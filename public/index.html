@@ -1,0 +1,110 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Cycling Without Age Singapore</title>
+<meta name="description" content="Cycling Without Age Singapore — bringing joy to seniors and reducing loneliness through rides and community activities.">
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="index.css"/>
+</head>
+<body>
+  <header>
+    <div></div>
+  </header>
+
+  <main class="container">
+    <!-- Hero with copy and progress card -->
+    <section class="hero" id="hero">
+      <article class="hero-card">
+        <div class="media">
+          <span>Community Rides & Activities</span>
+        </div>
+        <div class="progress-card stack">
+          <h1 style="margin:0">Welcome to Cycling Without Age Singapore</h1>
+          <p class="muted">Our mission is to bring joy to seniors and engage them in happy hours of community activities to reduce loneliness.</p>
+          <div class="progress-stats"><span class="amount" id="raised">$47,993</span><span class="muted">raised</span></div>
+          <div class="bar" aria-label="Donation progress toward goal"><span aria-hidden="true"></span></div>
+          <div style="display:flex;gap:10px;flex-wrap:wrap">
+            <a class="btn brand" href="#donate" id="donateBtn">Donate now</a>
+            <a class="btn" href="https://cyclingwithoutage.sg/" target="_blank" rel="noopener">Visit official site</a>
+          </div>
+        </div>
+      </article>
+
+      <aside class="section stack" id="about">
+        <h2 style="margin:0">About the campaign</h2>
+        <p>We transform loneliness into social connection. With your support, seniors can experience trishaw rides, communal dining, art reminiscence workshops, bicycle repair training, and docent programmes, bringing joy and belonging.</p>
+        <p class="muted">Senior loneliness is a silent epidemic — and it is curable with kindness.</p>
+      </aside>
+    </section>
+
+    <section class="grid">
+      <div id="awards" class="section stack">
+        <div class="award">
+          <div class="badge">CTA 2024</div>
+          <div>
+            <h3 style="margin:0 0 6px 0">Charity Transparency Award 2024</h3>
+            <p class="muted" style="margin:0">Recognised for governance and transparency in Singapore’s charity sector.</p>
+          </div>
+        </div>
+        <p class="muted">Source: official CWAS site.</p>
+      </div>
+
+      <div id="programmes" class="section stack">
+        <h3 style="margin:0">Programmes</h3>
+        <ul style="margin:0 0 6px 18px">
+          <li>Trishaw Docent rides</li>
+          <li>Active Generations Programme</li>
+          <li>Community and reminiscence workshops</li>
+        </ul>
+        <a class="btn" href="https://cyclingwithoutage.sg/" target="_blank" rel="noopener">Explore programmes</a>
+      </div>
+    </section>
+  </main>
+
+  <footer id="contact">
+    <div class="footer-inner footer-grid">
+      <div>
+        <strong>Contact Us</strong><br>
+        <a href="mailto:info@cyclingwithoutage.sg">info@cyclingwithoutage.sg</a>
+      </div>
+      <div class="social" aria-label="Follow us">
+        <a href="#" aria-label="Facebook"><i class="fa-brands fa-facebook-f"></i></a>
+        <a href="#" aria-label="Instagram"><i class="fa-brands fa-instagram"></i></a>
+        <a href="#" aria-label="LinkedIn"><i class="fa-brands fa-linkedin-in"></i></a>
+      </div>
+    </div>
+  </footer>
+
+  <div class="mobile-menu" id="menuOverlay" aria-hidden="true">
+    <div class="mobile-sheet" role="dialog" aria-modal="true" aria-label="Mobile menu">
+      <button class="close" id="closeMenu" aria-label="Close menu"><i class="fa-solid fa-xmark"></i></button>
+      <a href="#about" onclick="closeMenu()">About</a>
+      <a href="#programmes" onclick="closeMenu()">Programmes</a>
+      <a href="#awards" onclick="closeMenu()">Awards</a>
+      <a href="#contact" onclick="closeMenu()">Contact</a>
+      <a class="btn brand" href="#donate" onclick="closeMenu()">Donate</a>
+    </div>
+  </div>
+
+<script>
+  const openBtn = document.getElementById('openMenu');
+  const closeBtn = document.getElementById('closeMenu');
+  const overlay = document.getElementById('menuOverlay');
+  function openMenu(){overlay.style.display='block';overlay.setAttribute('aria-hidden','false')}
+  function closeMenu(){overlay.style.display='none';overlay.setAttribute('aria-hidden','true')}
+  openBtn.addEventListener('click',openMenu);
+  closeBtn.addEventListener('click',closeMenu);
+  overlay.addEventListener('click',(e)=>{ if(e.target===overlay){ closeMenu(); } });
+  // fake donate button scroll target
+  document.getElementById('donateBtn').addEventListener('click', (e)=>{
+    e.preventDefault();
+    window.scrollTo({ top: document.body.scrollHeight, behavior: 'smooth' });
+  });
+</script>
+
+<!-- Content sourced from the official CWAS site: https://cyclingwithoutage.sg/ -->
+</body>
+</html>
+
