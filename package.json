@@ -1,0 +1,27 @@
+{
+  "name": "full-stack-development-project--cycling-team-9",
+  "version": "1.0.0",
+  "description": "",
+  "main": "index.js",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/kkskyw/Full-Stack-Development-Project--cycling-team-9.git"
+  },
+  "keywords": [],
+  "author": "",
+  "license": "ISC",
+  "bugs": {
+    "url": "https://github.com/kkskyw/Full-Stack-Development-Project--cycling-team-9/issues"
+  },
+  "homepage": "https://github.com/kkskyw/Full-Stack-Development-Project--cycling-team-9#readme",
+  "dependencies": {
+    "bcryptjs": "^3.0.3",
+    "dotenv": "^17.2.3",
+    "express": "^5.1.0",
+    "joi": "^18.0.1",
+    "mssql": "^12.1.0"
+  }
+}
