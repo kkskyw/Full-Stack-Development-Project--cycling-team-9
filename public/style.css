@@ -1,0 +1,163 @@
+body {
+    margin: 0;
+    font-family: 'Open Sans', sans-serif;
+    background-color: #ffffff;
+    color: #333;
+    min-height: 79vh;
+    display: flex;
+    justify-content: center;
+    padding: 40px 0;
+    overflow-y: auto;
+}
+
+.modal {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    height: 90vh;
+    width: 23vw;
+    padding: 20px;
+    box-sizing: border-box;
+    border: 1px solid #333;
+    border-radius: 5px;
+}
+
+.logo {
+    text-align: center;
+    margin-bottom: 100px;
+}
+
+.logo img {
+    width: 250px;
+    height: auto;
+}
+
+.back-btn {
+    font-size: 24px;
+    font-weight: bold;
+    color: #000000;
+    cursor: pointer;
+    background: none;
+    border: none;
+    text-decoration: none;
+}
+
+.modal-content {
+    width: 20vw;
+    position: relative;
+}
+
+.modal-content h2 {
+    margin-top: 0;
+    margin-bottom: 80px;
+    font-weight: 600;
+    font-size: 1.8rem;
+    color: #000000;
+    text-align: center;
+}
+
+.modal-content label {
+    display: block;
+    text-align: left;
+    margin-bottom: 6px;
+    font-weight: 600;
+    color: #555;
+    font-size: 1rem;
+    margin-top: 16px;
+}
+
+.modal-content input, .modal-content select {
+    width: 100%;
+    padding: 12px 14px;
+    border: 1.5px solid #ddd;
+    border-radius: 25px;
+    font-size: 1rem;
+    box-sizing: border-box;
+    margin-top: 6px;
+    transition: border-color 0.3s ease;
+}
+
+.modal-content input:focus, .modal-content select:focus {
+    border-color: #00ADB5;
+    outline: none;
+}
+
+.forgot-password {
+    display: block;
+    text-align: right;
+    font-size: 0.85rem;
+    margin: 10px 0 20px;
+    color: #00ADB5;
+    text-decoration: underline;
+    cursor: pointer;
+}
+
+button {
+    width: 100%;
+    max-width: 280px;
+    padding: 12px;
+    margin: 10px 0 20px;
+    margin: 10px 0 8px;
+    font-size: 1rem;
+    border-radius: 25px;
+    background-color: #00ADB5;
+    color: white;
+    border: none;
+    text-align: center;
+    transition: background-color 0.3s ease;
+    cursor: pointer;
+}
+
+button:hover {
+    background-color: #00939a;
+}
+
+p {
+    font-size: 0.95rem;
+    color: #555;
+    text-align: center;
+    margin-top: 10px;
+}
+
+p a {
+    color: #00ADB5;
+    text-decoration: underline;
+    cursor: pointer;
+}
+
+/* Tab styles for combined login/register form */
+.tabs {
+    display: flex;
+    margin-bottom: 30px;
+    border-bottom: 1px solid #eee;
+}
+
+.tab {
+    padding: 12px 20px;
+    cursor: pointer;
+    font-weight: 600;
+    color: #777;
+    transition: all 0.3s ease;
+    flex: 1;
+    text-align: center;
+}
+
+.tab.active {
+    color: #00ADB5;
+    border-bottom: 3px solid #00ADB5;
+}
+
+.form {
+    display: none;
+}
+
+.form.active {
+    display: block;
+    animation: fadeIn 0.5s ease;
+}
+
+@keyframes fadeIn {
+    from { opacity: 0; transform: translateY(10px); }
+    to { opacity: 1; transform: translateY(0); }
+}
