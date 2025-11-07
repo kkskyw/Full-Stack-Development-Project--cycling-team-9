@@ -23,6 +23,7 @@ app.post("/users/login", userValidation.validateLogin, userController.loginUser)
 // Start server
 app.listen(port, () => {
   console.log(`Server running on port ${port}`);
+  console.log(`Click http://localhost:${port}`);
 });
 
 // Graceful shutdown
