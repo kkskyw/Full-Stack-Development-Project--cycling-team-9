@@ -10,6 +10,7 @@ const port = process.env.PORT || 3000;
 
 const userController = require("./controllers/userController");
 const userValidation = require("./middlewares/userValidation");
+const eventController = require("./controllers/eventController")
 
 // Middleware
 app.use(express.json());
@@ -19,6 +20,7 @@ app.use(express.static(path.join(__dirname, "public")));
 // User routes
 app.post("/users/register", userValidation.validateUser, userController.createUser);
 app.post("/users/login", userValidation.validateLogin, userController.loginUser);
+app.get("/events", eventController.getAllEvents);
 
 // Start server
 app.listen(port, () => {
