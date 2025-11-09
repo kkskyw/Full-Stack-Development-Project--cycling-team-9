@@ -92,10 +92,19 @@ async function getUserByUsername(username) {
     if (connection) await connection.close();
   }
 }
+// Get user by userId
+exports.getUserById = async (userId) => {
+  let pool = await sql.connect(dbConfig);
+  let result = await pool.request()
+    .input('userId', sql.Int, userId)
+    .query('SELECT');
+  return result.recordset[0];
+};
 
 module.exports = {
   getUserById,
   createUser,
   findUserByEmail,
-  getUserByUsername
+  getUserByUsername,
+  getUserById
 };

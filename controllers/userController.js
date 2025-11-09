@@ -93,9 +93,38 @@ async function loginUser(req, res) {
     res.status(500).json({ error: "Internal server error" });
   }
 }
+// Get user profile
+async function getProfile(req, res) {
+  try {
+    const userId = req.params.id;
+    const profile = await userModel.getUserById(userId);
+    if (!profile) return res.status(404).json({ error: 'User not found' });
+    res.json(profile);
+  } catch (err) {
+    console.error(err);
+    res.status(500).json({ error: 'Error fetching profile.' });
+  }
+};
+
+
+// Update user profile
+async function updateProfile(req, res) {
+  try {
+    const userId = req.params.id;
+    await userModel.updateUser(userId, req.body);
+    res.json({ message: "Profile updated successfully!" });
+  } catch (err) {
+    console.error(err);
+    res.status(500).json({ error: "Error updating profile." });
+  }
+};
+
+
 
 module.exports = {
   getUserById,
   createUser,
-  loginUser
+  loginUser,
+  getProfile,
+  updateProfile
 };
