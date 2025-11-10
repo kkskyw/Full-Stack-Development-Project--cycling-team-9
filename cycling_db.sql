@@ -7,3 +7,11 @@ dob DATE NOT NULL,
 password VARCHAR(255) NOT NULL,
 preferredLanguage VARCHAR(20) DEFAULT 'English',
 role VARCHAR(20) );
+
+CREATE TABLE events (
+eventId INT IDENTITY(1,1) PRIMARY KEY,
+header VARCHAR(100) NOT NULL,
+intro VARCHAR(1000) NOT NULL,
+location VARCHAR(50) NOT NULL,
+time DateTime NOT NULL,
+)
