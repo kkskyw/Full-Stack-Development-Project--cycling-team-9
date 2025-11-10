@@ -17,26 +17,22 @@ async function getUserById(req, res) {
 // Register new user
 async function createUser(req, res) {
   try {
-    const { name, email, phone, password, preferredLanguage, role } = req.body;
+    const { name, email, phone, dob, password, preferredLanguage, role } = req.body;
 
-    // Validate required fields
-    if (!name || !email || !password) {
-      return res.status(400).json({ error: "Name, email, and password are required" });
+    if (!name || !email || !password || !dob || !phone) {
+      return res.status(400).json({ error: "All fields are required" });
     }
 
-    // Check if name already exists
-    const existingName = await userModel.getUserByUsername(name);
-    if (existingName) {
-      return res.status(400).json({ error: "This name is already taken. Please choose another." });
+    const existingPhone = await userModel.findUserByPhone(phone);
+    if (existingPhone) {
+      return res.status(400).json({ error: "This phone number is already registered. Try logging in." });
     }
 
-    // Check if email already exists
     const existingEmail = await userModel.findUserByEmail(email);
     if (existingEmail) {
       return res.status(400).json({ error: "This email is already registered. Try logging in." });
     }
 
-    // Hash password and create user
     const salt = await bcrypt.genSalt(10);
     const hashedPassword = await bcrypt.hash(password, salt);
 
@@ -44,6 +40,7 @@ async function createUser(req, res) {
       name,
       email,
       phone,
+      dob,
       password: hashedPassword,
       preferredLanguage,
       role
