@@ -21,6 +21,12 @@ app.use(express.static(path.join(__dirname, "public")));
 app.post("/users/register", userValidation.validateUser, userController.createUser);
 app.post("/users/login", userValidation.validateLogin, userController.loginUser);
 app.get("/events", eventController.getAllEvents);
+app.put("/users/:id", userController.updateUser);
+
+// serve main.html at root
+app.get('/', (req, res) => {
+  res.sendFile(path.join(__dirname, 'public', 'main.html'));
+});
 
 // Start server
 app.listen(port, () => {
