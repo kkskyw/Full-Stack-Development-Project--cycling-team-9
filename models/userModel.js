@@ -91,9 +91,35 @@ async function findUserByPhone(phone) {
   return result.recordset[0];
 }
 
+async function updateUserInfo(userId, updatedData) {
+  let connection;
+  try {
+    connection = await sql.connect(dbConfig);
+    const request = connection.request()
+      .input("userId", userId)
+      .input("name", updatedData.name || null)
+      .input("email", updatedData.email || null)
+      .input("phone", updatedData.phone || null)
+      .input("password",updatedData.password || null)
+    const query = `
+      UPDATE users
+      SET name = COALESCE(@name, name), email = COALESCE(@email, email), phone = COALESCE(@phone, phone), password = COALESCE(@password, password)
+      WHERE userId = @userId
+    `;
+    await request.query(query);
+    return await getUserById(userId);
+  } catch (error) {
+    console.error("Database error:", error);
+    throw error;
+  } finally {
+    if (connection) await connection.close();
+  } 
+}
+
 module.exports = {
   getUserById,
   createUser,
   findUserByEmail,
-  findUserByPhone
+  findUserByPhone,
+  updateUserInfo
 };

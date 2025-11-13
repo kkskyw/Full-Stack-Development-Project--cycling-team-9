@@ -91,8 +91,30 @@ async function loginUser(req, res) {
   }
 }
 
+// Update User
+async function updateUser(req, res) {
+  const id = parseInt(req.params.id);
+  const updateData = req.body;
+  
+  try {
+    if (updateData.password && updateData.password.trim() !== "") {
+      const salt = await bcrypt.genSalt(10);
+      updateData.password = await bcrypt.hash(updateData.password, salt);
+    } else {
+      delete updateData.password;
+    }
+    
+    const updatedUser = await userModel.updateUserInfo(id, updateData);
+    res.status(200).json({ message: "User updated successfully", user: updatedUser });
+  } catch (error) {
+    console.error("Error updating user:", error);
+    res.status(500).json({ error: "Error updating user", details: error.message });
+  }
+}
+
 module.exports = {
   getUserById,
   createUser,
-  loginUser
+  loginUser,
+  updateUser
 };
