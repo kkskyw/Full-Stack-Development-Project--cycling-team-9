@@ -10,22 +10,28 @@ const userSchema = Joi.object({
     "any.required": "Name is required",
   }),
   email: Joi.string().email().required().messages({
-    "string.base": "Email must be a string",
     "string.email": "Email must be a valid email address",
     "string.empty": "Email cannot be empty",
     "any.required": "Email is required",
   }),
+  phone: Joi.string().pattern(/^[0-9]{8}$/).required().messages({
+    "string.pattern.base": "Phone number must be 8 digits",
+    "string.empty": "Phone number cannot be empty",
+    "any.required": "Phone number is required",
+  }),
+  dob: Joi.date().less("now").required().messages({
+    "date.base": "Date of birth must be a valid date",
+    "date.less": "Date of birth must be in the past",
+    "any.required": "Date of birth is required",
+  }),
   password: Joi.string().min(8).required().messages({
-    "string.base": "Password must be a string",
-    "string.empty": "Password cannot be empty",
     "string.min": "Password must be at least 8 characters",
     "any.required": "Password is required",
   }),
   role: Joi.string().valid("Volunteer", "Staff").required().messages({
-    "string.base": "Role must be a string",
     "any.only": "Role must be either 'Volunteer' or 'Staff'",
-    "any.required": "Role is required"
-  })
+    "any.required": "Role is required",
+  }),
 });
 
 // Validate request body for user creation

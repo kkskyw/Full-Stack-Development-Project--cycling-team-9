@@ -6,7 +6,7 @@ body {
     min-height: 79vh;
     display: flex;
     justify-content: center;
-    padding: 40px 0;
+    padding: 10px 0;
     overflow-y: auto;
 }
 
@@ -15,22 +15,6 @@ body {
     flex-direction: column;
     align-items: center;
     justify-content: center;
-    height: 90vh;
-    width: 23vw;
-    padding: 20px;
-    box-sizing: border-box;
-    border: 1px solid #333;
-    border-radius: 5px;
-}
-
-.logo {
-    text-align: center;
-    margin-bottom: 100px;
-}
-
-.logo img {
-    width: 250px;
-    height: auto;
 }
 
 .back-btn {
@@ -44,15 +28,15 @@ body {
 }
 
 .modal-content {
-    width: 20vw;
+    width: 400px;
     position: relative;
 }
 
 .modal-content h2 {
     margin-top: 0;
-    margin-bottom: 80px;
+    margin-bottom: 40px;
     font-weight: 600;
-    font-size: 1.8rem;
+    font-size: 30px;
     color: #000000;
     text-align: center;
 }
@@ -94,8 +78,7 @@ body {
 }
 
 button {
-    width: 100%;
-    max-width: 280px;
+    width: 400px;
     padding: 12px;
     margin: 10px 0 20px;
     margin: 10px 0 8px;
@@ -126,38 +109,14 @@ p a {
     cursor: pointer;
 }
 
-/* Tab styles for combined login/register form */
-.tabs {
-    display: flex;
-    margin-bottom: 30px;
-    border-bottom: 1px solid #eee;
+/* Shake animation */
+@keyframes shake {
+  0%, 100% { transform: translateX(0); }
+  20%, 60% { transform: translateX(-6px); }
+  40%, 80% { transform: translateX(6px); }
 }
 
-.tab {
-    padding: 12px 20px;
-    cursor: pointer;
-    font-weight: 600;
-    color: #777;
-    transition: all 0.3s ease;
-    flex: 1;
-    text-align: center;
-}
-
-.tab.active {
-    color: #00ADB5;
-    border-bottom: 3px solid #00ADB5;
-}
-
-.form {
-    display: none;
-}
-
-.form.active {
-    display: block;
-    animation: fadeIn 0.5s ease;
-}
-
-@keyframes fadeIn {
-    from { opacity: 0; transform: translateY(10px); }
-    to { opacity: 1; transform: translateY(0); }
+/* Apply shake effect */
+.shake {
+  animation: shake 0.3s ease;
 }
