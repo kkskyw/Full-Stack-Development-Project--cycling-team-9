@@ -3,74 +3,103 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Cycling Without Age Singapore</title>
+    <title data-lang="title">Cycling Without Age Singapore</title>
     <link rel="stylesheet" href="css/main.css" />
 </head>
 <body>
     <header>
         <div class="logo-container">
-            <img src="/images/cropped-logox2.png" alt="Cycling Without Age Logo" class="logo">
+            <img src="/images/cropped-logox2.png" alt="Cycling Without Age Logo" data-lang="logoAlt" class="logo">
             <div class="logo-text">
-                <p>Cycling Without Age</p>
+                <p data-lang="logoText">Cycling Without Age</p>
             </div>
         </div>
 
         <div class="header-buttons">
             <div class="menu-container">
-                <button class="menu-btn" id="menuBtn">
-                    <span>☰</span> Menu
+                <button class="language-btn" id="languageBtn">
+                    <span>🌐</span> <span data-lang="language">Language</span>
                 </button>
-                <div class="dropdown-menu" id="dropdownMenu">
-                    <a href="events.html">Events</a>
-                    <a href="checkin.html">Check-in</a>
-                    <a href="donate.html">Donate</a>
-                    <a href="feedback.html">Feedback</a>
-                    <a href="/public/profile.html">Profile</a>
-                    <a href="settings.html">Settings</a>
+                <div class="dropdown-menu" id="languageDropdown">
+                    <a href="#" value="en">English</a>
+                    <a href="#" value="zh">中文 (Chinese)</a>
+                    <a href="#" value="ms">Bahasa Melayu (Malay)</a>
+                    <a href="#" value="ta">தமிழ் (Tamil)</a>
                 </div>
             </div>
-            <button class="register-btn" onclick="window.location.href='register.html'">Register</button>
+
+            <div class="menu-container">
+                <button class="menu-btn" id="menuBtn">
+                    <span>☰</span> <span data-lang="menu">Menu</span>
+                </button>
+                <div class="dropdown-menu" id="dropdownMenu">
+                    <a href="events.html" data-lang="events">Events</a>
+                    <a href="checkin.html" data-lang="checkin">Check-in</a>
+                    <a href="donate.html" data-lang="donate">Donate</a>
+                    <a href="feedback.html" data-lang="feedback">Feedback</a>
+                    <a href="/public/profile.html" data-lang="profile">Profile</a>
+                    <a href="settings.html" data-lang="settings">Settings</a>
+                </div>
+            </div>
+
+            <button class="register-btn" onclick="window.location.href='register.html'" data-lang="register">Register</button>
         </div>
     </header>
 
-    <img src="/images/Untitled-design-1-1600x432.png" alt="Community cycling event" class="hero-image">
+    <img src="/images/Untitled-design-1-1600x432.png" 
+         alt="Community cycling event" 
+         data-lang="heroAlt"
+         class="hero-image">
 
     <section class="welcome-section">
-        <h1>Welcome to Cycling Without Age Singapore</h1>
-        <p class="mission">Our mission is to bring joy to seniors and engage them in happy hours of community activities to reduce loneliness.</p>
+        <h1 data-lang="welcomeHeader">Welcome to Cycling Without Age Singapore</h1>
+
+        <p class="mission" data-lang="missionText">
+            Our mission is to bring joy to seniors and engage them in happy hours of community activities to reduce loneliness.
+        </p>
         
-        <p>Today, 270,000 seniors aged 82 and above in Singapore experience loneliness. Loneliness not only increases the risk of developing depression & anxiety, but also increases the risk of death by 7%, while managing other health issues.</p>
+        <p data-lang="lonelinessStats">
+            Today, 270,000 seniors aged 82 and above in Singapore experience loneliness. Loneliness not only increases the risk of developing depression & anxiety, but also increases the risk of death by 7%, while managing other health issues.
+        </p>
         
-        <p>We transform loneliness into social connection. With your support, seniors can experience trishaw rides, communal dining, art reminiscence workshops, bicycle repair training, and trishaw docent programmes, bringing joy, purpose, and a sense of belonging!</p>
+        <p data-lang="transformationText">
+            We transform loneliness into social connection. With your support, seniors can experience trishaw rides, communal dining, art reminiscence workshops, bicycle repair training, and trishaw docent programmes, bringing joy, purpose, and a sense of belonging.
+        </p>
         
         <div class="button-container">
-            <button class="btn btn-join" onclick="window.location.href='register.html'">Join Us</button>
-            <button class="btn btn-donate" onclick="alert('Donate - Feature coming soon!')">Donate</button>
+            <button class="btn btn-join" onclick="window.location.href='register.html'" data-lang="joinUs">Join Us</button>
+            <button class="btn btn-donate" onclick="alert('Donate - Feature coming soon!')" data-lang="donateBtn">Donate</button>
         </div>
     </section>
 
     <section class="video-section">
         <div class="video-container">
-            <iframe width="560" height="315" src="https://www.youtube.com/embed/7a7vlkCngK8?si=8xwv7QGaNGLE6CBp" title="YouTube video player" frameborder="0" allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture; web-share" referrerpolicy="strict-origin-when-cross-origin" allowfullscreen></iframe>
+            <!-- No translation needed for video -->
+            <iframe width="560" height="315" src="https://www.youtube.com/embed/7a7vlkCngK8?si=8xwv7QGaNGLE6CBp" allowfullscreen></iframe>
         </div>
     </section>
 
     <section class="award-section">
-        <h2>Charity Transparency Award 2024</h2>
-        <p>Cycling Without Age Singapore (CWAS) is honoured to be accorded The Charity Transparency and Governance (CTA) Award for 2024, organized by the Ministry of Culture, Community & Youth (MCCY). This award is a recognition of our commitment to promoting good governance and transparency in the charity sector, and it is aimed at highlighting the outstanding work of charities, motivating others to follow their lead.</p>
+        <h2 data-lang="ctaHeader">Charity Transparency Award 2024</h2>
+
+        <p data-lang="ctaDesc1">
+            Cycling Without Age Singapore (CWAS) is honoured to be accorded The Charity Transparency and Governance (CTA) Award for 2024, organized by the Ministry of Culture, Community & Youth (MCCY). This award is a recognition of our commitment to promoting good governance and transparency in the charity sector, and it is aimed at highlighting the outstanding work of charities, motivating others to follow their lead.
+        </p>
         
-        <p>CWAS wishes to share this achievement with our supporters, volunteers, and community partners. This award serves as proof of our continued efforts to maintain and enhance our standards of corporate governance and transparency. As a trusted charity, we remain dedicated to serving and empowering seniors by reintegrating them into the community through volunteerism.</p>
+        <p data-lang="ctaDesc2">
+            CWAS wishes to share this achievement with our supporters, volunteers, and community partners. This award serves as proof of our continued efforts to maintain and enhance our standards of corporate governance and transparency. As a trusted charity, we remain dedicated to serving and empowering seniors by reintegrating them into the community through volunteerism.
+        </p>
         
-        <img src="/images/CTA-Logo-2024-768x503.png" alt="Charity Transparency Awards 2024" class="award-logo">
-        <img src="/images/CWAS-Transparency-Awasrd-2024-768x577.jpeg" alt="Award Presentation Ceremony" class="certificate-image">
+        <img src="/images/CTA-Logo-2024-768x503.png" class="award-logo" alt="CTA Logo" data-lang="ctaLogoAlt">
+        <img src="/images/CWAS-Transparency-Awasrd-2024-768x577.jpeg" class="certificate-image" alt="Award Ceremony" data-lang="awardCeremonyAlt">
     </section>
 
     <section class="contact-section">
-        <h2>Contact Us</h2>
-        <a href="mailto:info@cyclingwithoutage.sg">info@cyclingwithoutage.sg</a>
+        <h2 data-lang="contactUs">Contact Us</h2>
+        <a href="mailto:info@cyclingwithoutage.sg" data-lang="email">info@cyclingwithoutage.sg</a>
         
         <div class="social-section">
-            <h3>Follow Us</h3>
+            <h3 data-lang="followUs">Follow Us</h3>
             <div class="social-icons">
                 <div class="social-icon" onclick="window.open('https://facebook.com', '_blank')">
                     <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M24 12.073c0-6.627-5.373-12-12-12s-12 5.373-12 12c0 5.99 4.388 10.954 10.125 11.854v-8.385H7.078v-3.47h3.047V9.43c0-3.007 1.792-4.669 4.533-4.669 1.312 0 2.686.235 2.686.235v2.953H15.83c-1.491 0-1.956.925-1.956 1.874v2.25h3.328l-.532 3.47h-2.796v8.385C19.612 23.027 24 18.062 24 12.073z"/></svg>
@@ -90,6 +119,7 @@
         <p>All Rights Reserved</p>
     </footer>
 
+    <script src="/public/script/translations.js"></script>
     <script src="/public/script/main.js"></script>
 </body>
 </html>
