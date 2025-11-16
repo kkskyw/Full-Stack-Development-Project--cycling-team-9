@@ -4,12 +4,18 @@ const jwt = require("jsonwebtoken");
 
 // Get user by ID
 async function getUserById(req, res) {
-  const id = parseInt(req.params.id);
+  const id = parseInt(req.params.id, 10);
+  if (isNaN(id)) return res.status(400).json({ error: "Invalid user id" });
+
   try {
     const user = await userModel.getUserById(id);
     if (!user) return res.status(404).json({ error: "User not found" });
+
+    // Remove sensitive fields before sending
+    if (user.password) delete user.password;
     res.json(user);
   } catch (error) {
+    console.error("Error retrieving user:", error);
     res.status(500).json({ error: "Error retrieving user" });
   }
 }

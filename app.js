@@ -25,6 +25,7 @@ app.post("/users/login", userValidation.validateLogin, userController.loginUser)
 
 app.get("/events", eventController.getAllEvents);
 app.put("/users/:id", userController.updateUser);
+app.get("/users/:id", userController.getUserById);
 
 // Attendance routes
 app.post("/attendance/checkin", verifyJWT, attendanceController.checkIn);
@@ -34,6 +35,10 @@ app.post("/attendance/checkout", verifyJWT, attendanceController.checkOut);
 // serve main.html at root
 app.get('/', (req, res) => {
   res.sendFile(path.join(__dirname, 'public', 'main.html'));
+});
+
+app.get(['/profile.html/:id', '/profile/:id'], (req, res) => {
+    res.sendFile(path.join(__dirname, 'public', 'profile.html'));
 });
 
 // Start server
