@@ -1,0 +1,196 @@
+/* GLOBAL RESET */
+*{ margin:0; padding:0; box-sizing:border-box; }
+
+body{
+    font-family:Arial,sans-serif;
+    line-height:1.6;
+    color:#333;
+}
+
+/* HEADER */
+header{
+    background-color:#8dd4c3;
+    padding:15px 30px;
+    display:flex;
+    justify-content:space-between;
+    align-items:center;
+}
+
+.logo{ height:60px; }
+
+.menu-btn{
+    background:transparent;
+    border:2px solid #333;
+    padding:8px 20px;
+    border-radius:5px;
+    cursor:pointer;
+    display:flex;
+    align-items:center;
+    gap:5px;
+    font-size:16px;
+}
+.menu-btn:hover{ background-color:rgba(255,255,255,0.2); }
+
+/* HERO IMAGE */
+.hero-image{
+    width:100%;
+    height:auto;
+    display:block;
+}
+
+/* SIGNUP SECTION */
+.signup-section{
+    text-align:center;
+    padding:50px 20px;
+    max-width:900px;
+    margin:0 auto;
+}
+
+.signup-section h1{
+    font-size:32px;
+    margin-bottom:15px;
+}
+
+.signup-section .mission{
+    font-size:18px;
+    margin-bottom:30px;
+    color:#555;
+}
+
+/* EVENT CARDS */
+.event-container{
+    display:flex;
+    flex-direction:column;
+    gap:30px;
+    align-items:center;
+}
+
+.event-card{
+    background-color:#a3e2d2;
+    border-radius:20px;
+    padding:25px;
+    width:100%;
+    max-width:700px;
+    box-shadow:0 4px 10px rgba(0,0,0,0.1);
+    transition:0.2s;
+    text-align:left;
+}
+
+.event-card:hover{
+    transform:scale(1.02);
+}
+
+.event-card h2{
+    font-size:24px;
+    margin-bottom:10px;
+}
+
+.event-image{
+    width:100%;
+    border-radius:15px;
+    margin:15px 0;
+}
+
+.event-info{
+    font-size:18px;
+    margin-bottom:8px;
+}
+
+.btn-signup{
+    padding:12px 35px;
+    background-color:#333;
+    color:#fff;
+    font-size:18px;
+    border:none;
+    border-radius:5px;
+    cursor:pointer;
+    transition:0.2s;
+}
+.btn-signup:hover{
+    transform:scale(1.05);
+    background:#555;
+}
+
+.confirmation{
+    margin-top:12px;
+    font-size:18px;
+    color:#006400;
+}
+
+.contact-section {
+    background-color: #8dd4c3;
+    padding: 50px 20px;
+    text-align: center;
+}
+
+.contact-section h2 {
+    font-size: 28px;
+    margin-bottom: 15px;
+    color: #333;
+}
+
+.contact-section a {
+    color: #333;
+    text-decoration: none;
+    font-size: 18px;
+}
+
+.social-section {
+    margin-top: 30px;
+}
+
+.social-section h3 {
+    font-size: 24px;
+    margin-bottom: 20px;
+    color: #333;
+}
+
+.social-icons {
+    display: flex;
+    justify-content: center;
+    gap: 20px;
+}
+
+.social-icon {
+    width: 60px;
+    height: 60px;
+    background-color: #000;
+    border-radius: 50%;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    cursor: pointer;
+    transition: transform 0.2s;
+}
+
+.social-icon:hover {
+    transform: scale(1.1);
+}
+
+.social-icon svg {
+    width: 30px;
+    height: 30px;
+    fill: white;
+}
+
+footer {
+    background-color: #8dd4c3;
+    padding: 20px;
+    text-align: center;
+    color: #333;
+}
+
+@media (max-width: 768px) {
+    .welcome-section h1 {
+        font-size: 24px;
+    }
+
+    .button-container {
+        flex-direction: column;
+        align-items: center;
+    }
+
+    .btn {
+        width: 200px;
+    }
+}
