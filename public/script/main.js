@@ -107,3 +107,15 @@ document.addEventListener('DOMContentLoaded', function () {
         element.textContent = key in tranlations[displayLanguage].main ? tranlations[displayLanguage].main[key] : tranlations['en'].main[key];
     })
 })
+
+document.addEventListener('DOMContentLoaded', function() {
+    const logo = document.querySelector('.logo');
+    if (logo) {
+        logo.addEventListener('click', function() {
+            window.location.href = 'main.html';
+        });
+        
+        logo.style.cursor = 'pointer';
+        logo.title = 'back to main page';
+    }
+});

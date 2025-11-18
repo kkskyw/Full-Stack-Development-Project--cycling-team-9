@@ -62,7 +62,36 @@ const getMRTStations = async (req, res) => {
     }
 };
 
+const getEventById = async (req, res) => {
+    try {
+        const eventId = parseInt(req.params.id);
+        console.log('Getting event by ID:', eventId);
+        
+        const event = await eventModel.getEventById(eventId);
+        
+        if (!event) {
+            return res.status(404).json({
+                success: false,
+                message: 'Event not found'
+            });
+        }
+        
+        res.json({
+            success: true,
+            data: event
+        });
+    } catch (error) {
+        console.error('Error in eventController.getEventById:', error);
+        res.status(500).json({
+            success: false,
+            message: 'Failed to fetch event details',
+            error: error.message
+        });
+    }
+};
+
 module.exports = {
     getAllEvents,
-    getMRTStations
+    getMRTStations,
+    getEventById
 };

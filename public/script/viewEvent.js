@@ -77,14 +77,11 @@ document.addEventListener('DOMContentLoaded', function() {
             const result = await response.json();
             console.log('MRT stations response:', result);
             
-            // 处理不同的响应格式
             if (result.success && result.data) {
                 updateMRTFilter(result.data);
             } else if (result.items) {
-                // 如果返回格式是 {items: [...]}
                 updateMRTFilter(result.items);
             } else if (Array.isArray(result)) {
-                // 如果直接返回数组
                 updateMRTFilter(result);
             } else {
                 console.error('Unexpected MRT stations response format:', result);
@@ -138,7 +135,6 @@ document.addEventListener('DOMContentLoaded', function() {
             const result = await response.json();
             console.log('Events response:', result);
             
-            // 处理不同的响应格式
             let events = [];
             let paginationInfo = {};
             
@@ -146,11 +142,9 @@ document.addEventListener('DOMContentLoaded', function() {
                 events = result.data;
                 paginationInfo = result.pagination || {};
             } else if (result.items) {
-                // 如果返回格式是 {items: [...], metadata: {...}}
                 events = result.items;
                 paginationInfo = result.metadata || {};
             } else if (Array.isArray(result)) {
-                // 如果直接返回数组
                 events = result;
             } else {
                 console.error('Unexpected events response format:', result);
@@ -181,14 +175,18 @@ document.addEventListener('DOMContentLoaded', function() {
         
         const eventDate = new Date(event.time);
         const formattedDate = eventDate.toLocaleDateString('en-US', {
+            timeZone: 'UTC', 
             weekday: 'long',
             year: 'numeric',
             month: 'long',
             day: 'numeric'
         });
+        
         const formattedTime = eventDate.toLocaleTimeString('en-US', {
+            timeZone: 'UTC',
             hour: '2-digit',
-            minute: '2-digit'
+            minute: '2-digit',
+            hour12: true
         });
         
         const eventIntro = event.intro || event.header || 'No description available';
@@ -203,6 +201,9 @@ document.addEventListener('DOMContentLoaded', function() {
             </div>
             <div class="event-intro">${eventIntro}</div>
         `;
+        eventCard.addEventListener('click', function() {
+            window.location.href = `eventDetail.html?id=${event.eventId}`;
+        });
         
         eventsGrid.appendChild(eventCard);
     });

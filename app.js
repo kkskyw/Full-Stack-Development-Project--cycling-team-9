@@ -35,6 +35,7 @@ app.post("/attendance/checkout", verifyJWT, attendanceController.checkOut);
 // Event routes
 app.get("/events", eventController.getAllEvents);
 app.get("/mrt-stations", eventController.getMRTStations);
+app.get("/events/:id", eventController.getEventById);
 
 // serve main.html at root
 app.get('/', (req, res) => {
