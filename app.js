@@ -10,7 +10,8 @@ const port = process.env.PORT || 3000;
 
 const userController = require("./controllers/userController");
 const userValidation = require("./middlewares/userValidation");
-const eventController = require("./controllers/eventController")
+const eventController = require("./controllers/eventController");
+const eventSignupController = require("./controllers/eventSignupController");
 
 // Middleware
 app.use(express.json());
@@ -22,6 +23,12 @@ app.post("/users/register", userValidation.validateUser, userController.createUs
 app.post("/users/login", userValidation.validateLogin, userController.loginUser);
 app.get("/events", eventController.getAllEvents);
 app.put("/users/:id", userController.updateUser);
+
+//events signup
+app.get("/users/eligible-events", verifyJWT, eventController.getEligibleEvents);
+app.post("/events/:eventId/signup", verifyJWT, eventSignupController.joinEvent);
+app.get("/events/eligible", verifyJWT, eventSignupController.getEligibleEvents);
+app.get("/users/eligible-events", verifyJWT, eventSignupController.getEligibleEvents);
 
 // serve main.html at root
 app.get('/', (req, res) => {
