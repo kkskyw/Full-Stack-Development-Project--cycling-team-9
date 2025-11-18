@@ -1,6 +1,5 @@
 const sql = require("mssql");
 const dbConfig = require("../dbConfig");
-const bcrypt = require("bcryptjs");
 
 // Get user by ID
 async function getUserById(id) {

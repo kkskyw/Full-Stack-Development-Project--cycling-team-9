@@ -1,0 +1,41 @@
+.attendance-container {
+  width: 100%;
+  max-width: 450px;
+  margin: auto;
+  text-align: center;
+  padding: 20px;
+}
+
+.attendance-container button {
+  width: 100%;
+  padding: 12px;
+  margin-top: 10px;
+  font-size: 1rem;
+  border: none;
+  background-color: #5271FF;
+  color: white;
+  border-radius: 5px;
+  cursor: pointer;
+}
+
+.attendance-container button:hover {
+  background-color: #3d54cc;
+}
+
+.time-display {
+  margin-top: 15px;
+  font-size: 1.1rem;
+  font-weight: bold;
+}
+
+@keyframes shake {
+  0% { transform: translateX(0); }
+  25% { transform: translateX(-4px); }
+  50% { transform: translateX(4px); }
+  75% { transform: translateX(-4px); }
+  100% { transform: translateX(0); }
+}
+
+.shake {
+  animation: shake 0.3s;
+}
