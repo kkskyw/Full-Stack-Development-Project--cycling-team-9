@@ -1,3 +1,4 @@
+
 const path = require("path");
 const express = require("express");
 const sql = require("mssql");
@@ -12,6 +13,7 @@ const userController = require("./controllers/userController");
 const userValidation = require("./middlewares/userValidation");
 const eventController = require("./controllers/eventController");
 const eventSignupController = require("./controllers/eventSignupController");
+const verifyJWT = require("./middlewares/verifyJWT");
 
 // Middleware
 app.use(express.json());
@@ -25,7 +27,6 @@ app.get("/events", eventController.getAllEvents);
 app.put("/users/:id", userController.updateUser);
 
 //events signup
-app.get("/users/eligible-events", verifyJWT, eventController.getEligibleEvents);
 app.post("/events/:eventId/signup", verifyJWT, eventSignupController.joinEvent);
 app.get("/events/eligible", verifyJWT, eventSignupController.getEligibleEvents);
 app.get("/users/eligible-events", verifyJWT, eventSignupController.getEligibleEvents);
