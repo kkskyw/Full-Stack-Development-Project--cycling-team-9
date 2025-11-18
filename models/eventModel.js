@@ -4,7 +4,6 @@ const dbConfig = require("../dbConfig");
 
 let pool;
 
-// 获取数据库连接池
 const getPool = async () => {
     if (pool) {
         return pool;
@@ -24,7 +23,6 @@ const getAllEvents = async (page = 1, pageSize = 5, filters = {}) => {
         const pool = await getPool();
         const offset = (page - 1) * pageSize;
         
-        // 修改：将 shortIntro 改为 intro
         let baseQuery = `
             SELECT eventId, header, intro, location, time, nearestMRT, longIntro
             FROM events
