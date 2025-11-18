@@ -20,8 +20,11 @@ app.use(express.static(path.join(__dirname, "public")));
 // User routes
 app.post("/users/register", userValidation.validateUser, userController.createUser);
 app.post("/users/login", userValidation.validateLogin, userController.loginUser);
-app.get("/events", eventController.getAllEvents);
 app.put("/users/:id", userController.updateUser);
+
+// Event routes
+app.get("/events", eventController.getAllEvents);
+app.get("/mrt-stations", eventController.getMRTStations);
 
 // serve main.html at root
 app.get('/', (req, res) => {
