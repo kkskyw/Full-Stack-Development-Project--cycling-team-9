@@ -175,14 +175,18 @@ document.addEventListener('DOMContentLoaded', function() {
         
         const eventDate = new Date(event.time);
         const formattedDate = eventDate.toLocaleDateString('en-US', {
+            timeZone: 'UTC', 
             weekday: 'long',
             year: 'numeric',
             month: 'long',
             day: 'numeric'
         });
+        
         const formattedTime = eventDate.toLocaleTimeString('en-US', {
+            timeZone: 'UTC',
             hour: '2-digit',
-            minute: '2-digit'
+            minute: '2-digit',
+            hour12: true
         });
         
         const eventIntro = event.intro || event.header || 'No description available';
