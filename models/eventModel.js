@@ -1,43 +1,121 @@
+// models/eventModel.js
 const sql = require("mssql");
 const dbConfig = require("../dbConfig");
 
-async function getAllEvents(page, limit) {
-  let connection;
-  try {
-    connection = await sql.connect(dbConfig);
+let pool;
 
-    const offset = (parseInt(page) - 1) * parseInt(limit);
+// 获取数据库连接池
+const getPool = async () => {
+    if (pool) {
+        return pool;
+    }
+    try {
+        pool = await sql.connect(dbConfig);
+        console.log('Database connection pool created successfully');
+        return pool;
+    } catch (err) {
+        console.error('Database connection failed:', err.message);
+        throw err;
+    }
+};
 
-    // 1. Get paginated events
-    const eventsResult = await connection
-      .request()
-      .input("OFFSET", offset)
-      .input("LIMIT", parseInt(limit))
-      .query(`
-        SELECT * FROM events
-        ORDER BY eventId
-        OFFSET @OFFSET ROWS
-        FETCH NEXT @LIMIT ROWS ONLY;
-      `);
+const getAllEvents = async (page = 1, pageSize = 5, filters = {}) => {
+    try {
+        const pool = await getPool();
+        const offset = (page - 1) * pageSize;
+        
+        // 修改：将 shortIntro 改为 intro
+        let baseQuery = `
+            SELECT eventId, header, intro, location, time, nearestMRT, longIntro
+            FROM events
+            WHERE 1=1
+        `;
+        
+        let countQuery = `
+            SELECT COUNT(*) as totalCount 
+            FROM events 
+            WHERE 1=1
+        `;
+        
+        const request = pool.request();
+        
+        // Add time filter if provided
+        if (filters.time) {
+            baseQuery += ` AND DATEPART(HOUR, time) = @time`;
+            countQuery += ` AND DATEPART(HOUR, time) = @time`;
+            request.input('time', sql.Int, filters.time);
+        }
+        
+        // Add MRT filter if provided
+        if (filters.mrt) {
+            baseQuery += ` AND nearestMRT = @mrt`;
+            countQuery += ` AND nearestMRT = @mrt`;
+            request.input('mrt', sql.VarChar, filters.mrt);
+        }
+        
+        // Add MRT letter filter if provided
+        if (filters.mrtLetter && filters.mrtLetter !== '') {
+            baseQuery += ` AND UPPER(LEFT(nearestMRT, 1)) = @mrtLetter`;
+            countQuery += ` AND UPPER(LEFT(nearestMRT, 1)) = @mrtLetter`;
+            request.input('mrtLetter', sql.VarChar, filters.mrtLetter);
+        }
+        
+        baseQuery += ` ORDER BY time OFFSET @offset ROWS FETCH NEXT @pageSize ROWS ONLY`;
+        
+        request.input('offset', sql.Int, offset);
+        request.input('pageSize', sql.Int, pageSize);
+        
+        console.log('Executing events query:', baseQuery);
+        console.log('Executing count query:', countQuery);
+        
+        // Execute both queries
+        const eventsResult = await request.query(baseQuery);
+        const countResult = await request.query(countQuery);
+        
+        const totalCount = countResult.recordset[0].totalCount;
+        const totalPages = Math.ceil(totalCount / pageSize);
+        
+        return {
+            events: eventsResult.recordset,
+            totalCount: totalCount,
+            currentPage: page,
+            totalPages: totalPages
+        };
+    } catch (error) {
+        console.error('Error in eventModel.getAllEvents:', error);
+        throw error;
+    }
+};
 
-    // 2. Get total count
-    const totalResult = await connection
-      .request()
-      .query(`SELECT COUNT(*) AS total FROM events`);
-
-    const total = totalResult.recordset[0].total;
-    const totalPages = Math.ceil(total / parseInt(limit));
-
-    return [eventsResult.recordset, totalPages];
-
-  } catch (error) {
-    console.error("Database error:", error);
-    throw error;
-  } finally {
-    if (connection) await connection.close();
-  }
-}
+const getMRTStations = async (letter = '') => {
+    try {
+        const pool = await getPool();
+        let query = `
+            SELECT DISTINCT nearestMRT 
+            FROM events 
+            WHERE nearestMRT IS NOT NULL AND nearestMRT != ''
+        `;
+        
+        const request = pool.request();
+        
+        if (letter && letter !== '') {
+            query += ` AND UPPER(LEFT(nearestMRT, 1)) = @letter`;
+            request.input('letter', sql.VarChar, letter);
+        }
+        
+        query += ` ORDER BY nearestMRT`;
+        
+        console.log('Executing MRT query:', query);
+        
+        const result = await request.query(query);
+        return result.recordset.map(row => row.nearestMRT);
+    } catch (error) {
+        console.error('Error in eventModel.getMRTStations:', error);
+        throw error;
+    }
+};
 
 module.exports = {
-  getAllEvents
+    getAllEvents,
+    getMRTStations
 };

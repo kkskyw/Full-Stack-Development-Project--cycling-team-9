@@ -1,278 +1,289 @@
-// Wait for DOM to be fully loaded
+// public/script/viewEvent.js
 document.addEventListener('DOMContentLoaded', function() {
-    // API Configuration
-    const API_BASE_URL = 'http://localhost:3000';
-    
-    // State Management
-    let allEvents = [];
-    let filteredEvents = [];
-    let allMRTStations = [];
-    let currentPage = 1;
-    const eventsPerPage = 5;
-    
-    // DOM Elements
     const eventsGrid = document.getElementById('eventsGrid');
     const pagination = document.getElementById('pagination');
     const timeFilter = document.getElementById('timeFilter');
     const mrtFilter = document.getElementById('mrtFilter');
-    const alphabetButtons = document.querySelectorAll('.alphabet-btn');
+    const alphabetButtons = document.getElementById('alphabetButtons');
     const clearFiltersBtn = document.getElementById('clearFilters');
-
-    // Fetch all events from API
-    async function fetchAllEvents() {
+    
+    let currentPage = 1;
+    const pageSize = 5;
+    let currentFilters = {
+        time: '',
+        mrt: '',
+        mrtLetter: ''
+    };
+    
+    // Initialize the page
+    init();
+    
+    async function init() {
+        console.log('Initializing events page...');
+        await loadMRTStations();
+        await loadEvents();
+        setupEventListeners();
+    }
+    
+    function setupEventListeners() {
+        timeFilter.addEventListener('change', function() {
+            console.log('Time filter changed:', this.value);
+            currentFilters.time = this.value;
+            currentPage = 1;
+            loadEvents();
+        });
+        
+        mrtFilter.addEventListener('change', function() {
+            console.log('MRT filter changed:', this.value);
+            currentFilters.mrt = this.value;
+            currentPage = 1;
+            loadEvents();
+        });
+        
+        alphabetButtons.addEventListener('click', function(e) {
+            if (e.target.classList.contains('alphabet-btn')) {
+                const letter = e.target.getAttribute('data-letter');
+                console.log('Alphabet button clicked:', letter);
+                
+                // Update active state
+                document.querySelectorAll('.alphabet-btn').forEach(btn => {
+                    btn.classList.remove('active');
+                });
+                e.target.classList.add('active');
+                
+                currentFilters.mrtLetter = letter;
+                currentPage = 1;
+                
+                // Load MRT stations for this letter and then load events
+                loadMRTStations(letter).then(() => loadEvents());
+            }
+        });
+        
+        clearFiltersBtn.addEventListener('click', function() {
+            console.log('Clearing filters');
+            clearFilters();
+        });
+    }
+    
+    async function loadMRTStations(letter = '') {
         try {
-            eventsGrid.innerHTML = '<div class="loading">Loading events...</div>';
-            
-            // Fetch events with a large limit to get all events
-            const response = await fetch(`${API_BASE_URL}/events?page=1&limit=1000`);
+            console.log('Loading MRT stations for letter:', letter);
+            const response = await fetch(`/mrt-stations?letter=${letter}`);
             
             if (!response.ok) {
-                throw new Error('Failed to fetch events');
+                throw new Error(`HTTP error! status: ${response.status}`);
             }
             
-            const data = await response.json();
-            allEvents = data.items || [];
-            filteredEvents = [...allEvents];
+            const result = await response.json();
+            console.log('MRT stations response:', result);
             
-            // Extract unique MRT stations
-            extractMRTStations();
-            
-            // Display events
-            displayEvents();
-            
+            // 处理不同的响应格式
+            if (result.success && result.data) {
+                updateMRTFilter(result.data);
+            } else if (result.items) {
+                // 如果返回格式是 {items: [...]}
+                updateMRTFilter(result.items);
+            } else if (Array.isArray(result)) {
+                // 如果直接返回数组
+                updateMRTFilter(result);
+            } else {
+                console.error('Unexpected MRT stations response format:', result);
+                updateMRTFilter([]);
+            }
         } catch (error) {
-            console.error('Error fetching events:', error);
-            eventsGrid.innerHTML = '<div class="no-events">Failed to load events. Please try again later.</div>';
+            console.error('Error loading MRT stations:', error);
+            updateMRTFilter([]);
         }
     }
-
-    // Extract unique MRT stations from events
-    function extractMRTStations() {
-        const mrtSet = new Set();
-        allEvents.forEach(event => {
-            if (event.nearestMRT) {
-                mrtSet.add(event.nearestMRT);
-            }
-        });
-        allMRTStations = Array.from(mrtSet).sort();
-    }
-
-    // Filter MRT stations by selected letter
-    function filterMRTByLetter(letter) {
+    
+    function updateMRTFilter(stations) {
         mrtFilter.innerHTML = '<option value="">Select MRT Station</option>';
         
-        let stations = allMRTStations;
-        if (letter) {
-            stations = allMRTStations.filter(station => 
-                station.toUpperCase().startsWith(letter)
-            );
+        if (stations && stations.length > 0) {
+            stations.forEach(station => {
+                const option = document.createElement('option');
+                option.value = station;
+                option.textContent = station;
+                mrtFilter.appendChild(option);
+            });
+            console.log('Updated MRT filter with', stations.length, 'stations');
+        } else {
+            console.log('No MRT stations found');
         }
-        
-        stations.forEach(station => {
-            const option = document.createElement('option');
-            option.value = station;
-            option.textContent = station;
-            mrtFilter.appendChild(option);
-        });
     }
-
-    // Apply filters to events
-    function applyFilters() {
-        filteredEvents = allEvents.filter(event => {
-            // Time filter
-            if (timeFilter.value) {
-                const eventTime = new Date(event.time);
-                const eventHour = eventTime.getHours();
-                const selectedHour = parseInt(timeFilter.value);
-                
-                if (eventHour < selectedHour || eventHour >= selectedHour + 1) {
-                    return false;
-                }
+    
+    async function loadEvents() {
+        try {
+            console.log('Loading events, page:', currentPage);
+            eventsGrid.innerHTML = '<div class="loading">Loading events...</div>';
+            
+            const params = new URLSearchParams({
+                page: currentPage,
+                pageSize: pageSize
+            });
+            
+            if (currentFilters.time) params.append('time', currentFilters.time);
+            if (currentFilters.mrt) params.append('mrt', currentFilters.mrt);
+            if (currentFilters.mrtLetter) params.append('mrtLetter', currentFilters.mrtLetter);
+            
+            const url = `/events?${params}`;
+            console.log('Fetching from URL:', url);
+            
+            const response = await fetch(url);
+            
+            if (!response.ok) {
+                throw new Error(`HTTP error! status: ${response.status}`);
             }
             
-            // MRT filter
-            if (mrtFilter.value && event.nearestMRT !== mrtFilter.value) {
-                return false;
+            const result = await response.json();
+            console.log('Events response:', result);
+            
+            // 处理不同的响应格式
+            let events = [];
+            let paginationInfo = {};
+            
+            if (result.success && result.data) {
+                events = result.data;
+                paginationInfo = result.pagination || {};
+            } else if (result.items) {
+                // 如果返回格式是 {items: [...], metadata: {...}}
+                events = result.items;
+                paginationInfo = result.metadata || {};
+            } else if (Array.isArray(result)) {
+                // 如果直接返回数组
+                events = result;
+            } else {
+                console.error('Unexpected events response format:', result);
             }
             
-            return true;
-        });
-        
-        currentPage = 1;
-        displayEvents();
-    }
-
-    // Display events on the page
-    function displayEvents() {
-        const startIndex = (currentPage - 1) * eventsPerPage;
-        const endIndex = startIndex + eventsPerPage;
-        const eventsToDisplay = filteredEvents.slice(startIndex, endIndex);
-        
-        if (eventsToDisplay.length === 0) {
-            eventsGrid.innerHTML = '<div class="no-events">No events found matching your filters.</div>';
-            pagination.innerHTML = '';
-            return;
+            displayEvents(events);
+            displayPagination(paginationInfo);
+            
+        } catch (error) {
+            console.error('Error loading events:', error);
+            eventsGrid.innerHTML = `<div class="no-events">Error loading events: ${error.message}. Please check console for details.</div>`;
         }
-        
-        eventsGrid.innerHTML = '';
-        
-        eventsToDisplay.forEach(event => {
-            const eventCard = createEventCard(event);
-            eventsGrid.appendChild(eventCard);
-        });
-        
-        renderPagination();
     }
-
-    // Create event card HTML
-    function createEventCard(event) {
-        const card = document.createElement('div');
-        card.className = 'event-card';
+    
+    function displayEvents(events) {
+    console.log('Displaying', events.length, 'events');
+    
+    if (!events || events.length === 0) {
+        eventsGrid.innerHTML = '<div class="no-events">No events found matching your criteria.</div>';
+        return;
+    }
+    
+    eventsGrid.innerHTML = '';
+    
+    events.forEach(event => {
+        const eventCard = document.createElement('div');
+        eventCard.className = 'event-card';
         
         const eventDate = new Date(event.time);
-        const formattedDate = eventDate.toLocaleDateString('en-SG', {
+        const formattedDate = eventDate.toLocaleDateString('en-US', {
+            weekday: 'long',
             year: 'numeric',
             month: 'long',
             day: 'numeric'
         });
-        const formattedTime = eventDate.toLocaleTimeString('en-SG', {
+        const formattedTime = eventDate.toLocaleTimeString('en-US', {
             hour: '2-digit',
-            minute: '2-digit',
-            hour12: true
+            minute: '2-digit'
         });
         
-        card.innerHTML = `
-            <h2 class="event-header">${event.header}</h2>
+        const eventIntro = event.intro || event.header || 'No description available';
+        
+        eventCard.innerHTML = `
+            <div class="event-header">${event.header}</div>
             <div class="event-meta">
-                <span class="event-date">${formattedDate}</span>
-                <span class="event-time">${formattedTime}</span>
-                <span class="event-location">${event.location}</span>
-                <span class="event-mrt">${event.nearestMRT}</span>
+                <div class="event-date">${formattedDate}</div>
+                <div class="event-time">${formattedTime}</div>
+                <div class="event-location">${event.location}</div>
+                <div class="event-mrt">${event.nearestMRT}</div>
             </div>
-            <p class="event-intro">${event.intro}</p>
+            <div class="event-intro">${eventIntro}</div>
         `;
         
-        // Add click event to navigate to event details
-        card.addEventListener('click', () => {
-            console.log('Event clicked:', event.eventId);
-            // You can navigate to event details page here
-            // window.location.href = `eventDetails.html?id=${event.eventId}`;
-        });
-        
-        return card;
+        eventsGrid.appendChild(eventCard);
+    });
     }
-
-    // Render pagination buttons
-    function renderPagination() {
-        const totalPages = Math.ceil(filteredEvents.length / eventsPerPage);
-        
-        if (totalPages <= 1) {
-            pagination.innerHTML = '';
-            return;
-        }
-        
+    
+    function displayPagination(paginationInfo) {
         pagination.innerHTML = '';
         
+        if (!paginationInfo || !paginationInfo.totalPages || paginationInfo.totalPages <= 1) return;
+        
         // Previous button
-        const prevBtn = createPageButton('« Prev', currentPage - 1, currentPage === 1);
-        pagination.appendChild(prevBtn);
+        const prevButton = document.createElement('button');
+        prevButton.className = 'page-btn';
+        prevButton.innerHTML = '&laquo;';
+        prevButton.disabled = currentPage === 1;
+        prevButton.addEventListener('click', () => {
+            if (currentPage > 1) {
+                currentPage--;
+                loadEvents();
+            }
+        });
+        pagination.appendChild(prevButton);
         
         // Page numbers
         const maxVisiblePages = 5;
         let startPage = Math.max(1, currentPage - Math.floor(maxVisiblePages / 2));
-        let endPage = Math.min(totalPages, startPage + maxVisiblePages - 1);
+        let endPage = Math.min(paginationInfo.totalPages, startPage + maxVisiblePages - 1);
         
-        if (endPage - startPage < maxVisiblePages - 1) {
+        if (endPage - startPage + 1 < maxVisiblePages) {
             startPage = Math.max(1, endPage - maxVisiblePages + 1);
         }
         
-        // First page
-        if (startPage > 1) {
-            pagination.appendChild(createPageButton('1', 1));
-            if (startPage > 2) {
-                const ellipsis = document.createElement('span');
-                ellipsis.className = 'page-info';
-                ellipsis.textContent = '...';
-                pagination.appendChild(ellipsis);
-            }
-        }
-        
-        // Page numbers
         for (let i = startPage; i <= endPage; i++) {
-            pagination.appendChild(createPageButton(i.toString(), i));
-        }
-        
-        // Last page
-        if (endPage < totalPages) {
-            if (endPage < totalPages - 1) {
-                const ellipsis = document.createElement('span');
-                ellipsis.className = 'page-info';
-                ellipsis.textContent = '...';
-                pagination.appendChild(ellipsis);
-            }
-            pagination.appendChild(createPageButton(totalPages.toString(), totalPages));
+            const pageButton = document.createElement('button');
+            pageButton.className = `page-btn ${i === currentPage ? 'active' : ''}`;
+            pageButton.textContent = i;
+            pageButton.addEventListener('click', () => {
+                currentPage = i;
+                loadEvents();
+            });
+            pagination.appendChild(pageButton);
         }
         
         // Next button
-        const nextBtn = createPageButton('Next »', currentPage + 1, currentPage === totalPages);
-        pagination.appendChild(nextBtn);
-    }
-
-    // Create pagination button
-    function createPageButton(text, pageNum, disabled = false) {
-        const button = document.createElement('button');
-        button.className = 'page-btn';
-        button.textContent = text;
-        button.disabled = disabled;
-        
-        if (pageNum === currentPage) {
-            button.classList.add('active');
-        }
-        
-        if (!disabled) {
-            button.addEventListener('click', () => {
-                currentPage = pageNum;
-                displayEvents();
-                window.scrollTo({ top: 0, behavior: 'smooth' });
-            });
-        }
-        
-        return button;
-    }
-
-    // Event Listeners
-    timeFilter.addEventListener('change', applyFilters);
-    mrtFilter.addEventListener('change', applyFilters);
-    
-    alphabetButtons.forEach(button => {
-        button.addEventListener('click', function() {
-            // Remove active class from all buttons
-            alphabetButtons.forEach(btn => btn.classList.remove('active'));
-            
-            // Add active class to clicked button
-            this.classList.add('active');
-            
-            const letter = this.getAttribute('data-letter');
-            filterMRTByLetter(letter);
-            
-            console.log('Selected letter:', letter || 'All');
+        const nextButton = document.createElement('button');
+        nextButton.className = 'page-btn';
+        nextButton.innerHTML = '&raquo;';
+        nextButton.disabled = currentPage === paginationInfo.totalPages;
+        nextButton.addEventListener('click', () => {
+            if (currentPage < paginationInfo.totalPages) {
+                currentPage++;
+                loadEvents();
+            }
         });
-    });
+        pagination.appendChild(nextButton);
+        
+        // Page info
+        const pageInfo = document.createElement('div');
+        pageInfo.className = 'page-info';
+        pageInfo.textContent = `Page ${currentPage} of ${paginationInfo.totalPages}`;
+        pagination.appendChild(pageInfo);
+    }
     
-    clearFiltersBtn.addEventListener('click', () => {
+    function clearFilters() {
         timeFilter.value = '';
         mrtFilter.value = '';
         
-        // Reset alphabet buttons
-        alphabetButtons.forEach(btn => btn.classList.remove('active'));
-        alphabetButtons[0].classList.add('active');
+        document.querySelectorAll('.alphabet-btn').forEach(btn => {
+            btn.classList.remove('active');
+        });
         
-        filterMRTByLetter('');
-        applyFilters();
+        // Activate "All" button
+        document.querySelector('.alphabet-btn[data-letter=""]').classList.add('active');
         
-        console.log('Filters cleared');
-    });
-
-    // Initialize
-    fetchAllEvents();
+        currentFilters = {
+            time: '',
+            mrt: '',
+            mrtLetter: ''
+        };
+        
+        currentPage = 1;
+        loadMRTStations().then(() => loadEvents());
+    }
 });
