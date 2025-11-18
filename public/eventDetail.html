@@ -1,0 +1,100 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Event Details - Cycling Without Age Singapore</title>
+    <link rel="stylesheet" href="css/main.css">
+    <link rel="stylesheet" href="css/eventDetail.css">
+</head>
+<body>
+    <header>
+        <div class="logo-container">
+            <img src="images/cropped-logox2.png" alt="Cycling Without Age Logo" data-lang="logoAlt" class="logo">
+            <div class="logo-text">
+                <p data-lang="logoText">Cycling Without Age</p>
+            </div>
+        </div>
+
+        <div class="header-buttons">
+            <div class="menu-container">
+                <button class="language-btn" id="languageBtn">
+                    <span>🌐</span> Language
+                </button>
+                <div class="dropdown-menu" id="languageDropdown">
+                    <a href="#" data-lang="en">English</a>
+                    <a href="#" data-lang="zh">中文 (Chinese)</a>
+                    <a href="#" data-lang="ms">Bahasa Melayu (Malay)</a>
+                    <a href="#" data-lang="ta">தமிழ் (Tamil)</a>
+                </div>
+            </div>
+            <div class="menu-container">
+                <button class="menu-btn" id="menuBtn">
+                    <span>☰</span> Menu
+                </button>
+                <div class="dropdown-menu" id="dropdownMenu">
+                    <a href="viewEvent.html">Events</a>
+                    <a href="checkin.html">Check-in</a>
+                    <a href="donationPage.html">Donate</a>
+                    <a href="feedback.html">Feedback</a>
+                    <a href="profile.html">Profile</a>
+                </div>
+            </div>
+            <button class="register-btn" onclick="window.location.href='register.html'">Register</button>
+        </div>
+    </header>
+
+    <main class="event-detail-container">
+        <div class="back-button-container">
+            <button class="back-btn" id="backBtn">
+                <span>←</span> Back to Events
+            </button>
+        </div>
+
+        <div class="event-detail-card">
+            <div class="event-header-section">
+                <h1 class="event-title" id="eventTitle">Event Title</h1>
+                <div class="event-meta-detail">
+                    <div class="meta-item">
+                        <span class="meta-icon">📅</span>
+                        <span class="meta-text" id="eventDate">Date</span>
+                    </div>
+                    <div class="meta-item">
+                        <span class="meta-icon">🕐</span>
+                        <span class="meta-text" id="eventTime">Time</span>
+                    </div>
+                    <div class="meta-item">
+                        <span class="meta-icon">📍</span>
+                        <span class="meta-text" id="eventLocation">Location</span>
+                    </div>
+                    <div class="meta-item">
+                        <span class="meta-icon">🚇</span>
+                        <span class="meta-text" id="eventMRT">Nearest MRT</span>
+                    </div>
+                </div>
+            </div>
+
+            <div class="event-content-section">
+                <div class="event-description">
+                    <h2>About This Event</h2>
+                    <p id="eventDescription">Event description will be loaded here...</p>
+                </div>
+
+                <div class="action-section">
+                    <button class="signup-btn" id="signupBtn">
+                        Sign Up for This Event
+                    </button>
+                </div>
+            </div>
+        </div>
+    </main>
+
+    <footer>
+        <p>Copyright Cycling Without Age Singapore 2024</p>
+        <p>All Rights Reserved</p>
+    </footer>
+
+    <script src="script/main.js"></script>
+    <script src="script/eventDetail.js"></script>
+</body>
+</html>

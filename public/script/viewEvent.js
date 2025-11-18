@@ -201,6 +201,9 @@ document.addEventListener('DOMContentLoaded', function() {
             </div>
             <div class="event-intro">${eventIntro}</div>
         `;
+        eventCard.addEventListener('click', function() {
+            window.location.href = `eventDetail.html?id=${event.eventId}`;
+        });
         
         eventsGrid.appendChild(eventCard);
     });
