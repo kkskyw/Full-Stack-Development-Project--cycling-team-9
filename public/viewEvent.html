@@ -1,0 +1,137 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Events - Cycling Without Age Singapore</title>
+    <link rel="stylesheet" href="css/main.css">
+    <link rel="stylesheet" href="css/viewEvent.css">
+</head>
+<body>
+    <header>
+        <div class="logo-container">
+            <img src="images/cropped-logox2.png" alt="Cycling Without Age Logo" data-lang="logoAlt" class="logo">
+            <div class="logo-text">
+                <p data-lang="logoText">Cycling Without Age</p>
+            </div>
+        </div>
+        
+        <div class="header-buttons">
+            <div class="menu-container">
+                <button class="language-btn" id="languageBtn">
+                    <span>🌐</span> Language
+                </button>
+                <div class="dropdown-menu" id="languageDropdown">
+                    <a href="#" data-lang="en">English</a>
+                    <a href="#" data-lang="zh">中文 (Chinese)</a>
+                    <a href="#" data-lang="ms">Bahasa Melayu (Malay)</a>
+                    <a href="#" data-lang="ta">தமிழ் (Tamil)</a>
+                </div>
+            </div>
+            <div class="menu-container">
+                <button class="menu-btn" id="menuBtn">
+                    <span>☰</span> Menu
+                </button>
+                <div class="dropdown-menu" id="dropdownMenu">
+                    <a href="viewEvent.html">Events</a>
+                    <a href="checkin.html">Check-in</a>
+                    <a href="donate.html">Donate</a>
+                    <a href="feedback.html">Feedback</a>
+                    <a href="profile.html">Profile</a>
+                    <a href="settings.html">Settings</a>
+                </div>
+            </div>
+            <button class="register-btn" onclick="window.location.href='register.html'">Register</button>
+        </div>
+    </header>
+
+    <main class="events-container">
+        <h1 class="page-title">Browse Events</h1>
+
+        <!-- Filters Section -->
+        <div class="filters-section">
+            <div class="filter-group">
+                <label for="timeFilter">Filter by Start Time:</label>
+                <select id="timeFilter" class="filter-select">
+                    <option value="">All Times</option>
+                    <option value="6">6:00 AM - 7:00 AM</option>
+                    <option value="7">7:00 AM - 8:00 AM</option>
+                    <option value="8">8:00 AM - 9:00 AM</option>
+                    <option value="9">9:00 AM - 10:00 AM</option>
+                    <option value="10">10:00 AM - 11:00 AM</option>
+                    <option value="11">11:00 AM - 12:00 PM</option>
+                    <option value="12">12:00 PM - 1:00 PM</option>
+                    <option value="13">1:00 PM - 2:00 PM</option>
+                    <option value="14">2:00 PM - 3:00 PM</option>
+                    <option value="15">3:00 PM - 4:00 PM</option>
+                    <option value="16">4:00 PM - 5:00 PM</option>
+                    <option value="17">5:00 PM - 6:00 PM</option>
+                    <option value="18">6:00 PM - 7:00 PM</option>
+                    <option value="19">7:00 PM - 8:00 PM</option>
+                    <option value="20">8:00 PM - 9:00 PM</option>
+                    <option value="21">9:00 PM - 10:00 PM</option>
+                </select>
+            </div>
+
+            <div class="filter-group">
+                <label for="mrtFilter">Filter by Nearest MRT:</label>
+                <div class="mrt-filter-container">
+                    <div class="alphabet-buttons" id="alphabetButtons">
+                        <button class="alphabet-btn" data-letter="">All</button>
+                        <button class="alphabet-btn" data-letter="A">A</button>
+                        <button class="alphabet-btn" data-letter="B">B</button>
+                        <button class="alphabet-btn" data-letter="C">C</button>
+                        <button class="alphabet-btn" data-letter="D">D</button>
+                        <button class="alphabet-btn" data-letter="E">E</button>
+                        <button class="alphabet-btn" data-letter="F">F</button>
+                        <button class="alphabet-btn" data-letter="G">G</button>
+                        <button class="alphabet-btn" data-letter="H">H</button>
+                        <button class="alphabet-btn" data-letter="I">I</button>
+                        <button class="alphabet-btn" data-letter="J">J</button>
+                        <button class="alphabet-btn" data-letter="K">K</button>
+                        <button class="alphabet-btn" data-letter="L">L</button>
+                        <button class="alphabet-btn" data-letter="M">M</button>
+                        <button class="alphabet-btn" data-letter="N">N</button>
+                        <button class="alphabet-btn" data-letter="O">O</button>
+                        <button class="alphabet-btn" data-letter="P">P</button>
+                        <button class="alphabet-btn" data-letter="Q">Q</button>
+                        <button class="alphabet-btn" data-letter="R">R</button>
+                        <button class="alphabet-btn" data-letter="S">S</button>
+                        <button class="alphabet-btn" data-letter="T">T</button>
+                        <button class="alphabet-btn" data-letter="U">U</button>
+                        <button class="alphabet-btn" data-letter="V">V</button>
+                        <button class="alphabet-btn" data-letter="W">W</button>
+                        <button class="alphabet-btn" data-letter="X">X</button>
+                        <button class="alphabet-btn" data-letter="Y">Y</button>
+                        <button class="alphabet-btn" data-letter="Z">Z</button>
+                    </div>
+                    <select id="mrtFilter" class="filter-select mrt-select">
+                        <option value="">Select MRT Station</option>
+                    </select>
+                </div>
+            </div>
+
+            <button class="clear-filters-btn" id="clearFilters">Clear Filters</button>
+        </div>
+
+        <!-- Events Grid -->
+        <div class="events-grid" id="eventsGrid">
+            <!-- Event cards will be dynamically inserted here -->
+            <div class="loading">Loading events...</div>
+        </div>
+
+        <!-- Pagination -->
+        <div class="pagination" id="pagination">
+            <!-- Pagination buttons will be dynamically inserted here -->
+        </div>
+    </main>
+
+    <footer>
+        <p>Copyright Cycling Without Age Singapore 2024</p>
+        <p>All Rights Reserved</p>
+    </footer>
+
+    <script src="script/main.js"></script>
+    <script src="script/viewEvent.js"></script>
+</body>
+</html>

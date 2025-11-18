@@ -50,6 +50,23 @@ header {
     background-color: rgba(255, 255, 255, 0.2);
 }
 
+.language-btn {
+    background-color: transparent;
+    border: 2px solid #333;
+    padding: 8px 20px;
+    border-radius: 5px;
+    cursor: pointer;
+    font-size: 16px;
+    display: flex;
+    align-items: center;
+    gap: 5px;
+    transition: background-color 0.3s;
+}
+
+.language-btn:hover {
+    background-color: rgba(255, 255, 255, 0.2);
+}
+
 .register-btn {
     background-color: #333;
     color: white;
