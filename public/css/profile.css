@@ -43,14 +43,32 @@ body{background:#fff;color:#071422;-webkit-font-smoothing:antialiased}
 /* page layout */
 .page{max-width:var(--max-width);margin:14px auto;padding:0 14px}
 .back-link{
-  display:inline-block;
-  margin:8px 0;
+  position:fixed;
+  z-index:999;
   color:#071422;
   text-decoration:none;
   font-size:22px;
-  padding:10px;
-  position:relative;
-  left: calc((var(--max-width) - 100vw) / 2); /* flush to viewport left */
+  border-radius:10px;
+  box-shadow:0 6px 18px rgba(2,6,23,0.08);
+  transition:transform .18s ease, box-shadow .18s ease;
+}
+
+/* smaller screens tweak */
+@media (max-width:420px){
+  .back-link{ left:8px; top:72px; width:44px; height:44px; }
+}
+
+/* on wider screens align with content container instead of viewport edge */
+@media (min-width:720px){
+  .back-link{
+    left: calc((100vw - var(--max-width)) / 2 + 8px);
+    top:20px;
+    width:auto;
+    height:auto;
+    padding:8px 10px;
+    border-radius:8px;
+    font-size:20px;
+  }
 }
 .profile{background:transparent;padding:6px 0 40px}
 .avatar{
