@@ -11,6 +11,8 @@ const port = process.env.PORT || 3000;
 const userController = require("./controllers/userController");
 const userValidation = require("./middlewares/userValidation");
 const eventController = require("./controllers/eventController")
+const attendanceController = require("./controllers/attendanceController");
+const verifyJWT = require("./middlewares/verifyJWT");
 
 // Middleware
 app.use(express.json());
@@ -20,7 +22,15 @@ app.use(express.static(path.join(__dirname, "public")));
 // User routes
 app.post("/users/register", userValidation.validateUser, userController.createUser);
 app.post("/users/login", userValidation.validateLogin, userController.loginUser);
+
+app.get("/events", eventController.getAllEvents);
 app.put("/users/:id", userController.updateUser);
+app.get("/users/:id", userController.getUserById);
+
+// Attendance routes
+app.post("/attendance/checkin", verifyJWT, attendanceController.checkIn);
+app.post("/attendance/checkout", verifyJWT, attendanceController.checkOut);
+
 
 // Event routes
 app.get("/events", eventController.getAllEvents);
@@ -29,6 +39,10 @@ app.get("/mrt-stations", eventController.getMRTStations);
 // serve main.html at root
 app.get('/', (req, res) => {
   res.sendFile(path.join(__dirname, 'public', 'main.html'));
+});
+
+app.get(['/profile.html/:id', '/profile/:id'], (req, res) => {
+    res.sendFile(path.join(__dirname, 'public', 'profile.html'));
 });
 
 // Start server

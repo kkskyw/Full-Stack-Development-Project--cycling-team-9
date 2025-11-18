@@ -4,12 +4,18 @@ const jwt = require("jsonwebtoken");
 
 // Get user by ID
 async function getUserById(req, res) {
-  const id = parseInt(req.params.id);
+  const id = parseInt(req.params.id, 10);
+  if (isNaN(id)) return res.status(400).json({ error: "Invalid user id" });
+
   try {
     const user = await userModel.getUserById(id);
     if (!user) return res.status(404).json({ error: "User not found" });
+
+    // Remove sensitive fields before sending
+    if (user.password) delete user.password;
     res.json(user);
   } catch (error) {
+    console.error("Error retrieving user:", error);
     res.status(500).json({ error: "Error retrieving user" });
   }
 }
@@ -93,22 +99,30 @@ async function loginUser(req, res) {
 
 // Update User
 async function updateUser(req, res) {
-  const id = parseInt(req.params.id);
-  const updateData = req.body;
-  
+  const id = parseInt(req.params.id, 10);
+  if (isNaN(id)) return res.status(400).json({ error: 'Invalid user id' });
+
+  const updateData = { ...req.body };
+
   try {
-    if (updateData.password && updateData.password.trim() !== "") {
-      const salt = await bcrypt.genSalt(10);
-      updateData.password = await bcrypt.hash(updateData.password, salt);
-    } else {
-      delete updateData.password;
+    if ('password' in updateData) {
+      if (!updateData.password || updateData.password.trim() === '') {
+        delete updateData.password;
+      } else {
+        const salt = await bcrypt.genSalt(10);
+        updateData.password = await bcrypt.hash(updateData.password, salt);
+      }
     }
-    
+
     const updatedUser = await userModel.updateUserInfo(id, updateData);
-    res.status(200).json({ message: "User updated successfully", user: updatedUser });
+    if (!updatedUser) return res.status(404).json({ error: 'User not found' });
+
+    if (updatedUser.password) delete updatedUser.password;
+
+    res.json({ message: 'User updated', user: updatedUser });
   } catch (error) {
-    console.error("Error updating user:", error);
-    res.status(500).json({ error: "Error updating user", details: error.message });
+    console.error('Error updating user:', error);
+    res.status(500).json({ error: 'Error updating user', details: error.message });
   }
 }
 
