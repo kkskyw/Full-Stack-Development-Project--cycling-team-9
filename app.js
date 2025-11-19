@@ -15,12 +15,13 @@ const eventController = require("./controllers/eventController");
 const eventSignupController = require("./controllers/eventSignupController");
 const verifyJWT = require("./middlewares/verifyJWT");
 const attendanceController = require("./controllers/attendanceController");
-const verifyJWT = require("./middlewares/verifyJWT");
-
+const trainingController = require("./controllers/trainingController");
+const trainingRoutes = require("./routes/trainingRoutes");
 // Middleware
 app.use(express.json());
 app.use(express.urlencoded({ extended: true }));
 app.use(express.static(path.join(__dirname, "public")));
+
 
 // User routes
 app.post("/users/register", userValidation.validateUser, userController.createUser);
@@ -38,6 +39,10 @@ app.get("/users/:id", userController.getUserById);
 // Attendance routes
 app.post("/attendance/checkin", verifyJWT, attendanceController.checkIn);
 app.post("/attendance/checkout", verifyJWT, attendanceController.checkOut);
+
+//training
+app.post("/api/training/complete/:type", verifyJWT, trainingController.completeTraining);
+
 
 
 // serve main.html at root

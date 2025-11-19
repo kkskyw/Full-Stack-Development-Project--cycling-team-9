@@ -3,6 +3,7 @@
 function getToken() {
     return localStorage.getItem("token");
 }
+console.log("TOKEN FOUND:", localStorage.getItem("token"));
 
 // load events from backend
 async function loadEvents() {
