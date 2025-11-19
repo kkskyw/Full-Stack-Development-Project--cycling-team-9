@@ -16,6 +16,7 @@ body {
     padding: 20px;
 }
 
+/* Default mobile layout */
 .modal {
     background-color: white;
     border-radius: 10px;
@@ -28,6 +29,149 @@ body {
 
 .modal-content {
     width: 100%;
+}
+
+/* Hide info panel on mobile */
+.info-panel {
+    display: none;
+}
+
+/* Desktop Layout */
+@media (min-width: 1024px) {
+    body {
+        background: linear-gradient(135deg, #8dd4c3 0%, #7bc4b2 100%);
+        padding: 40px;
+        position: relative;
+        min-height: 100vh;
+    }
+    
+    body::before {
+        content: '';
+        position: absolute;
+        top: 0;
+        left: 0;
+        right: 0;
+        bottom: 0;
+        background-image: url('../images/Untitled-design-1-1600x432.png');
+        background-size: cover;
+        background-position: center;
+        background-repeat: no-repeat;
+        opacity: 0.1;
+        z-index: -1;
+    }
+    
+    .modal {
+        display: flex;
+        max-width: 900px;
+        width: 100%;
+        min-height: 600px;
+        border-radius: 15px;
+        overflow: hidden;
+        box-shadow: 0 10px 30px rgba(0, 0, 0, 0.2);
+        padding: 0; /* Remove padding since we'll use inner padding */
+    }
+    
+    /* Show info panel only on desktop */
+    .info-panel {
+        display: flex;
+        flex: 1;
+        background: linear-gradient(135deg, #8dd4c3 0%, #7bc4b2 100%);
+        padding: 50px 40px;
+        color: #333;
+        flex-direction: column;
+        justify-content: center;
+        position: relative;
+    }
+    
+    .info-panel::before {
+        content: '';
+        position: absolute;
+        top: 0;
+        left: 0;
+        right: 0;
+        bottom: 0;
+        background-image: url('../images/cropped-logox2.png');
+        background-size: 80%;
+        background-position: center;
+        background-repeat: no-repeat;
+        opacity: 0.1;
+    }
+    
+    .info-panel h1 {
+        font-size: 2.2rem;
+        margin-bottom: 20px;
+        position: relative;
+        z-index: 1;
+    }
+    
+    .info-panel p {
+        font-size: 1.1rem;
+        margin-bottom: 15px;
+        line-height: 1.6;
+        position: relative;
+        z-index: 1;
+    }
+    
+    .info-features {
+        margin-top: 30px;
+        position: relative;
+        z-index: 1;
+    }
+    
+    .feature {
+        display: flex;
+        align-items: center;
+        margin-bottom: 15px;
+        font-size: 0.95rem;
+    }
+    
+    .feature::before {
+        content: '✓';
+        color: #333;
+        font-weight: bold;
+        margin-right: 10px;
+        background: rgba(255, 255, 255, 0.3);
+        width: 20px;
+        height: 20px;
+        border-radius: 50%;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+    }
+    
+    .form-panel {
+        flex: 1;
+        background: white;
+        padding: 50px 40px;
+        display: flex;
+        flex-direction: column;
+        justify-content: center;
+    }
+    
+    .modal-content {
+        width: 100%;
+        max-width: 400px;
+        margin: 0 auto;
+    }
+}
+
+/* Tablet Layout */
+@media (max-width: 1023px) and (min-width: 769px) {
+    body {
+        background: linear-gradient(135deg, #8dd4c3 0%, #7bc4b2 100%);
+        padding: 30px;
+    }
+    
+    .modal {
+        max-width: 600px;
+        border-radius: 15px;
+        box-shadow: 0 10px 30px rgba(0, 0, 0, 0.2);
+    }
+    
+    /* Keep info panel hidden on tablet */
+    .info-panel {
+        display: none;
+    }
 }
 
 .back-btn {
