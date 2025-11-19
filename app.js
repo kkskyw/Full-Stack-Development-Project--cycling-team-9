@@ -1,3 +1,4 @@
+
 const path = require("path");
 const express = require("express");
 const sql = require("mssql");
@@ -10,14 +11,17 @@ const port = process.env.PORT || 3000;
 
 const userController = require("./controllers/userController");
 const userValidation = require("./middlewares/userValidation");
-const eventController = require("./controllers/eventController")
-const attendanceController = require("./controllers/attendanceController");
+const eventController = require("./controllers/eventController");
+const eventSignupController = require("./controllers/eventSignupController");
 const verifyJWT = require("./middlewares/verifyJWT");
-
+const attendanceController = require("./controllers/attendanceController");
+const trainingController = require("./controllers/trainingController");
+const trainingRoutes = require("./routes/trainingRoutes");
 // Middleware
 app.use(express.json());
 app.use(express.urlencoded({ extended: true }));
 app.use(express.static(path.join(__dirname, "public")));
+
 
 // User routes
 app.post("/users/register", userValidation.validateUser, userController.createUser);
@@ -25,11 +29,20 @@ app.post("/users/login", userValidation.validateLogin, userController.loginUser)
 
 app.get("/events", eventController.getAllEvents);
 app.put("/users/:id", userController.updateUser);
+
+//events signup
+app.post("/events/:eventId/signup", verifyJWT, eventSignupController.joinEvent);
+app.get("/events/eligible", verifyJWT, eventSignupController.getEligibleEvents);
+app.get("/users/eligible-events", verifyJWT, eventSignupController.getEligibleEvents);
 app.get("/users/:id", userController.getUserById);
 
 // Attendance routes
 app.post("/attendance/checkin", verifyJWT, attendanceController.checkIn);
 app.post("/attendance/checkout", verifyJWT, attendanceController.checkOut);
+
+//training
+app.post("/api/training/complete/:type", verifyJWT, trainingController.completeTraining);
+
 
 
 // Event routes
