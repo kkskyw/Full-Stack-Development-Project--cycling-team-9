@@ -3,6 +3,12 @@ document.addEventListener('DOMContentLoaded', function () {
     // Check if user is logged in and update menu visibility
     updateMenuVisibility();
 
+    // Add logout button event listener
+    const logoutBtn = document.getElementById('logoutBtn');
+    if (logoutBtn) {
+        logoutBtn.addEventListener('click', handleLogout);
+    }
+    
     // Check if user is logged in and hide register button
     const token = localStorage.getItem('token');
     const registerBtn = document.querySelector('.register-btn');
@@ -136,10 +142,11 @@ function updateMenuVisibility() {
     const token = localStorage.getItem('token');
     const trainingLink = document.getElementById('trainingLink');
     const eventsLink = document.getElementById('eventsLink');
-    const registerBtn = document.querySelector('.register-btn');
+    const registerBtn = document.getElementById('registerBtn');
+    const logoutBtn = document.getElementById('logoutBtn');
     
     if (token) {
-        // User is logged in - show training button, change events link
+        // User is logged in - show training button, change events link, show logout button
         if (trainingLink) {
             trainingLink.style.display = 'block';
         }
@@ -149,8 +156,11 @@ function updateMenuVisibility() {
         if (registerBtn) {
             registerBtn.style.display = 'none';
         }
+        if (logoutBtn) {
+            logoutBtn.style.display = 'block';
+        }
     } else {
-        // User is not logged in - hide training button, use default events link
+        // User is not logged in - hide training button, use default events link, show register button
         if (trainingLink) {
             trainingLink.style.display = 'none';
         }
@@ -160,5 +170,20 @@ function updateMenuVisibility() {
         if (registerBtn) {
             registerBtn.style.display = 'block';
         }
+        if (logoutBtn) {
+            logoutBtn.style.display = 'none';
+        }
     }
+}
+
+// Function to handle logout
+function handleLogout() {
+    // Clear all stored user data
+    localStorage.removeItem('token');
+    localStorage.removeItem('userId');
+    localStorage.removeItem('role');
+    localStorage.removeItem('userName');
+    
+    // Redirect to main page
+    window.location.href = 'main.html';
 }
