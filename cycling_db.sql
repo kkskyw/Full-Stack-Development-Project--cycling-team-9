@@ -94,3 +94,11 @@ CREATE TABLE bookedevents (
     FOREIGN KEY (userId) REFERENCES users(userId),
     FOREIGN KEY (eventId) REFERENCES events(eventId)
 );
+CREATE TABLE eventSignups (
+    id INT IDENTITY(1,1) PRIMARY KEY,
+    eventId INT NOT NULL,
+    userId INT NOT NULL,
+    signupDate DATETIME DEFAULT GETDATE(),
+    FOREIGN KEY (eventId) REFERENCES events(eventId),
+    FOREIGN KEY (userId) REFERENCES users(userId)
+);
