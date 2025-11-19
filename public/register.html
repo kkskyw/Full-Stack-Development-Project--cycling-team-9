@@ -4,57 +4,95 @@
     <meta charset="UTF-8" />
     <title>Cycling Without Age - Singapore</title>
     <link href="https://fonts.googleapis.com/css2?family=Open+Sans&display=swap" rel="stylesheet" />
-    <link rel="stylesheet" href="/css/login_register.css" />
+    <link rel="stylesheet" href="../css/login_register.css" />
     <link rel="icon" type="image/png" href="/images/favicon.png">
+    <script src="https://unpkg.com/@dotlottie/player-component@2.7.12/dist/dotlottie-player.mjs" type="module"></script>
 </head>
 <body>
   <div class="modal">
-    <div class="modal-content">`
+    <!-- Info Panel for Desktop -->
+    <div class="info-panel">
+        <h1>Join Our Community</h1>
+        <p>Be part of Cycling Without Age Singapore and help bring joy to seniors through trishaw rides and community activities.</p>
+        
+        <div class="info-features">
+            <div class="feature">Connect with like-minded volunteers</div>
+            <div class="feature">Participate in meaningful events</div>
+            <div class="feature">Make a difference in seniors' lives</div>
+            <div class="feature">Join a certified charity organization</div>
+        </div>
+    </div>
 
-        <!-- Back Button -->
-        <a href="main.html" class="back-btn">&#8592;</a>
+    <!-- Form Panel -->
+    <div class="form-panel">
+        <div class="modal-content">
+            <!-- Back Button -->
+            <a href="main.html" class="back-btn">&#8592;</a>
 
-        <!-- Title -->
-        <h2>Register</h2>
+            <!-- Title -->
+            <h2>Register</h2>
 
-        <!-- Form -->
-        <form id="registerForm">
-            <!-- Name -->
-            <label for="name">Name:</label>
-            <input type="text" id="name" name="name" placeholder="Enter your full name as in NRIC" required>
+            <!-- Form -->
+            <form id="registerForm">
+                <!-- Name -->
+                <label for="name">Name:</label>
+                <input type="text" id="name" name="name" placeholder="Enter your full name as in NRIC" required>
 
-            <!-- Email Address -->
-            <label for="email">Email Address:</label>
-            <input type="email" id="email" name="email" placeholder="Enter your email" required>
+                <!-- Email Address -->
+                <label for="email">Email Address:</label>
+                <input type="email" id="email" name="email" placeholder="Enter your email" required>
 
-            <!-- Phone Number -->
-            <label for="phone">Phone Number:</label>
-            <input type="tel" id="phone" name="phone" placeholder="Enter your phone number" required>
+                <!-- Phone Number -->
+                <label for="phone">Phone Number:</label>
+                <input type="tel" id="phone" name="phone" placeholder="Enter your phone number" required>
 
-            <!-- Date of Birth -->
-            <label for="dob">Date of Birth:</label>
-            <input type="date" id="dob" name="dob" required>
+                <!-- Date of Birth -->
+                <label for="dob">Date of Birth:</label>
+                <input type="date" id="dob" name="dob" required>
 
-            <!-- Password -->
-            <label for="password">Password:</label>
-            <input type="password" id="password" name="password" placeholder="Create a password" required>
+                <!-- Password -->
+                <label for="password">Password:</label>
+                <input type="password" id="password" name="password" placeholder="Create a password" required>
 
-            <!-- Confirm Password -->
-            <label for="confirmPassword">Confirm Password:</label>
-            <input type="password" id="confirmPassword" name="confirmPassword" placeholder="Re-enter your password" required>
+                <!-- Confirm Password -->
+                <label for="confirmPassword">Confirm Password:</label>
+                <input type="password" id="confirmPassword" name="confirmPassword" placeholder="Re-enter your password" required>
 
-            <!-- Sign Up Button -->
-            <button type="submit">Sign Up</button>
-        </form>
+                <!-- Sign Up Button -->
+                <button type="submit">Sign Up</button>
+            </form>
 
-        <!-- Redirect to Login -->
-       <p>
-          <span>Already have an account?</span>
-          <a href="login.html" id="goToLoginLink">Login</a>
-       </p>
-
+            <!-- Redirect to Login -->
+            <p>
+                <span>Already have an account?</span>
+                <a href="login.html" id="goToLoginLink">Login</a>
+            </p>
+        </div>
     </div>
   </div>
+
+  <!-- Register Successful Modal (pop-up) -->
+  <div id="registerSuccessModal" class="success-modal" style="display: none;">
+      <div class="success-modal-content">
+          <span class="close-btn" id="closeRegisterSuccessModal">&times;</span>
+          <h2>Registration Successful!</h2>
+          
+          <!-- Lottie Animation Container -->
+          <div class="lottie-container">
+              <dotlottie-player 
+                  src="https://lottie.host/07d2015e-12bd-4b20-95b3-add530a01150/GJJ27JsCtB.lottie" 
+                  background="transparent" 
+                  speed="1" 
+                  style="width: 200px; height: 200px;"
+                  loop 
+                  autoplay>
+              </dotlottie-player>
+          </div>
+          
+          <p>Your account has been created successfully!</p>
+      </div>
+  </div>
+
   <script src="script/register-script.js"></script>
 </body>
 </html>

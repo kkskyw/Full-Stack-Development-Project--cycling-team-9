@@ -17,16 +17,9 @@ document.addEventListener('DOMContentLoaded', function() {
     const eventsLink = document.getElementById('eventsLink');
     const backBtn = document.getElementById('backBtn');
 
-    let currentQuestion = 1;
-    const totalQuestions = 3;
-    const correctAnswers = {
-        q1: 'B', // Safety Procedures
-        q2: 'C', // Passenger Care
-        q3: 'B'  // Emergency Procedures
-    };
-
-    // Initialize the training
-    init();
+async function startTraining(type) {
+    const token = localStorage.getItem("token");
+    const userId = localStorage.getItem("userId");
 
     function init() {
         // Check if user has already completed training
@@ -83,72 +76,38 @@ document.addEventListener('DOMContentLoaded', function() {
         }
     }
 
-    function updateProgress() {
-        const progress = ((currentQuestion - 1) / totalQuestions) * 100;
-        progressFill.style.width = `${progress}%`;
-        currentQuestionSpan.textContent = currentQuestion;
-        
-        // Show/hide appropriate question
-        document.querySelectorAll('.question-card').forEach((card, index) => {
-            card.classList.toggle('active', (index + 1) === currentQuestion);
+    const certName = certMap[type];
+    if (!certName) {
+        alert("Invalid certification type.");
+        return;
+    }
+
+    try {
+        const res = await fetch(`http://localhost:3000/users/${userId}`, {
+            method: "PUT",
+            headers: {
+                "Authorization": `Bearer ${token}`,
+                "Content-Type": "application/json"
+            },
+            body: JSON.stringify({
+                addCertification: certName
+            })
         });
-        
-        updateNavigationButtons();
-    }
 
-    function updateNavigationButtons() {
-        // Check if current question is answered
-        const currentQuestionName = `q${currentQuestion}`;
-        const isAnswered = document.querySelector(`input[name="${currentQuestionName}"]:checked`) !== null;
-        
-        // Update previous button
-        prevBtn.disabled = currentQuestion === 1;
-        
-        // Update next/submit buttons
-        if (currentQuestion === totalQuestions) {
-            nextBtn.style.display = 'none';
-            submitBtn.style.display = isAnswered ? 'inline-block' : 'none';
-        } else {
-            nextBtn.style.display = isAnswered ? 'inline-block' : 'none';
-            submitBtn.style.display = 'none';
-        }
-        
-        nextBtn.disabled = !isAnswered;
-    }
+        const data = await res.json();
 
-    function goToPreviousQuestion() {
-        if (currentQuestion > 1) {
-            currentQuestion--;
-            updateProgress();
+        if (!res.ok) {
+            alert(data.error || "Could not complete training.");
+            return;
         }
-    }
 
-    function goToNextQuestion() {
-        if (currentQuestion < totalQuestions) {
-            currentQuestion++;
-            updateProgress();
-        }
+        alert(`🎉 You are now certified: ${certName}`);
+    } catch (err) {
+        console.error(err);
+        alert("Server error completing training.");
     }
+}
 
-    function handleFormSubmit(event) {
-        event.preventDefault();
-        
-        const formData = new FormData(trainingForm);
-        let wrongAnswers = 0;
-        
-        // Check each answer
-        for (let i = 1; i <= totalQuestions; i++) {
-            const questionName = `q${i}`;
-            const userAnswer = formData.get(questionName);
-            const correctAnswer = correctAnswers[questionName];
-            
-            if (userAnswer !== correctAnswer) {
-                wrongAnswers++;
-            }
-        }
-        
-        showResults(wrongAnswers);
-    }
 
     function showResults(wrongAnswers) {
         // Hide the form and show results

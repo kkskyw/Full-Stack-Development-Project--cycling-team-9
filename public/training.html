@@ -1,33 +1,11 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Volunteer Training - Cycling Without Age Singapore</title>
-    <link rel="stylesheet" href="css/main.css">
-    <link rel="stylesheet" href="css/training.css">
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Training Sessions | Cycling Without Age Singapore</title>
+    <link rel="stylesheet" href="../css/training.css">
 </head>
-<body>
-    <header>
-        <div class="logo-container">
-            <img src="images/cropped-logox2.png" alt="Cycling Without Age Logo" data-lang="logoAlt" class="logo">
-            <div class="logo-text">
-                <p data-lang="logoText">Cycling Without Age</p>
-            </div>
-        </div>
-
-        <div class="header-buttons">
-            <div class="menu-container">
-                <button class="language-btn" id="languageBtn">
-                    <span>🌐</span> Language
-                </button>
-                <div class="dropdown-menu" id="languageDropdown">
-                    <a href="#" value="en">English</a>
-                    <a href="#" value="zh">中文 (Chinese)</a>
-                    <a href="#" value="ms">Bahasa Melayu (Malay)</a>
-                    <a href="#" value="ta">தமிழ் (Tamil)</a>
-                </div>
-            </div>
 
             <div class="menu-container">
                 <button class="menu-btn" id="menuBtn">
@@ -43,7 +21,11 @@
                 </div>
             </div>
 
-        </div>
+    <header>
+        <img src="/images/cropped-logox2.png" class="logo" alt="Logo" />
+        <button class="menu-btn" onclick="toggleMenu()">
+            <span>☰</span> Menu
+        </button>
     </header>
 
     <main class="training-container">
@@ -211,14 +193,13 @@
                 </div>
             </div>
         </div>
-    </main>
+    </section>
 
     <footer>
         <p>Copyright Cycling Without Age Singapore 2024</p>
         <p>All Rights Reserved</p>
     </footer>
 
-    <script src="script/main.js"></script>
-    <script src="script/training.js"></script>
+    <script src="../script/training.js"></script>
 </body>
 </html>
