@@ -8,6 +8,7 @@ const tranlations = {
             menu: "Menu",
 
             events: "Events",
+            training: "Training",
             checkin: "Check-in",
             donate: "Donate",
             feedback: "Feedback",
@@ -50,6 +51,7 @@ const tranlations = {
             menu: "菜单",
 
             events: "活动",
+            training: "培训",
             checkin: "签到",
             donate: "捐赠",
             feedback: "反馈",
@@ -89,6 +91,7 @@ const tranlations = {
             menu: "Menu",
 
             events: "Acara",
+            training: "Latihan",
             checkin: "Daftar Masuk",
             donate: "Derma",
             feedback: "Maklum Balas",
@@ -128,6 +131,7 @@ const tranlations = {
             menu: "மெனு",
 
             events: "நிகழ்வுகள்",
+            training: "பயிற்சி",
             checkin: "சரிபார்ப்பு",
             donate: "நன்கொடை",
             feedback: "கருத்து",

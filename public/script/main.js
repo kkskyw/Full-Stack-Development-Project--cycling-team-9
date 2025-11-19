@@ -1,5 +1,16 @@
 // Wait for DOM to be fully loaded
 document.addEventListener('DOMContentLoaded', function () {
+    // Check if user is logged in and update menu visibility
+    updateMenuVisibility();
+
+    // Check if user is logged in and hide register button
+    const token = localStorage.getItem('token');
+    const registerBtn = document.querySelector('.register-btn');
+    
+    if (token && registerBtn) {
+        registerBtn.style.display = 'none';
+    }
+
     // Menu dropdown functionality
     const menuBtn = document.getElementById('menuBtn');
     const dropdownMenu = document.getElementById('dropdownMenu');
@@ -119,3 +130,35 @@ document.addEventListener('DOMContentLoaded', function() {
         logo.title = 'back to main page';
     }
 });
+
+// Function to handle menu visibility based on login status
+function updateMenuVisibility() {
+    const token = localStorage.getItem('token');
+    const trainingLink = document.getElementById('trainingLink');
+    const eventsLink = document.getElementById('eventsLink');
+    const registerBtn = document.querySelector('.register-btn');
+    
+    if (token) {
+        // User is logged in - show training button, change events link
+        if (trainingLink) {
+            trainingLink.style.display = 'block';
+        }
+        if (eventsLink) {
+            eventsLink.href = 'viewEvent.html';
+        }
+        if (registerBtn) {
+            registerBtn.style.display = 'none';
+        }
+    } else {
+        // User is not logged in - hide training button, use default events link
+        if (trainingLink) {
+            trainingLink.style.display = 'none';
+        }
+        if (eventsLink) {
+            eventsLink.href = 'eventIntroduction.html';
+        }
+        if (registerBtn) {
+            registerBtn.style.display = 'block';
+        }
+    }
+}

@@ -24,7 +24,7 @@ const getAllEvents = async (page = 1, pageSize = 5, filters = {}) => {
         const offset = (page - 1) * pageSize;
         
         let baseQuery = `
-            SELECT eventId, header, intro, location, time, nearestMRT, longIntro
+            SELECT eventId, header, intro, location, start_time, nearestMRT, longIntro
             FROM events
             WHERE 1=1
         `;
@@ -39,8 +39,8 @@ const getAllEvents = async (page = 1, pageSize = 5, filters = {}) => {
         
         // Add time filter if provided
         if (filters.time) {
-            baseQuery += ` AND DATEPART(HOUR, time) = @time`;
-            countQuery += ` AND DATEPART(HOUR, time) = @time`;
+            baseQuery += ` AND DATEPART(HOUR, start_time) = @time`;
+            countQuery += ` AND DATEPART(HOUR, start_time) = @time`;
             request.input('time', sql.Int, filters.time);
         }
         
@@ -58,7 +58,7 @@ const getAllEvents = async (page = 1, pageSize = 5, filters = {}) => {
             request.input('mrtLetter', sql.VarChar, filters.mrtLetter);
         }
         
-        baseQuery += ` ORDER BY time OFFSET @offset ROWS FETCH NEXT @pageSize ROWS ONLY`;
+        baseQuery += ` ORDER BY start_time OFFSET @offset ROWS FETCH NEXT @pageSize ROWS ONLY`;
         
         request.input('offset', sql.Int, offset);
         request.input('pageSize', sql.Int, pageSize);
@@ -119,7 +119,7 @@ const getEventById = async (eventId) => {
         const request = pool.request();
         
         const query = `
-            SELECT eventId, header, intro, location, time, nearestMRT, longIntro
+            SELECT eventId, header, intro, location, start_time, nearestMRT, longIntro
             FROM events
             WHERE eventId = @eventId
         `;
