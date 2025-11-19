@@ -46,7 +46,7 @@ app.post("/events/:eventId/email-signup", verifyJWT, eventSignupController.email
 app.post("/attendance/checkin", verifyJWT, attendanceController.checkIn);
 app.post("/attendance/checkout", verifyJWT, attendanceController.checkOut);
 
-// Event routes
+// Event routes - Yiru
 app.get("/events", eventController.getAllEvents);
 app.get("/mrt-stations", eventController.getMRTStations);
 app.get("/events/:id", eventController.getEventById);
