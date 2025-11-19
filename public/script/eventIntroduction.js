@@ -1,5 +1,11 @@
-// public/script/eventIntroduction.js
 document.addEventListener('DOMContentLoaded', function() {
+    const backBtn = document.getElementById('backBtn');
+    if (backBtn) {
+        backBtn.addEventListener('click', function() {
+            window.location.href = 'main.html';
+        });
+    }
+
     const actionButtons = document.getElementById('actionButtons');
     
     // Initialize the page
@@ -26,7 +32,7 @@ document.addEventListener('DOMContentLoaded', function() {
         // Implement your login check logic here
         // This could check localStorage, session, or make an API call
         // For now, return false to simulate not logged in
-        return localStorage.getItem('userLoggedIn') === 'true';
+        return localStorage.getItem('userLoggedIn') === 'true' || localStorage.getItem('token') !== null;
     }
     
     function checkIfUserTrained() {
@@ -40,27 +46,21 @@ document.addEventListener('DOMContentLoaded', function() {
         actionButtons.innerHTML = '';
         
         if (!isLoggedIn) {
-            // User not logged in
+            // User not logged in - show Register/Login button
             actionButtons.innerHTML = `
-                <button class="action-btn btn-primary" onclick="handleSignUpClick()">
-                    Sign Up as a Volunteer
-                </button>
-                <button class="action-btn btn-secondary" onclick="handleLoginClick()">
-                    Login First
+                <button class="action-btn btn-primary" onclick="handleRegisterClick()">
+                    Register / Login First
                 </button>
             `;
         } else if (!isTrained) {
-            // User logged in but not trained
+            // User logged in but not trained - show Training button
             actionButtons.innerHTML = `
                 <button class="action-btn btn-primary" onclick="handleTrainingClick()">
-                    Start Training
-                </button>
-                <button class="action-btn btn-secondary" onclick="handleViewEventsClick()">
-                    View Events (Training Required)
+                    Train to be a Volunteer
                 </button>
             `;
         } else {
-            // User logged in and trained
+            // User logged in and trained - show View Events button
             actionButtons.innerHTML = `
                 <button class="action-btn btn-primary" onclick="handleViewEventsClick()">
                     View Available Events
@@ -73,12 +73,8 @@ document.addEventListener('DOMContentLoaded', function() {
     }
     
     // Global functions for button clicks
-    window.handleSignUpClick = function() {
+    window.handleRegisterClick = function() {
         window.location.href = 'register.html';
-    };
-    
-    window.handleLoginClick = function() {
-        window.location.href = 'login.html';
     };
     
     window.handleTrainingClick = function() {
@@ -86,12 +82,7 @@ document.addEventListener('DOMContentLoaded', function() {
     };
     
     window.handleViewEventsClick = function() {
-        const isTrained = checkIfUserTrained();
-        if (isTrained) {
-            window.location.href = 'viewEvent.html';
-        } else {
-            alert('Please complete the training first to view and sign up for events.');
-        }
+        window.location.href = 'viewEvent.html';
     };
     
     // For testing purposes - you can remove these in production
@@ -110,6 +101,7 @@ document.addEventListener('DOMContentLoaded', function() {
     window.debugReset = function() {
         localStorage.removeItem('userLoggedIn');
         localStorage.removeItem('userTrained');
+        localStorage.removeItem('token');
         alert('Debug: Reset user status (for testing)');
         location.reload();
     };
