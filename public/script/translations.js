@@ -18,6 +18,7 @@ const tranlations = {
             register: "Register",
             logout: "Log Out",
             loginPrompt: "Please Register / Login First",
+            history: "History",
 
             heroAlt: "Community cycling event",
 
@@ -63,6 +64,7 @@ const tranlations = {
             register: "注册",
             logout: "退出登录",
             loginPrompt: "请先注册/登录",
+            history: "历史记录",
 
             heroAlt: "社区骑行活动",
 
@@ -104,6 +106,7 @@ const tranlations = {
             settings: "Tetapan",
             register: "Daftar",
             logout: "Log Keluar",
+            history: "Sejarah Aktiviti",
 
             heroAlt: "Acara berbasikal komuniti",
 
@@ -145,6 +148,7 @@ const tranlations = {
             settings: "அமைப்புகள்",
             register: "பதிவு",
             logout: "வெளியேறு",
+            history: "வரலாறு பதிவுகள்",
 
             heroAlt: "சமூக சைக்கிள் நிகழ்வு",
 
