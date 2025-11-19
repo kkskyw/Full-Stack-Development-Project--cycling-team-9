@@ -303,6 +303,7 @@ footer {
 .donation-section{
     padding-top: 20px;
     padding-bottom: 20px;
+
 }
 
 .donation-section h1{
@@ -314,6 +315,11 @@ footer {
 .donation-section p.intro{
     font-weight: bold;
     margin-bottom: 20px;
+}
+
+.donation-section p.point1{
+    font-weight: normal;
+    margin-bottom: 10px;
 }
 
 .text-brand-green{
