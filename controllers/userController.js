@@ -65,7 +65,7 @@ async function createUser(req, res) {
 // Login user
 async function loginUser(req, res) {
   const { email, password } = req.body;
-
+  
   try {
     const user = await userModel.findUserByEmail(email);
     if (!user) {

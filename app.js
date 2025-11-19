@@ -15,8 +15,9 @@ const eventController = require("./controllers/eventController");
 const eventSignupController = require("./controllers/eventSignupController");
 const verifyJWT = require("./middlewares/verifyJWT");
 const attendanceController = require("./controllers/attendanceController");
-const trainingController = require("./controllers/trainingController");
-const trainingRoutes = require("./routes/trainingRoutes");
+const reminderController = require("./controllers/reminderController");
+const { getUserBookings } = require("./controllers/bookingController");
+
 // Middleware
 app.use(express.json());
 app.use(express.urlencoded({ extended: true }));
@@ -26,8 +27,6 @@ app.use(express.static(path.join(__dirname, "public")));
 // User routes
 app.post("/users/register", userValidation.validateUser, userController.createUser);
 app.post("/users/login", userValidation.validateLogin, userController.loginUser);
-
-app.get("/events", eventController.getAllEvents);
 app.put("/users/:id", userController.updateUser);
 
 //events signup
@@ -36,14 +35,17 @@ app.get("/events/eligible", verifyJWT, eventSignupController.getEligibleEvents);
 app.get("/users/eligible-events", verifyJWT, eventSignupController.getEligibleEvents);
 app.get("/users/:id", userController.getUserById);
 
+//reminder
+app.post("/api/sendReminder", verifyJWT, reminderController.sendReminder);
+
+//booking list
+app.get("/users/:userId/bookings", verifyJWT, getUserBookings);
+app.post("/events/:eventId/email-signup", verifyJWT, eventSignupController.emailSignup);
+
+
 // Attendance routes
 app.post("/attendance/checkin", verifyJWT, attendanceController.checkIn);
 app.post("/attendance/checkout", verifyJWT, attendanceController.checkOut);
-
-//training
-app.post("/api/training/complete/:type", verifyJWT, trainingController.completeTraining);
-
-
 
 // Event routes
 app.get("/events", eventController.getAllEvents);
