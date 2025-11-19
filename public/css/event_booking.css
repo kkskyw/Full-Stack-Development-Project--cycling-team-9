@@ -1,0 +1,158 @@
+* { margin: 0; padding: 0; box-sizing: border-box; }
+
+body {
+    font-family: Arial, sans-serif;
+    color: #333;
+    background: #f8fdfc;
+}
+
+header {
+    background-color: #8dd4c3;
+    padding: 15px 30px;
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+}
+
+.logo { height: 60px; }
+
+.menu-btn {
+    background: transparent;
+    border: 2px solid #333;
+    padding: 8px 20px;
+    border-radius: 6px;
+    cursor: pointer;
+    font-size: 16px;
+}
+
+.hero-image {
+    width: 100%;
+    display: block;
+}
+
+.booking-header {
+    text-align: center;
+    padding: 40px 20px;
+}
+
+.booking-header h1 {
+    font-size: 34px;
+    font-weight: 800;
+    margin-bottom: 10px;
+}
+
+.booking-container {
+    max-width: 900px;
+    margin: 0 auto 40px;
+    padding: 20px;
+}
+
+.booking-card {
+    background: #fff;
+    padding: 25px;
+    margin-bottom: 25px;
+    border-radius: 18px;
+    box-shadow: 0 10px 28px rgba(0,0,0,0.12);
+}
+
+.booking-card h2 {
+    font-size: 24px;
+    margin-bottom: 8px;
+}
+
+.booking-card p {
+    margin: 5px 0;
+    font-size: 16px;
+}
+
+.booking-status {
+    margin-top: 12px;
+    padding: 10px 15px;
+    background: #e7fff4;
+    font-weight: 600;
+    border-radius: 10px;
+    color: #007b55;
+}
+.contact-section {
+    background-color: #8dd4c3;
+    padding: 50px 20px;
+    text-align: center;
+}
+
+.contact-section h2 {
+    font-size: 28px;
+    margin-bottom: 15px;
+    color: #333;
+}
+
+.contact-section a {
+    color: #333;
+    text-decoration: none;
+    font-size: 18px;
+}
+
+.social-section {
+    margin-top: 30px;
+}
+
+.social-section h3 {
+    font-size: 24px;
+    margin-bottom: 20px;
+    color: #333;
+}
+
+.social-icons {
+    display: flex;
+    justify-content: center;
+    gap: 20px;
+}
+
+.social-icon {
+    width: 60px;
+    height: 60px;
+    background-color: #000;
+    border-radius: 50%;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    cursor: pointer;
+    transition: transform 0.2s;
+}
+
+.social-icon:hover {
+    transform: scale(1.1);
+}
+
+.social-icon svg {
+    width: 30px;
+    height: 30px;
+    fill: white;
+}
+
+footer {
+    background-color: #8dd4c3;
+    padding: 20px;
+    text-align: center;
+    color: #333;
+}
+.resend-btn {
+    margin-top: 10px;
+    padding: 12px;
+    background-color: #8dd4c3;
+    border: none;
+    border-radius: 8px;
+    font-size: 16px;
+    cursor: pointer;
+    font-weight: bold;
+    width: 100%;
+}
+
+.resend-btn:hover {
+    background-color: #7bcbb8;
+}
+
+.booking-status {
+    margin-top: 10px;
+    font-size: 14px;
+    font-weight: 600;
+}

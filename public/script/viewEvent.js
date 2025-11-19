@@ -6,6 +6,12 @@ document.addEventListener('DOMContentLoaded', function() {
     const mrtFilter = document.getElementById('mrtFilter');
     const alphabetButtons = document.getElementById('alphabetButtons');
     const clearFiltersBtn = document.getElementById('clearFilters');
+    const backBtn = document.getElementById('backBtn');
+    if (backBtn) {
+        backBtn.addEventListener('click', function() {
+            window.location.href = 'main.html'; // 或者返回首页
+        });
+    }
     
     let currentPage = 1;
     const pageSize = 5;

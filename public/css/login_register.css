@@ -16,6 +16,7 @@ body {
     padding: 20px;
 }
 
+/* Default mobile layout */
 .modal {
     background-color: white;
     border-radius: 10px;
@@ -28,6 +29,149 @@ body {
 
 .modal-content {
     width: 100%;
+}
+
+/* Hide info panel on mobile */
+.info-panel {
+    display: none;
+}
+
+/* Desktop Layout */
+@media (min-width: 1024px) {
+    body {
+        background: linear-gradient(135deg, #8dd4c3 0%, #7bc4b2 100%);
+        padding: 40px;
+        position: relative;
+        min-height: 100vh;
+    }
+    
+    body::before {
+        content: '';
+        position: absolute;
+        top: 0;
+        left: 0;
+        right: 0;
+        bottom: 0;
+        background-image: url('../images/Untitled-design-1-1600x432.png');
+        background-size: cover;
+        background-position: center;
+        background-repeat: no-repeat;
+        opacity: 0.1;
+        z-index: -1;
+    }
+    
+    .modal {
+        display: flex;
+        max-width: 900px;
+        width: 100%;
+        min-height: 600px;
+        border-radius: 15px;
+        overflow: hidden;
+        box-shadow: 0 10px 30px rgba(0, 0, 0, 0.2);
+        padding: 0; /* Remove padding since we'll use inner padding */
+    }
+    
+    /* Show info panel only on desktop */
+    .info-panel {
+        display: flex;
+        flex: 1;
+        background: linear-gradient(135deg, #8dd4c3 0%, #7bc4b2 100%);
+        padding: 50px 40px;
+        color: #333;
+        flex-direction: column;
+        justify-content: center;
+        position: relative;
+    }
+    
+    .info-panel::before {
+        content: '';
+        position: absolute;
+        top: 0;
+        left: 0;
+        right: 0;
+        bottom: 0;
+        background-image: url('../images/cropped-logox2.png');
+        background-size: 80%;
+        background-position: center;
+        background-repeat: no-repeat;
+        opacity: 0.1;
+    }
+    
+    .info-panel h1 {
+        font-size: 2.2rem;
+        margin-bottom: 20px;
+        position: relative;
+        z-index: 1;
+    }
+    
+    .info-panel p {
+        font-size: 1.1rem;
+        margin-bottom: 15px;
+        line-height: 1.6;
+        position: relative;
+        z-index: 1;
+    }
+    
+    .info-features {
+        margin-top: 30px;
+        position: relative;
+        z-index: 1;
+    }
+    
+    .feature {
+        display: flex;
+        align-items: center;
+        margin-bottom: 15px;
+        font-size: 0.95rem;
+    }
+    
+    .feature::before {
+        content: '✓';
+        color: #333;
+        font-weight: bold;
+        margin-right: 10px;
+        background: rgba(255, 255, 255, 0.3);
+        width: 20px;
+        height: 20px;
+        border-radius: 50%;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+    }
+    
+    .form-panel {
+        flex: 1;
+        background: white;
+        padding: 50px 40px;
+        display: flex;
+        flex-direction: column;
+        justify-content: center;
+    }
+    
+    .modal-content {
+        width: 100%;
+        max-width: 400px;
+        margin: 0 auto;
+    }
+}
+
+/* Tablet Layout */
+@media (max-width: 1023px) and (min-width: 769px) {
+    body {
+        background: linear-gradient(135deg, #8dd4c3 0%, #7bc4b2 100%);
+        padding: 30px;
+    }
+    
+    .modal {
+        max-width: 600px;
+        border-radius: 15px;
+        box-shadow: 0 10px 30px rgba(0, 0, 0, 0.2);
+    }
+    
+    /* Keep info panel hidden on tablet */
+    .info-panel {
+        display: none;
+    }
 }
 
 .back-btn {
@@ -57,26 +201,40 @@ form {
     display: flex;
     flex-direction: column;
     gap: 15px;
+    width: 100%;
 }
 
 label {
     font-weight: bold;
     color: #333;
     margin-bottom: 5px;
+    text-align: left;
+    width: 100%;
 }
 
+/* WIDER INPUT FIELDS */
 input {
-    padding: 12px 15px;
+    padding: 14px 16px;
     border: 2px solid #ddd;
     border-radius: 5px;
     font-size: 16px;
     transition: border-color 0.3s, box-shadow 0.3s;
+    width: 100%; /* Full width of container */
+    box-sizing: border-box; /* Include padding in width calculation */
+}
+
+/* Make inputs even wider on desktop */
+@media (min-width: 1024px) {
+    input {
+        padding: 15px 18px;
+        font-size: 16px;
+    }
 }
 
 input:focus {
     outline: none;
     border-color: #8dd4c3;
-    box-shadow: 0 0 5px rgba(141, 212, 195, 0.5);
+    box-shadow: 0 0 8px rgba(141, 212, 195, 0.5);
 }
 
 input::placeholder {
@@ -88,8 +246,10 @@ input::placeholder {
     font-size: 14px;
     color: #666;
     text-decoration: none;
-    margin-top: -10px;
+    margin-top: -5px;
     margin-bottom: 10px;
+    width: 100%;
+    display: block;
 }
 
 .forgot-password:hover {
@@ -97,17 +257,20 @@ input::placeholder {
     text-decoration: underline;
 }
 
+/* Wider button to match input width */
 button {
     background-color: #8dd4c3;
     color: #333;
     border: 2px solid #8dd4c3;
-    padding: 12px 20px;
+    padding: 14px 20px;
     border-radius: 5px;
     cursor: pointer;
     font-size: 16px;
     font-weight: bold;
     transition: background-color 0.3s, transform 0.2s;
     margin-top: 10px;
+    width: 100%; /* Match input width */
+    box-sizing: border-box;
 }
 
 button:hover {
@@ -119,6 +282,7 @@ p {
     text-align: center;
     margin-top: 20px;
     color: #666;
+    width: 100%;
 }
 
 a {
@@ -140,6 +304,8 @@ a:hover {
     
     .modal {
         padding: 25px 20px;
+        width: 95%;
+        max-width: 400px;
     }
     
     h2 {
@@ -147,12 +313,12 @@ a:hover {
     }
     
     input {
-        padding: 10px 12px;
+        padding: 12px 14px;
         font-size: 14px;
     }
     
     button {
-        padding: 10px 15px;
+        padding: 12px 15px;
         font-size: 14px;
     }
 }
@@ -160,6 +326,8 @@ a:hover {
 @media (max-width: 480px) {
     .modal {
         padding: 20px 15px;
+        width: 95%;
+        max-width: 380px;
     }
     
     h2 {
@@ -171,4 +339,109 @@ a:hover {
         left: 15px;
         font-size: 18px;
     }
+    
+    input {
+        padding: 12px 14px;
+    }
+    
+    button {
+        padding: 12px 15px;
+    }
+}
+
+/* Success Modal Styling */
+.success-modal {
+    display: none;
+    position: fixed;
+    z-index: 1000;
+    left: 0;
+    top: 0;
+    width: 100%;
+    height: 100%;
+    background-color: rgba(0, 0, 0, 0.5);
+    justify-content: center;
+    align-items: center;
+}
+
+.success-modal-content {
+    background-color: white;
+    padding: 40px 30px;
+    border-radius: 15px;
+    width: 90%;
+    max-width: 450px;
+    text-align: center;
+    position: relative;
+    box-shadow: 0 10px 30px rgba(0, 0, 0, 0.3);
+    margin: 0 auto;
+}
+
+.success-modal h2 {
+    color: #8dd4c3;
+    margin-bottom: 20px;
+    font-size: 28px;
+}
+
+.success-modal p {
+    color: #666;
+    font-size: 16px;
+    margin-top: 15px;
+    line-height: 1.5;
+}
+
+.success-modal .close-btn {
+    position: absolute;
+    top: 15px;
+    right: 20px;
+    color: #aaa;
+    font-size: 28px;
+    font-weight: bold;
+    cursor: pointer;
+    transition: color 0.3s;
+    line-height: 1;
+}
+
+.success-modal .close-btn:hover {
+    color: #333;
+}
+
+/* Lottie Animation Container */
+.lottie-container {
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    margin: 20px 0;
+    background: transparent;
+    width: 100%;
+}
+
+.lottie-container dotlottie-player {
+    background: transparent !important;
+    display: block !important;
+    margin: 0 auto !important;
+}
+
+/* Center everything in success modal */
+.success-modal-content {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+}
+
+/* Force center positioning */
+.success-modal {
+    display: none;
+    position: fixed;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    background-color: rgba(0, 0, 0, 0.5);
+    z-index: 9999;
+}
+
+.success-modal:not([style*="display: none"]) {
+    display: flex !important;
+    justify-content: center !important;
+    align-items: center !important;
 }
