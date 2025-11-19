@@ -25,17 +25,37 @@ document.getElementById("loginForm").addEventListener("submit", async function (
       localStorage.setItem('userId', data.userId); 
       localStorage.setItem("role", data.role); 
       localStorage.setItem("userName", data.name);
-      alert("Login successful!");
-        if(localStorage.getItem("role")=='Volunteer'){
-          window.location.href ="main.html";
-        }else { window.location.href = "staffPage.html";}
       
-     
+      // Show success modal with Lottie animation
+      document.getElementById("loginSuccessModal").style.display = "block";
+      
+      // Redirect after delay
+      setTimeout(function() {
+        if(localStorage.getItem("role") == 'Volunteer') {
+          window.location.href = "main.html";
+        } else { 
+          window.location.href = "staffPage.html";
+        }
+      }, 3000);
+      
     } else {
       alert(data.error || "Login failed");
     }
   } catch (error) {
     console.error("Login error:", error);
     alert("Something went wrong while logging in.");
+  }
+});
+
+// Close login success modal
+document.getElementById("closeLoginSuccessModal").addEventListener("click", function() {
+  document.getElementById("loginSuccessModal").style.display = "none";
+});
+
+// Close modal when clicking outside
+window.addEventListener("click", function(event) {
+  const modal = document.getElementById("loginSuccessModal");
+  if (event.target === modal) {
+    modal.style.display = "none";
   }
 });

@@ -6,6 +6,7 @@
     <link href="https://fonts.googleapis.com/css2?family=Open+Sans&display=swap" rel="stylesheet" />
     <link rel="stylesheet" href="css/login_register.css" />
     <link rel="icon" type="image/png" href="images/favicon.png">
+    <script src="https://unpkg.com/@dotlottie/player-component@2.7.12/dist/dotlottie-player.mjs" type="module"></script>
 </head>
 <body>
     <div class="modal">
@@ -54,6 +55,29 @@
             </div>
         </div>
     </div>
+
+    <!-- Login Successful Modal (pop-up)  -->
+    <div id="loginSuccessModal" class="success-modal" style="display: none;">
+        <div class="success-modal-content">
+            <span class="close-btn" id="closeLoginSuccessModal">&times;</span>
+            <h2>Login Successful!</h2>
+            
+            <!-- Lottie Animation Container -->
+            <div class="lottie-container">
+                <dotlottie-player 
+                    src="https://lottie.host/07d2015e-12bd-4b20-95b3-add530a01150/GJJ27JsCtB.lottie" 
+                    background="transparent" 
+                    speed="1" 
+                    style="width: 200px; height: 200px;"
+                    loop 
+                    autoplay>
+                </dotlottie-player>
+            </div>
+            
+            <p>Redirecting you to the homepage...</p>
+        </div>
+    </div>
+
     <script src="script/login-script.js"></script>
 </body>
 </html>
