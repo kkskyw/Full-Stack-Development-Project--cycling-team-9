@@ -299,6 +299,15 @@
     flex-wrap: wrap;
 }
 
+.already-trained-section {
+    margin-top: 30px;
+}
+
+/* Ensure the training content is properly displayed */
+#trainingContent {
+    width: 100%;
+}
+
 /* Responsive Design */
 @media (max-width: 768px) {
     .training-container {

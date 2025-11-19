@@ -10,6 +10,12 @@ document.addEventListener('DOMContentLoaded', function() {
     const failureMessage = document.getElementById('failureMessage');
     const failureText = document.getElementById('failureText');
     const wrongCountSpan = document.getElementById('wrongCount');
+    
+    // New elements for already trained section
+    const alreadyTrainedSection = document.getElementById('alreadyTrainedSection');
+    const trainingContent = document.getElementById('trainingContent');
+    const eventsLink = document.getElementById('eventsLink');
+    const backBtn = document.getElementById('backBtn'); // 添加返回按钮引用
 
     let currentQuestion = 1;
     const totalQuestions = 3;
@@ -23,8 +29,41 @@ document.addEventListener('DOMContentLoaded', function() {
     init();
 
     function init() {
+        // Check if user has already completed training
+        checkTrainingStatus();
         updateProgress();
         setupEventListeners();
+    }
+
+    function checkTrainingStatus() {
+        const isTrained = localStorage.getItem('userTrained') === 'true';
+        
+        if (isTrained) {
+            // User has completed training - show success message
+            showAlreadyTrained();
+        } else {
+            // User hasn't completed training - show training content
+            showTrainingContent();
+        }
+        
+        // Update events link based on training status
+        updateEventsLink(isTrained);
+    }
+
+    function showAlreadyTrained() {
+        alreadyTrainedSection.style.display = 'block';
+        trainingContent.style.display = 'none';
+    }
+
+    function showTrainingContent() {
+        alreadyTrainedSection.style.display = 'none';
+        trainingContent.style.display = 'block';
+    }
+
+    function updateEventsLink(isTrained) {
+        if (eventsLink) {
+            eventsLink.href = isTrained ? 'viewEvent.html' : 'eventIntroduction.html';
+        }
     }
 
     function setupEventListeners() {
@@ -36,6 +75,12 @@ document.addEventListener('DOMContentLoaded', function() {
         document.querySelectorAll('input[type="radio"]').forEach(radio => {
             radio.addEventListener('change', updateNavigationButtons);
         });
+        
+        if (backBtn) {
+            backBtn.addEventListener('click', function() {
+                window.location.href = 'main.html';
+            });
+        }
     }
 
     function updateProgress() {
@@ -117,6 +162,9 @@ document.addEventListener('DOMContentLoaded', function() {
             
             // Mark user as trained in localStorage
             localStorage.setItem('userTrained', 'true');
+            
+            // Update events link
+            updateEventsLink(true);
         } else {
             // Some answers wrong - failure
             successMessage.style.display = 'none';
@@ -134,6 +182,10 @@ document.addEventListener('DOMContentLoaded', function() {
 
     // Global functions for result actions
     window.handleSuccess = function() {
+        window.location.href = 'viewEvent.html';
+    };
+
+    window.viewEvents = function() {
         window.location.href = 'viewEvent.html';
     };
 
