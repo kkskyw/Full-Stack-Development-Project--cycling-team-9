@@ -18,7 +18,7 @@ async function signupForEvent(userId, eventId) {
         throw new Error("You have already booked this event.");
     }
 
-    // 2️⃣ GET the event date
+    // 2️⃣ GET event date
     const eventData = await pool.request()
         .input("eventId", sql.Int, eventId)
         .query(`
@@ -33,10 +33,10 @@ async function signupForEvent(userId, eventId) {
 
     const eventDate = eventData.recordset[0].start_time;
 
-    // 3️⃣ CHECK: Already have an event on the same date?
+    // 3️⃣ FIXED — Use DateTime not Date
     const dateCheck = await pool.request()
         .input("userId", sql.Int, userId)
-        .input("eventDate", sql.Date, eventDate)
+        .input("eventDate", sql.DateTime, eventDate)   // FIX
         .query(`
             SELECT 1
             FROM eventSignups es
@@ -58,14 +58,16 @@ async function signupForEvent(userId, eventId) {
             VALUES (@eventId, @userId)
         `);
 
-    // 5️⃣ INSERT into bookedEvents (so booking page can show it)
-    return pool.request()
+    // 5️⃣ INSERT into bookedevents (booking list)
+    await pool.request()
         .input("eventId", sql.Int, eventId)
         .input("userId", sql.Int, userId)
         .query(`
-            INSERT INTO bookedevents (eventId, userId, bookingDate)
-            VALUES (@eventId, @userId, GETDATE())
+            INSERT INTO bookedevents (eventId, userId)
+            VALUES (@eventId, @userId)
         `);
+
+    return true;
 }
 
 
