@@ -173,7 +173,7 @@ document.addEventListener('DOMContentLoaded', function() {
         const eventCard = document.createElement('div');
         eventCard.className = 'event-card';
         
-        const eventDate = new Date(event.time);
+        const eventDate = new Date(event.start_time);
         const formattedDate = eventDate.toLocaleDateString('en-US', {
             timeZone: 'UTC', 
             weekday: 'long',

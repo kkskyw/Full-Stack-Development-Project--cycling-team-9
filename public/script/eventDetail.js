@@ -73,7 +73,7 @@ document.addEventListener('DOMContentLoaded', function() {
         console.log('Displaying event details:', event);
         
         // Format date and time
-        const eventDateTime = new Date(event.time);
+        const eventDateTime = new Date(event.start_time);
         
         const formattedDate = eventDateTime.toLocaleDateString('en-US', {
             timeZone: 'UTC',
