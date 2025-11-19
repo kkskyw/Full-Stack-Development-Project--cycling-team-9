@@ -1,4 +1,4 @@
-// public/script/eventDetail.js
+// Yiru
 document.addEventListener('DOMContentLoaded', function() {
     const eventTitle = document.getElementById('eventTitle');
     const eventDate = document.getElementById('eventDate');
@@ -41,13 +41,13 @@ document.addEventListener('DOMContentLoaded', function() {
 
     const certs = JSON.parse(localStorage.getItem("certifications")) || [];
 
-    // 1️⃣ Not certified
+    // 1️ Not certified
     if (certs.length === 0) {
         alert("⚠️ You must complete your training before signing up for events.");
         return;
     }
 
-    // 2️⃣ Check with backend if already booked / same day conflict
+    // 2️ Check with backend if already booked / same day conflict
     try {
         const res = await fetch(`/events/${eventId}/signup`, {
             method: "POST",
@@ -59,13 +59,13 @@ document.addEventListener('DOMContentLoaded', function() {
 
         const data = await res.json();
 
-        // ❌ Backend says not allowed (duplicate or same-day)
+        //  Backend says not allowed (duplicate or same-day)
         if (!res.ok) {
             alert(data.error);
             return;
         }
 
-        // 3️⃣ Allowed → redirect to signup page
+        // 3️ Allowed → redirect to signup page
         window.location.href = `event_signup.html?eventId=${eventId}`;
 
     } catch (err) {

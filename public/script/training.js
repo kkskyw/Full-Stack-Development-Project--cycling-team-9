@@ -1,3 +1,4 @@
+// Yiru
 document.addEventListener('DOMContentLoaded', function() {
     const trainingForm = document.getElementById('trainingForm');
     const prevBtn = document.getElementById('prevBtn');
