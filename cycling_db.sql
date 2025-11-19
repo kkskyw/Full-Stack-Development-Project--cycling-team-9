@@ -84,3 +84,13 @@ CREATE TABLE attendance (
     check_out_lon FLOAT NULL,
     status NVARCHAR(50) NULL -- On Time/Late
 );
+
+CREATE TABLE bookedevents (
+    bookingId INT IDENTITY(1,1) PRIMARY KEY,
+    userId INT NOT NULL,
+    eventId INT NOT NULL,
+    bookingDate DATETIME DEFAULT GETDATE(),
+
+    FOREIGN KEY (userId) REFERENCES users(userId),
+    FOREIGN KEY (eventId) REFERENCES events(eventId)
+);
