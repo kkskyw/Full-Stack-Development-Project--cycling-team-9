@@ -1,4 +1,4 @@
-// controllers/eventController.js
+// Yiru
 const eventModel = require('../models/eventModel');
 
 const getAllEvents = async (req, res) => {
