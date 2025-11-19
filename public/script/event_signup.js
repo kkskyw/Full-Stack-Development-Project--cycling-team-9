@@ -1,144 +1,84 @@
-
-// get login token
 function getToken() {
     return localStorage.getItem("token");
 }
-console.log("TOKEN FOUND:", localStorage.getItem("token"));
 
-// load events from backend
-async function loadEvents() {
-    const container = document.getElementById("event-container");
-    container.innerHTML = `<p>Loading events...</p>`;
+document.addEventListener("DOMContentLoaded", () => {
+    const emailBtn = document.getElementById("emailBtn");
+    const statusMsg = document.getElementById("statusMsg");
 
-    try {
-        const res = await fetch("/users/eligible-events", {
-            headers: {
-                "Authorization": `Bearer ${getToken()}`
-            }
-        });
+    const params = new URLSearchParams(window.location.search);
+    const eventId = params.get("eventId");
 
-        if (!res.ok) {
-            container.innerHTML = `<p style="color:red;">Unable to load events. Please login again.</p>`;
-            return;
-        }
-
-        const data = await res.json();
-        const events = data.events;
-
-        if (!events || events.length === 0) {
-            container.innerHTML = `<p>No eligible events available.</p>`;
-            return;
-        }
-
-        container.innerHTML = "";
-
-        events.forEach(e => {
-            const card = document.createElement("section");
-            card.classList.add("event-card");
-
-            // fallback image if event has no image_url column
-            const imgSrc = e.image_url || "/images/default-event.jpg";
-
-            card.innerHTML = `
-                <img src="${imgSrc}" class="event-image">
-                <div class="card-body">
-
-                    <div class="event-title">${e.header}</div>
-
-                    <div class="event-row">
-                        <strong>Date:</strong> ${new Date(e.time).toLocaleDateString()}
-                    </div>
-
-                    <div class="event-row">
-                        <strong>Location:</strong> ${e.location}
-                    </div>
-
-                    <button class="btn-signup" onclick="signUp(${e.eventId}, this)">
-                        Sign Up
-                    </button>
-
-                    <p class="confirmation" id="confirm-${e.eventId}"></p>
-                </div>
-            `;
-
-            container.appendChild(card);
-        });
-
-    } catch (err) {
-        console.error(err);
-        container.innerHTML = `<p style="color:red;">Server error loading events.</p>`;
+    if (!eventId) {
+        statusMsg.textContent = "Invalid event selection.";
+        statusMsg.style.color = "red";
+        return;
     }
-}
 
+    emailBtn.addEventListener("click", async () => {
+        statusMsg.textContent = "Submitting signup...";
+        statusMsg.style.color = "#333";
 
+        try {
+            // Register event signup
+            const signupRes = await fetch(`/events/${eventId}/email-signup`, {
+                method: "POST",
+                headers: {
+                    "Authorization": `Bearer ${getToken()}`,
+                    "Content-Type": "application/json"
+                }
+            });
 
-//sign up for events
-async function signUp(eventId, btn) {
-    try {
-        btn.disabled = true;
-        btn.textContent = "Processing...";
+            const signupData = await signupRes.json();
 
-        const res = await fetch(`/events/${eventId}/signup`, {
-            method: "POST",
-            headers: {
-                "Authorization": `Bearer ${getToken()}`,
-                "Content-Type": "application/json"
+            if (!signupRes.ok) {
+                statusMsg.textContent = signupData.error || "Signup failed.";
+                statusMsg.style.color = "red";
+                return;
             }
-        });
 
-        const data = await res.json();
+            statusMsg.textContent = "Signup successful! Scheduling email reminder...";
+            statusMsg.style.color = "green";
 
-        if (!res.ok) {
-            btn.disabled = false;
-            btn.textContent = "Try Again";
-            alert(data.error || "Signup failed");
-            return;
+            // Delay slightly for smoother UI
+            setTimeout(async () => {
+                const reminderRes = await fetch(`/api/sendReminder`, {
+                    method: "POST",
+                    headers: {
+                        "Authorization": `Bearer ${getToken()}`,
+                        "Content-Type": "application/json"
+                    },
+                    body: JSON.stringify({
+                        eventId: eventId,
+                        method: "email"
+                    })
+                });
+
+                const rd = await reminderRes.json();
+
+                if (!reminderRes.ok) {
+                    statusMsg.textContent = rd.error || "Failed to send reminder.";
+                    statusMsg.style.color = "red";
+                    return;
+                }
+
+                statusMsg.textContent = "Reminder scheduled! Redirecting...";
+                statusMsg.style.color = "green";
+
+                // Redirect to booking page after 1.5 seconds
+                setTimeout(() => {
+                    window.location.href = "/event_booking.html"; 
+                }, 1500);
+
+            }, 1000);
+
+        } catch (err) {
+            statusMsg.textContent = "Server error. Try again.";
+            statusMsg.style.color = "red";
         }
-
-        // success UI update
-        btn.textContent = "Signed Up!";
-        btn.style.background = "#8dd4c3";
-        btn.style.color = "#000";
-
-        document.getElementById(`confirm-${eventId}`).textContent =
-            "You have successfully signed up for this event!";
-
-    } catch (err) {
-        console.error(err);
-        alert("Error signing up. Please try again.");
-        btn.disabled = false;
-    }
-}
-
-async function loadEligibleEvents() {
-    try {
-        const res = await fetch("/events/eligible", {
-            method: "GET",
-            headers: {
-                "Authorization": `Bearer ${localStorage.getItem("token")}`
-            }
-        });
-
-        const data = await res.json();
-        console.log("EVENT DATA:", data); // DEBUG
-
-        if (!data.events || data.events.length === 0) {
-            document.getElementById("event-container").innerHTML =
-                `<p>No eligible events found.</p>`;
-            return;
-        }
-
-        displayEvents(data.events);
-
-    } catch (err) {
-        console.error("Frontend fetch error:", err);
-    }
-}
-
-window.onload = loadEligibleEvents;
+    });
+});
 
 function toggleMenu() {
-    alert("Menu functionality coming soon!");
+    alert("Menu coming soon!");
 }
-
-document.addEventListener("DOMContentLoaded", loadEvents);

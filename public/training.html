@@ -6,6 +6,7 @@
     <title>Volunteer Training - Cycling Without Age Singapore</title>
     <link rel="stylesheet" href="css/main.css">
     <link rel="stylesheet" href="css/training.css">
+    <link rel="icon" type="image/png" href="/images/favicon.png">
 </head>
 <body>
     <header>
@@ -34,12 +35,12 @@
                     <span>☰</span> Menu
                 </button>
                 <div class="dropdown-menu" id="dropdownMenu">
-                    <a href="#" id="eventsLink">Events</a>
-                    <a href="training.html">Training</a>
+                    <a href="eventIntroduction.html">Events</a>
                     <a href="checkin.html">Check-in</a>
                     <a href="donationPage.html">Donate</a>
                     <a href="feedback.html">Feedback</a>
                     <a href="profile.html">Profile</a>
+                    <a href="history.html">History</a>
                 </div>
             </div>
 
@@ -47,165 +48,137 @@
     </header>
 
     <main class="training-container">
-        <!-- Already Trained Section (Initially Hidden) -->
-        <div id="alreadyTrainedSection" class="already-trained-section" style="display: none;">
-            <div class="results-card">
-                <div class="results-header">
-                    <h2>Volunteer Status</h2>
-                </div>
-                <div class="results-content">
-                    <div class="success-message">
-                        <div class="success-icon">🎉</div>
-                        <h3>You have successfully become a volunteer!</h3>
-                        <p>Thank you for completing the training. You are now certified as a Trishaw Pilot Volunteer.</p>
-                        <button class="action-btn btn-primary" onclick="viewEvents()">View Events</button>
-                    </div>
-                </div>
-            </div>
+        <div class="training-header">
+            <h1 class="page-title">Volunteer Training</h1>
+            <p class="page-subtitle">Complete this training to become a certified Trishaw Pilot</p>
         </div>
 
-        <!-- Original Training Content -->
-        <div id="trainingContent">
-            <main class="training-container">
-                <div class="back-button-container">
-                    <button class="back-btn" id="backBtn">
-                        <span>←</span> Back to Main Page
-                    </button>
-                </div>
+        <div class="progress-section">
+            <div class="progress-bar">
+                <div class="progress-fill" id="progressFill"></div>
+            </div>
+            <div class="progress-text">Question <span id="currentQuestion">1</span> of 3</div>
+        </div>
 
-                <div class="training-header">
-            <div class="training-header">
-                <h1 class="page-title">Volunteer Training</h1>
-                <p class="page-subtitle">Complete this training to become a certified Trishaw Pilot</p>
+        <form id="trainingForm" class="training-form">
+            <!-- Question 1 -->
+            <div class="question-card active" id="question1">
+                <div class="question-header">
+                    <h2>Question 1: Safety Procedures</h2>
+                </div>
+                <div class="question-content">
+                    <p class="question-text">What is the most important safety check you should perform before starting a trishaw ride?</p>
+                    
+                    <div class="options-container">
+                        <label class="option">
+                            <input type="radio" name="q1" value="A" required>
+                            <span class="option-text">A) Check the weather forecast</span>
+                        </label>
+                        <label class="option">
+                            <input type="radio" name="q1" value="B">
+                            <span class="option-text">B) Ensure all passengers are wearing seatbelts and safety equipment is functional</span>
+                        </label>
+                        <label class="option">
+                            <input type="radio" name="q1" value="C">
+                            <span class="option-text">C) Make sure you have enough water</span>
+                        </label>
+                        <label class="option">
+                            <input type="radio" name="q1" value="D">
+                            <span class="option-text">D) Check your mobile phone battery</span>
+                        </label>
+                    </div>
+                </div>
             </div>
 
-            <div class="progress-section">
-                <div class="progress-bar">
-                    <div class="progress-fill" id="progressFill"></div>
+            <!-- Question 2 -->
+            <div class="question-card" id="question2">
+                <div class="question-header">
+                    <h2>Question 2: Passenger Care</h2>
                 </div>
-                <div class="progress-text">Question <span id="currentQuestion">1</span> of 3</div>
+                <div class="question-content">
+                    <p class="question-text">When assisting a senior into the trishaw, what should you do?</p>
+                    
+                    <div class="options-container">
+                        <label class="option">
+                            <input type="radio" name="q2" value="A" required>
+                            <span class="option-text">A) Rush them to save time</span>
+                        </label>
+                        <label class="option">
+                            <input type="radio" name="q2" value="B">
+                            <span class="option-text">B) Let them get in by themselves to maintain their independence</span>
+                        </label>
+                        <label class="option">
+                            <input type="radio" name="q2" value="C">
+                            <span class="option-text">C) Offer your arm for support and guide them patiently</span>
+                        </label>
+                        <label class="option">
+                            <input type="radio" name="q2" value="D">
+                            <span class="option-text">D) Ask another volunteer to help them</span>
+                        </label>
+                    </div>
+                </div>
             </div>
 
-            <form id="trainingForm" class="training-form">
-                <!-- Question 1 -->
-                <div class="question-card active" id="question1">
-                    <div class="question-header">
-                        <h2>Question 1: Safety Procedures</h2>
-                    </div>
-                    <div class="question-content">
-                        <p class="question-text">What is the most important safety check you should perform before starting a trishaw ride?</p>
-                        
-                        <div class="options-container">
-                            <label class="option">
-                                <input type="radio" name="q1" value="A" required>
-                                <span class="option-text">A) Check the weather forecast</span>
-                            </label>
-                            <label class="option">
-                                <input type="radio" name="q1" value="B">
-                                <span class="option-text">B) Ensure all passengers are wearing seatbelts and safety equipment is functional</span>
-                            </label>
-                            <label class="option">
-                                <input type="radio" name="q1" value="C">
-                                <span class="option-text">C) Make sure you have enough water</span>
-                            </label>
-                            <label class="option">
-                                <input type="radio" name="q1" value="D">
-                                <span class="option-text">D) Check your mobile phone battery</span>
-                            </label>
-                        </div>
+            <!-- Question 3 -->
+            <div class="question-card" id="question3">
+                <div class="question-header">
+                    <h2>Question 3: Emergency Procedures</h2>
+                </div>
+                <div class="question-content">
+                    <p class="question-text">If a passenger feels unwell during the ride, what is your first action?</p>
+                    
+                    <div class="options-container">
+                        <label class="option">
+                            <input type="radio" name="q3" value="A" required>
+                            <span class="option-text">A) Continue the ride to the destination</span>
+                        </label>
+                        <label class="option">
+                            <input type="radio" name="q3" value="B">
+                            <span class="option-text">B) Stop immediately in a safe location and assess the situation</span>
+                        </label>
+                        <label class="option">
+                            <input type="radio" name="q3" value="C">
+                            <span class="option-text">C) Give them water and continue slowly</span>
+                        </label>
+                        <label class="option">
+                            <input type="radio" name="q3" value="D">
+                            <span class="option-text">D) Ask other passengers for advice</span>
+                        </label>
                     </div>
                 </div>
+            </div>
 
-                <!-- Question 2 -->
-                <div class="question-card" id="question2">
-                    <div class="question-header">
-                        <h2>Question 2: Passenger Care</h2>
-                    </div>
-                    <div class="question-content">
-                        <p class="question-text">When assisting a senior into the trishaw, what should you do?</p>
-                        
-                        <div class="options-container">
-                            <label class="option">
-                                <input type="radio" name="q2" value="A" required>
-                                <span class="option-text">A) Rush them to save time</span>
-                            </label>
-                            <label class="option">
-                                <input type="radio" name="q2" value="B">
-                                <span class="option-text">B) Let them get in by themselves to maintain their independence</span>
-                            </label>
-                            <label class="option">
-                                <input type="radio" name="q2" value="C">
-                                <span class="option-text">C) Offer your arm for support and guide them patiently</span>
-                            </label>
-                            <label class="option">
-                                <input type="radio" name="q2" value="D">
-                                <span class="option-text">D) Ask another volunteer to help them</span>
-                            </label>
-                        </div>
-                    </div>
+            <!-- Navigation Buttons -->
+            <div class="navigation-buttons">
+                <button type="button" class="nav-btn btn-secondary" id="prevBtn" disabled>Previous</button>
+                <button type="button" class="nav-btn btn-primary" id="nextBtn">Next Question</button>
+                <button type="submit" class="nav-btn btn-success" id="submitBtn" style="display: none;">Submit Answers</button>
+            </div>
+        </form>
+
+        <!-- Results Section (Initially Hidden) -->
+        <div id="resultsSection" class="results-section" style="display: none;">
+            <div class="results-card">
+                <div class="results-header">
+                    <h2>Training Results</h2>
                 </div>
-
-                <!-- Question 3 -->
-                <div class="question-card" id="question3">
-                    <div class="question-header">
-                        <h2>Question 3: Emergency Procedures</h2>
+                <div class="results-content">
+                    <div id="successMessage" class="success-message" style="display: none;">
+                        <div class="success-icon">🎉</div>
+                        <h3>Congratulations!</h3>
+                        <p>You have successfully passed the training with a perfect score!</p>
+                        <p>You are now certified as a Trishaw Pilot Volunteer.</p>
+                        <button class="action-btn btn-primary" onclick="handleSuccess()">View Available Events</button>
                     </div>
-                    <div class="question-content">
-                        <p class="question-text">If a passenger feels unwell during the ride, what is your first action?</p>
-                        
-                        <div class="options-container">
-                            <label class="option">
-                                <input type="radio" name="q3" value="A" required>
-                                <span class="option-text">A) Continue the ride to the destination</span>
-                            </label>
-                            <label class="option">
-                                <input type="radio" name="q3" value="B">
-                                <span class="option-text">B) Stop immediately in a safe location and assess the situation</span>
-                            </label>
-                            <label class="option">
-                                <input type="radio" name="q3" value="C">
-                                <span class="option-text">C) Give them water and continue slowly</span>
-                            </label>
-                            <label class="option">
-                                <input type="radio" name="q3" value="D">
-                                <span class="option-text">D) Ask other passengers for advice</span>
-                            </label>
-                        </div>
-                    </div>
-                </div>
-
-                <!-- Navigation Buttons -->
-                <div class="navigation-buttons">
-                    <button type="button" class="nav-btn btn-secondary" id="prevBtn" disabled>Previous</button>
-                    <button type="button" class="nav-btn btn-primary" id="nextBtn">Next Question</button>
-                    <button type="submit" class="nav-btn btn-success" id="submitBtn" style="display: none;">Submit Answers</button>
-                </div>
-            </form>
-
-            <!-- Results Section (Initially Hidden) -->
-            <div id="resultsSection" class="results-section" style="display: none;">
-                <div class="results-card">
-                    <div class="results-header">
-                        <h2>Training Results</h2>
-                    </div>
-                    <div class="results-content">
-                        <div id="successMessage" class="success-message" style="display: none;">
-                            <div class="success-icon">🎉</div>
-                            <h3>Congratulations!</h3>
-                            <p>You have successfully passed the training with a perfect score!</p>
-                            <p>You are now certified as a Trishaw Pilot Volunteer.</p>
-                            <button class="action-btn btn-primary" onclick="handleSuccess()">View Available Events</button>
-                        </div>
-                        
-                        <div id="failureMessage" class="failure-message" style="display: none;">
-                            <div class="failure-icon">📝</div>
-                            <h3>Training Incomplete</h3>
-                            <p id="failureText">You answered <span id="wrongCount">0</span> out of 3 questions incorrectly.</p>
-                            <p>To become a volunteer, you need to answer all questions correctly.</p>
-                            <div class="retry-buttons">
-                                <button class="action-btn btn-primary" onclick="retryTraining()">Retry Training</button>
-                                <button class="action-btn btn-secondary" onclick="goToIntroduction()">Back to Introduction</button>
-                            </div>
+                    
+                    <div id="failureMessage" class="failure-message" style="display: none;">
+                        <div class="failure-icon">📝</div>
+                        <h3>Training Incomplete</h3>
+                        <p id="failureText">You answered <span id="wrongCount">0</span> out of 3 questions incorrectly.</p>
+                        <p>To become a volunteer, you need to answer all questions correctly.</p>
+                        <div class="retry-buttons">
+                            <button class="action-btn btn-primary" onclick="retryTraining()">Retry Training</button>
+                            <button class="action-btn btn-secondary" onclick="goToIntroduction()">Back to Introduction</button>
                         </div>
                     </div>
                 </div>
