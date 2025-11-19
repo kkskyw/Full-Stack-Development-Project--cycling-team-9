@@ -33,32 +33,30 @@ document.getElementById("registerForm").addEventListener("submit", async functio
     age--;
   }
 
-  const existingError = document.getElementById("dobError");
+  let existingError = document.getElementById("dobError");
 
   if (age < 50) {
     const dobField = document.getElementById("dob");
 
-  if (!existingError) {
-    const errorMsg = document.createElement("span");
-    errorMsg.id = "dobError";
-    errorMsg.style.color = "red";
-    errorMsg.style.fontSize = "0.9em";
-    errorMsg.style.display = "inline-block";
-    errorMsg.textContent = "You must be at least 50 years old to register.";
-    dobField.insertAdjacentElement("afterend", errorMsg);
-    existingError = errorMsg;
-  }
+    if (!existingError) {
+      const errorMsg = document.createElement("span");
+      errorMsg.id = "dobError";
+      errorMsg.style.color = "red";
+      errorMsg.style.fontSize = "0.9em";
+      errorMsg.style.display = "inline-block";
+      errorMsg.textContent = "You must be at least 50 years old to register.";
+      dobField.insertAdjacentElement("afterend", errorMsg);
+      existingError = errorMsg;
+    }
 
-  existingError.classList.remove("shake");
-  void existingError.offsetWidth;
-  existingError.classList.add("shake");
-
-  return;
+    existingError.classList.remove("shake");
+    void existingError.offsetWidth;
+    existingError.classList.add("shake");
+    return;
   }
 
   if (existingError) {
     existingError.remove();
-    ageErrorShown = false;
   }
 
   const user = { name, email, phone, dob, password, role: "Volunteer" };
@@ -73,8 +71,15 @@ document.getElementById("registerForm").addEventListener("submit", async functio
     const data = await res.json();
 
     if (res.ok) {
-      alert("Registration successful!");
-      window.location.href = "login.html";
+      // Show success modal with Lottie animation
+      document.getElementById("registerSuccessModal").style.display = "block";
+      
+      // Redirect to login after delay
+      setTimeout(function() {
+        document.getElementById("registerSuccessModal").style.display = "none";
+        window.location.href = "login.html";
+      }, 3000);
+      
     } else {
       if (data.error.includes("email")) {
         showBackendError("email", data.error);
@@ -90,20 +95,31 @@ document.getElementById("registerForm").addEventListener("submit", async functio
   }
 });
 
+// Close register success modal
+document.getElementById("closeRegisterSuccessModal").addEventListener("click", function() {
+  document.getElementById("registerSuccessModal").style.display = "none";
+});
+
+// Close modal when clicking outside
+window.addEventListener("click", function(event) {
+  const modal = document.getElementById("registerSuccessModal");
+  if (event.target === modal) {
+    modal.style.display = "none";
+  }
+});
+
 function showBackendError(fieldId, message) {
   const field = document.getElementById(fieldId);
   let errorMsg = document.getElementById(fieldId + "Error");
 
-  // If the message already exists
   if (errorMsg) {
-    errorMsg.textContent = message; // Update text in case backend changes
+    errorMsg.textContent = message;
     errorMsg.classList.remove("shake");
     void errorMsg.offsetWidth;
     errorMsg.classList.add("shake");
     return;
   }
 
-  // Create only once
   errorMsg = document.createElement("span");
   errorMsg.id = fieldId + "Error";
   errorMsg.style.color = "red";
@@ -114,7 +130,6 @@ function showBackendError(fieldId, message) {
   field.insertAdjacentElement("afterend", errorMsg);
 }
 
-// Remove backend error message for a field
 function removeBackendError(fieldId) {
   const existing = document.getElementById(fieldId + "Error");
   if (existing) existing.remove();

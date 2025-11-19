@@ -68,6 +68,9 @@ document.addEventListener('DOMContentLoaded', function() {
             nextBtn.style.display = isAnswered ? 'inline-block' : 'none';
             submitBtn.style.display = 'none';
         }
+        
+        showResults(wrongAnswers);
+    }
 
         nextBtn.disabled = !isAnswered;
     }

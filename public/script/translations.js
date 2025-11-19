@@ -15,6 +15,7 @@ const tranlations = {
             profile: "Profile",
             settings: "Settings",
             register: "Register",
+            logout: "Log Out",
 
             heroAlt: "Community cycling event",
 
@@ -58,6 +59,7 @@ const tranlations = {
             profile: "个人资料",
             settings: "设置",
             register: "注册",
+            logout: "退出登录",
 
             heroAlt: "社区骑行活动",
 
@@ -98,6 +100,7 @@ const tranlations = {
             profile: "Profil",
             settings: "Tetapan",
             register: "Daftar",
+            logout: "Log Keluar",
 
             heroAlt: "Acara berbasikal komuniti",
 
@@ -138,6 +141,7 @@ const tranlations = {
             profile: "சுயவிவரம்",
             settings: "அமைப்புகள்",
             register: "பதிவு",
+            logout: "வெளியேறு",
 
             heroAlt: "சமூக சைக்கிள் நிகழ்வு",
 

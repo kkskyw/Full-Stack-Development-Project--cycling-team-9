@@ -3,92 +3,133 @@ body {
     background-color: #f7f7f7;
     color: #333;
 }
-
-.text-brand-green {color: #17936a;}
-.bg-brand-button {background-color: #69e09a;}
-.bg-brand-footer {background-color: #c9e8dc;}
-
-.app-body {
-    min-height: 100vh;
+header {
+    background-color: #8dd4c3;
+    padding: 15px 30px;
     display: flex;
-    flex-direction: column;
+    justify-content: space-between;
+    align-items: center;
+    position: relative;
 }
 
-.main-header {
-    background-color: white;
-    box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
-    padding: 1rem;
+.logo {
+    height: 60px;
+}
+
+.header-buttons {
+    display: flex;
+    gap: 15px;
+    align-items: center;
+}
+
+.menu-container {
+    position: relative;
+}
+
+.menu-btn {
+    background-color: transparent;
+    border: 2px solid #333;
+    padding: 8px 20px;
+    border-radius: 5px;
+    cursor: pointer;
+    font-size: 16px;
     display: flex;
     align-items: center;
-    position: sticky;
-    top:0;
-    z-index: 10;
+    gap: 5px;
+    transition: background-color 0.3s;
 }
 
-.logo-container {
+.menu-btn:hover {
+    background-color: rgba(255, 255, 255, 0.2);
+}
+
+.language-btn {
+    background-color: transparent;
+    border: 2px solid #333;
+    padding: 8px 20px;
+    border-radius: 5px;
+    cursor: pointer;
+    font-size: 16px;
     display: flex;
     align-items: center;
-    gap: 0.5rem;
+    gap: 5px;
+    transition: background-color 0.3s;
 }
 
-.header-buttons{
-    display: flex;
-    align-items: center;
-    gap: 0.75rem;
+.language-btn:hover {
+    background-color: rgba(255, 255, 255, 0.2);
 }
 
-.menu-btn, .register-btn {
-    padding: 0.5rem 1rem;
-    border-radius: 0.5rem;
-    font-weight: 600;
-    transition: all 0.15s ease-in-out;
-    cursor:pointer;
-    border: none;
+.register-btn {
+    background-color: #333;
+    color: white;
+    border: 2px solid #333;
+    padding: 8px 20px;
+    border-radius: 5px;
+    cursor: pointer;
+    font-size: 16px;
+    font-weight: bold;
+    transition: background-color 0.3s, transform 0.2s;
 }
 
-.menu-btn{
-    background-color: #f3f4f6;
-    color: #4b5563;
-    box-shadow: 0 1px 2px rgba(0, 0, 0, 0.05);
+.register-btn:hover {
+    background-color: #555;
+    transform: scale(1.05);
 }
-
-.menu-btn:hover {opacity: 0.9;}
-
-.menu-container {position:relative}
 
 .dropdown-menu {
     display: none;
     position: absolute;
-    right: 0;
     top: 100%;
+    right: 0;
     background-color: white;
-    border: 0.5rem;
-    box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
-    min-width: 150px;
-    z-index: 10;
     border: 1px solid #ddd;
-    padding: 0.5rem 0;
+    border-radius: 5px;
+    box-shadow: 0 4px 10px rgba(0, 0, 0, 0.15);
+    min-width: 180px;
+    margin-top: 10px;
+    z-index: 1000;
+    overflow: hidden;
+}
+
+.dropdown-menu.show {
+    display: block;
+    animation: slideDown 0.3s ease-out;
+}
+
+@keyframes slideDown {
+    from {
+        opacity: 0;
+        transform: translateY(-10px);
+    }
+    to {
+        opacity: 1;
+        transform: translateY(0);
+    }
 }
 
 .dropdown-menu a {
     display: block;
-    padding: 0.5rem 1rem;
+    padding: 12px 20px;
     color: #333;
     text-decoration: none;
+    transition: background-color 0.2s;
+    border-bottom: 1px solid #f0f0f0;
 }
 
-.dropdown-menua:hover { background-color: #f3f4f6;}
-
-@media (min-width:640px){
-    .menu-container:hover .dropdown-menu{ display:block; }
+.dropdown-menu a:last-child {
+    border-bottom: none;
 }
 
-.hero-image{
-    width:100%;
-    height:auto;
-    object-fit: cover;
+.dropdown-menu a:hover {
+    background-color: #8dd4c3;
 }
 
+.hero-image {
+    width: 100%;
+    height: auto;
+    display: block;
+}
 .main-content{
     width:100%;
     max-width:1280px;
