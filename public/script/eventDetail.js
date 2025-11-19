@@ -42,10 +42,10 @@ document.addEventListener('DOMContentLoaded', function() {
     const certs = JSON.parse(localStorage.getItem("certifications")) || [];
 
     // 1️ Not certified
-    if (certs.length === 0) {
+    /*if (certs.length === 0) {
         alert("⚠️ You must complete your training before signing up for events.");
         return;
-    }
+    }*/
 
     // 2️ Check with backend if already booked / same day conflict
     try {

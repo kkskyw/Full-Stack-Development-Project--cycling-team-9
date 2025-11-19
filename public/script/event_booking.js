@@ -3,17 +3,19 @@ function getToken() {
 }
 
 document.addEventListener("DOMContentLoaded", async () => {
+    // PAGE GUARD → Only run on event_booking.html
     const container = document.getElementById("booking-container");
+    if (!container) return;
 
     try {
-       const userId = localStorage.getItem("userId");
+        const userId = localStorage.getItem("userId");
 
-const res = await fetch(`/users/${userId}/bookings`, {
-    headers: {
-        "Authorization": `Bearer ${getToken()}`,
-        "Content-Type": "application/json"
-    }
-});
+        const res = await fetch(`/users/${userId}/bookings`, {
+            headers: {
+                "Authorization": `Bearer ${getToken()}`,
+                "Content-Type": "application/json"
+            }
+        });
 
         const data = await res.json();
 
@@ -60,6 +62,7 @@ function bookingCard(b) {
 
 async function resendReminder(eventId) {
     const status = document.getElementById(`status-${eventId}`);
+    status.style.display = "block";
     status.textContent = "Sending email...";
     status.style.color = "black";
 
@@ -81,7 +84,7 @@ async function resendReminder(eventId) {
         if (!res.ok) {
             status.textContent = data.error || "Reminder failed.";
             status.style.color = "red";
-           return;
+            return;
         }
 
         status.textContent = "Reminder sent!";
