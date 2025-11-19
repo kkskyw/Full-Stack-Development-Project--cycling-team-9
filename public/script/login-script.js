@@ -27,7 +27,7 @@ document.getElementById("loginForm").addEventListener("submit", async function (
       localStorage.setItem("userName", data.name);
       alert("Login successful!");
         if(localStorage.getItem("role")=='Volunteer'){
-          window.location.href ="volunteerPage.html";
+          window.location.href ="main.html";
         }else { window.location.href = "staffPage.html";}
       
      

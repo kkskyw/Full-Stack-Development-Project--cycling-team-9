@@ -45,6 +45,11 @@ app.post("/api/training/complete/:type", verifyJWT, trainingController.completeT
 
 
 
+// Event routes
+app.get("/events", eventController.getAllEvents);
+app.get("/mrt-stations", eventController.getMRTStations);
+app.get("/events/:id", eventController.getEventById);
+
 // serve main.html at root
 app.get('/', (req, res) => {
   res.sendFile(path.join(__dirname, 'public', 'main.html'));

@@ -24,17 +24,17 @@ CREATE TABLE usercertifications (
     certifiedDate DATETIME DEFAULT GETDATE()
 );
 CREATE TABLE events (
-	eventId INT IDENTITY(1,1) PRIMARY KEY,
-	header VARCHAR(100) NOT NULL,
-	intro VARCHAR(1000) NOT NULL,
-    longIntro VARCHAR(MAX) NOT NULL,
-	location VARCHAR(50) NOT NULL,
-    nearestMRT varchar(100) NOT NULL,
-	latitude FLOAT NOT NULL,
-    longitude FLOAT NOT NULL,
-    radius_m INT NOT NULL DEFAULT 100, -- allowed radius in meters for clock in/out
-    start_time DATETIME NOT NULL,
-    end_time DATETIME NOT NULL
+eventId INT IDENTITY(1,1) PRIMARY KEY,
+header VARCHAR(100) NOT NULL,
+intro VARCHAR(1000) NOT NULL,
+location VARCHAR(50) NOT NULL,
+nearestMRT VARCHAR(200) NOT NULL,
+latitude FLOAT NOT NULL,
+longitude FLOAT NOT NULL,
+radius_m INT NOT NULL DEFAULT 100, -- allowed radius in meters for clock in/out
+start_time DATETIME NOT NULL,
+end_time DATETIME NOT NULL,
+longIntro VARCHAR(MAX) NOT NULL
 )
 
 INSERT INTO events 

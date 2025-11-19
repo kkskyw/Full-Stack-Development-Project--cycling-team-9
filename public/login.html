@@ -9,35 +9,49 @@
 </head>
 <body>
     <div class="modal">
-        <div class="modal-content">
+        <!-- Info Panel for Desktop -->
+        <div class="info-panel">
+            <h1>Welcome Back</h1>
+            <p>Continue your journey with Cycling Without Age Singapore and help bring joy to seniors in our community.</p>
+            
+            <div class="info-features">
+                <div class="feature">Access volunteer opportunities</div>
+                <div class="feature">Manage your event participation</div>
+                <div class="feature">Track your contributions</div>
+                <div class="feature">Connect with our community</div>
+            </div>
+        </div>
 
-        <!-- Back Button -->
-        <a href="main.html" class="back-btn">&#8592;</a>
+        <!-- Form Panel -->
+        <div class="form-panel">
+            <div class="modal-content">
+                <!-- Back Button -->
+                <a href="main.html" class="back-btn">&#8592;</a>
 
-        <!-- Title -->
-        <h2>Login</h2>
+                <!-- Title -->
+                <h2>Login</h2>
 
-        <!-- Form -->
-        <form id="loginForm">
-            <!-- Email Address -->
-            <label for="email">Email Address:</label>
-            <input type="email" id="email" name="email" placeholder="Enter your email" required>
+                <!-- Form -->
+                <form id="loginForm">
+                    <!-- Email Address -->
+                    <label for="email">Email Address:</label>
+                    <input type="email" id="email" name="email" placeholder="Enter your email" required>
 
-            <!-- Password -->
-            <label for="password">Password:</label>
-            <input type="password" id="password" name="password" placeholder="Enter your password" required>
-            <a href="forgetPassword.html" class="forgot-password">Forgot Password?</a>
+                    <!-- Password -->
+                    <label for="password">Password:</label>
+                    <input type="password" id="password" name="password" placeholder="Enter your password" required>
+                    <a href="forgetPassword.html" class="forgot-password">Forgot Password?</a>
 
-            <!-- Sign In Button -->
-            <button type="submit">Sign In</button>
-            </form>
+                    <!-- Sign In Button -->
+                    <button type="submit">Sign In</button>
+                </form>
 
-        <!-- Create Account -->
-        <p>
-          <span>Don't have an account yet?</span>
-          <a href="register.html">Create Account</a>
-        </p>
-
+                <!-- Create Account -->
+                <p>
+                    <span>Don't have an account yet?</span>
+                    <a href="register.html">Create Account</a>
+                </p>
+            </div>
         </div>
     </div>
     <script src="script/login-script.js"></script>
