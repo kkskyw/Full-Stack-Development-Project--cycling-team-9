@@ -16,6 +16,7 @@ const tranlations = {
             settings: "Settings",
             register: "Register",
             logout: "Log Out",
+            loginPrompt: "Please Register / Login First",
 
             heroAlt: "Community cycling event",
 
@@ -60,6 +61,7 @@ const tranlations = {
             settings: "设置",
             register: "注册",
             logout: "退出登录",
+            loginPrompt: "请先注册/登录",
 
             heroAlt: "社区骑行活动",
 
