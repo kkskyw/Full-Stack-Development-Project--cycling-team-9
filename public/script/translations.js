@@ -1,3 +1,4 @@
+// Yiru
 const tranlations = {
     en: {
         main: {

@@ -1,3 +1,4 @@
+// Yiru
 document.addEventListener('DOMContentLoaded', function () {
     // Check if user is logged in and update menu visibility
     updateMenuVisibility();

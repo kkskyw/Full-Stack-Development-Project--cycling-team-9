@@ -1,4 +1,4 @@
-// models/eventModel.js
+// Yiru
 const sql = require("mssql");
 const dbConfig = require("../dbConfig");
 
