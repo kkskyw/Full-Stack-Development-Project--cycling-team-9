@@ -34,7 +34,6 @@ document.addEventListener('DOMContentLoaded', function() {
         nextBtn.addEventListener('click', goToNextQuestion);
         trainingForm.addEventListener('submit', handleFormSubmit);
 
-        // Enable/disable buttons when user clicks options
         document.querySelectorAll('input[type="radio"]').forEach(radio => {
             radio.addEventListener('change', updateNavigationButtons);
         });
@@ -45,7 +44,6 @@ document.addEventListener('DOMContentLoaded', function() {
         progressFill.style.width = `${progress}%`;
         currentQuestionSpan.textContent = currentQuestion;
 
-        // Show only current question
         document.querySelectorAll('.question-card').forEach((card, index) => {
             card.classList.toggle('active', (index + 1) === currentQuestion);
         });
@@ -61,6 +59,7 @@ document.addEventListener('DOMContentLoaded', function() {
         // Prev button disabled for Q1
         prevBtn.disabled = currentQuestion === 1;
 
+        // Last question?
         if (currentQuestion === totalQuestions) {
             nextBtn.style.display = 'none';
             submitBtn.style.display = isAnswered ? 'inline-block' : 'none';
@@ -68,10 +67,8 @@ document.addEventListener('DOMContentLoaded', function() {
             nextBtn.style.display = isAnswered ? 'inline-block' : 'none';
             submitBtn.style.display = 'none';
         }
-        
-        showResults(wrongAnswers);
-    }
 
+        // Disable next button until user answers
         nextBtn.disabled = !isAnswered;
     }
 
@@ -95,7 +92,6 @@ document.addEventListener('DOMContentLoaded', function() {
         const formData = new FormData(trainingForm);
         let wrongAnswers = 0;
 
-        // Count wrong answers
         for (let i = 1; i <= totalQuestions; i++) {
             const q = `q${i}`;
             const userAnswer = formData.get(q);
@@ -110,11 +106,9 @@ document.addEventListener('DOMContentLoaded', function() {
         resultsSection.style.display = 'block';
 
         if (wrongAnswers === 0) {
-            // SUCCESS
             successMessage.style.display = 'block';
             failureMessage.style.display = 'none';
 
-            // 🟢 GIVE ALL CERTIFICATIONS
             const allCertifications = [
                 "Trishaw Pilot Certification",
                 "Cyclist Certification"
@@ -124,19 +118,13 @@ document.addEventListener('DOMContentLoaded', function() {
             localStorage.setItem("userTrained", "true");
 
         } else {
-            // FAILURE
             successMessage.style.display = 'none';
             failureMessage.style.display = 'block';
 
             wrongCountSpan.textContent = wrongAnswers;
 
-            if (wrongAnswers === 1) {
-                failureText.innerHTML =
-                    'You answered <span id="wrongCount">1</span> question incorrectly.';
-            } else {
-                failureText.innerHTML =
-                    `You answered <span id="wrongCount">${wrongAnswers}</span> questions incorrectly.`;
-            }
+            failureText.innerHTML =
+                `You answered <span id="wrongCount">${wrongAnswers}</span> question${wrongAnswers > 1 ? 's' : ''} incorrectly.`;
         }
     }
 
