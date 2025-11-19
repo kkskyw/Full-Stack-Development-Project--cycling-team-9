@@ -11,9 +11,10 @@ async function joinEvent(req, res) {
 
     } catch (err) {
         console.error("Error signing up:", err);
-        return res.status(500).json({ error: "Failed to sign up for event" });
+        return res.status(500).json({ error: err.message });
     }
 }
+
 
 // GET ELIGIBLE EVENTS
 async function fetchEligibleEvents(req, res) {
