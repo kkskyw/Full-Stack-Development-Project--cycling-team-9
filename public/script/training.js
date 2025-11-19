@@ -10,56 +10,101 @@ document.addEventListener('DOMContentLoaded', function() {
     const failureMessage = document.getElementById('failureMessage');
     const failureText = document.getElementById('failureText');
     const wrongCountSpan = document.getElementById('wrongCount');
+    
+    // New elements for already trained section
+    const alreadyTrainedSection = document.getElementById('alreadyTrainedSection');
+    const trainingContent = document.getElementById('trainingContent');
+    const eventsLink = document.getElementById('eventsLink');
+    const backBtn = document.getElementById('backBtn');
 
     let currentQuestion = 1;
     const totalQuestions = 3;
-
-    // Correct answers for training
     const correctAnswers = {
-        q1: 'B',
-        q2: 'C',
-        q3: 'B'
+        q1: 'B', // Safety Procedures
+        q2: 'C', // Passenger Care
+        q3: 'B'  // Emergency Procedures
     };
 
-    // Initialize UI
+    // Initialize the training
     init();
 
     function init() {
+        // Check if user has already completed training
+        checkTrainingStatus();
         updateProgress();
         setupEventListeners();
+    }
+
+    function checkTrainingStatus() {
+        const isTrained = localStorage.getItem('userTrained') === 'true';
+        
+        if (isTrained) {
+            // User has completed training - show success message
+            showAlreadyTrained();
+        } else {
+            // User hasn't completed training - show training content
+            showTrainingContent();
+        }
+        
+        // Update events link based on training status
+        updateEventsLink(isTrained);
+    }
+
+    function showAlreadyTrained() {
+        alreadyTrainedSection.style.display = 'block';
+        trainingContent.style.display = 'none';
+    }
+
+    function showTrainingContent() {
+        alreadyTrainedSection.style.display = 'none';
+        trainingContent.style.display = 'block';
+    }
+
+    function updateEventsLink(isTrained) {
+        if (eventsLink) {
+            eventsLink.href = isTrained ? 'viewEvent.html' : 'eventIntroduction.html';
+        }
     }
 
     function setupEventListeners() {
         prevBtn.addEventListener('click', goToPreviousQuestion);
         nextBtn.addEventListener('click', goToNextQuestion);
         trainingForm.addEventListener('submit', handleFormSubmit);
-
+        
+        // Add input event listeners to enable/disable buttons based on selection
         document.querySelectorAll('input[type="radio"]').forEach(radio => {
             radio.addEventListener('change', updateNavigationButtons);
         });
+        
+        if (backBtn) {
+            backBtn.addEventListener('click', function() {
+                window.location.href = 'main.html';
+            });
+        }
     }
 
     function updateProgress() {
         const progress = ((currentQuestion - 1) / totalQuestions) * 100;
         progressFill.style.width = `${progress}%`;
         currentQuestionSpan.textContent = currentQuestion;
-
+        
+        // Show/hide appropriate question
         document.querySelectorAll('.question-card').forEach((card, index) => {
             card.classList.toggle('active', (index + 1) === currentQuestion);
         });
-
+        
         updateNavigationButtons();
     }
 
     function updateNavigationButtons() {
+        // Check if current question is answered
         const currentQuestionName = `q${currentQuestion}`;
-        const isAnswered =
-            document.querySelector(`input[name="${currentQuestionName}"]:checked`) !== null;
-
-        // Prev button disabled for Q1
+        const isAnswered = document.querySelector(`input[name="${currentQuestionName}"]:checked`) !== null;
+        
+        // Update previous button
         prevBtn.disabled = currentQuestion === 1;
-
-        // Last question?
+        
+        // Update next/submit buttons
         if (currentQuestion === totalQuestions) {
             nextBtn.style.display = 'none';
             submitBtn.style.display = isAnswered ? 'inline-block' : 'none';
@@ -67,8 +112,7 @@ document.addEventListener('DOMContentLoaded', function() {
             nextBtn.style.display = isAnswered ? 'inline-block' : 'none';
             submitBtn.style.display = 'none';
         }
-
-        // Disable next button until user answers
+        
         nextBtn.disabled = !isAnswered;
     }
 
@@ -88,52 +132,65 @@ document.addEventListener('DOMContentLoaded', function() {
 
     function handleFormSubmit(event) {
         event.preventDefault();
-
+        
         const formData = new FormData(trainingForm);
         let wrongAnswers = 0;
-
+        
+        // Check each answer
         for (let i = 1; i <= totalQuestions; i++) {
-            const q = `q${i}`;
-            const userAnswer = formData.get(q);
-            if (userAnswer !== correctAnswers[q]) wrongAnswers++;
+            const questionName = `q${i}`;
+            const userAnswer = formData.get(questionName);
+            const correctAnswer = correctAnswers[questionName];
+            
+            if (userAnswer !== correctAnswer) {
+                wrongAnswers++;
+            }
         }
-
+        
         showResults(wrongAnswers);
     }
 
     function showResults(wrongAnswers) {
+        // Hide the form and show results
         trainingForm.style.display = 'none';
         resultsSection.style.display = 'block';
-
+        
         if (wrongAnswers === 0) {
+            // All answers correct - success!
             successMessage.style.display = 'block';
             failureMessage.style.display = 'none';
-
-            const allCertifications = [
-                "Trishaw Pilot Certification",
-                "Cyclist Certification"
-            ];
-
-            localStorage.setItem("certifications", JSON.stringify(allCertifications));
-            localStorage.setItem("userTrained", "true");
-
+            
+            // Mark user as trained in localStorage
+            localStorage.setItem('userTrained', 'true');
+            
+            // Update events link
+            updateEventsLink(true);
         } else {
+            // Some answers wrong - failure
             successMessage.style.display = 'none';
             failureMessage.style.display = 'block';
-
             wrongCountSpan.textContent = wrongAnswers;
-
-            failureText.innerHTML =
-                `You answered <span id="wrongCount">${wrongAnswers}</span> question${wrongAnswers > 1 ? 's' : ''} incorrectly.`;
+            
+            // Update failure text based on number of wrong answers
+            if (wrongAnswers === 1) {
+                failureText.innerHTML = 'You answered <span id="wrongCount">1</span> question incorrectly.';
+            } else {
+                failureText.innerHTML = `You answered <span id="wrongCount">${wrongAnswers}</span> questions incorrectly.`;
+            }
         }
     }
 
-    // Redirects
+    // Global functions for result actions
     window.handleSuccess = function() {
         window.location.href = 'viewEvent.html';
     };
 
+    window.viewEvents = function() {
+        window.location.href = 'viewEvent.html';
+    };
+
     window.retryTraining = function() {
+        // Reset form and show first question
         trainingForm.reset();
         trainingForm.style.display = 'block';
         resultsSection.style.display = 'none';
