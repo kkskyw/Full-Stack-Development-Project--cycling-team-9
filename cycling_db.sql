@@ -8,6 +8,7 @@ CREATE TABLE users (
     preferredLanguage VARCHAR(20) DEFAULT 'English',
     role VARCHAR(20) 
 );
+
 CREATE TABLE certificationtypes (
     certificationId INT IDENTITY(1,1) PRIMARY KEY,
     certificationName VARCHAR(100) UNIQUE NOT NULL
@@ -23,6 +24,7 @@ CREATE TABLE usercertifications (
     certificationId INT NOT NULL FOREIGN KEY REFERENCES certificationtypes(certificationId),
     certifiedDate DATETIME DEFAULT GETDATE()
 );
+
 CREATE TABLE events (
 eventId INT IDENTITY(1,1) PRIMARY KEY,
 header VARCHAR(100) NOT NULL,
@@ -93,4 +95,12 @@ CREATE TABLE bookedevents (
 
     FOREIGN KEY (userId) REFERENCES users(userId),
     FOREIGN KEY (eventId) REFERENCES events(eventId)
+);
+CREATE TABLE eventSignups (
+    id INT IDENTITY(1,1) PRIMARY KEY,
+    eventId INT NOT NULL,
+    userId INT NOT NULL,
+    signupDate DATETIME DEFAULT GETDATE(),
+    FOREIGN KEY (eventId) REFERENCES events(eventId),
+    FOREIGN KEY (userId) REFERENCES users(userId)
 );
