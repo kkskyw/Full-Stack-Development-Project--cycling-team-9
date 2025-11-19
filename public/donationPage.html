@@ -4,40 +4,75 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Cycling Without Age Singapore</title>
+<<<<<<< HEAD
     <link rel="stylesheet" href="css/main.css" />
+    <link rel="icon" type="image/png" href="/images/favicon.png">
+=======
+    <link rel="stylesheet" href="css/donate.css" />
+>>>>>>> d2267e2f8b08ccf046454acb436703ac141564e0
 </head>
 <body>
-    <header>
+     <header>
         <div class="logo-container">
-            <img src="images/cropped-logox2.png" alt="Cycling Without Age Logo" class="logo">
+            <img src="images/cropped-logox2.png" alt="Cycling Without Age Logo" data-lang="logoAlt" class="logo">
             <div class="logo-text">
-                <p>Cycling Without Age</p>
+                <p data-lang="logoText">Cycling Without Age</p>
             </div>
         </div>
 
         <div class="header-buttons">
             <div class="menu-container">
-                <button class="menu-btn" id="menuBtn">
-                    <span>☰</span> Menu
+                <button class="language-btn" id="languageBtn">
+                    <span>🌐</span> <span data-lang="language">Language</span>
                 </button>
-                <div class="dropdown-menu" id="dropdownMenu">
-                    <a href="events.html">Events</a>
-                    <a href="checkin.html">Check-in</a>
-                    <a href="donate.html">Donate</a>
-                    <a href="feedback.html">Feedback</a>
-                    <a href="profile.html">Profile</a>
-                    <a href="history.html">History</a>
-                    <a href="settings.html">Settings</a>
+                <div class="dropdown-menu" id="languageDropdown">
+                    <a href="#" value="en">English</a>
+                    <a href="#" value="zh">中文 (Chinese)</a>
+                    <a href="#" value="ms">Bahasa Melayu (Malay)</a>
+                    <a href="#" value="ta">தமிழ் (Tamil)</a>
                 </div>
             </div>
-            <button class="register-btn" onclick="window.location.href='register.html'">Register</button>
+
+            <div class="menu-container">
+                <button class="menu-btn" id="menuBtn">
+                    <span>☰</span> <span data-lang="menu">Menu</span>
+                </button>
+                <div class="dropdown-menu" id="dropdownMenu">
+                    <a href="eventIntroduction.html" id="eventsLink" data-lang="events">Events</a>
+                    <a href="training.html" id="trainingLink" data-lang="training" style="display: none;">Training</a>
+                    <a href="checkin.html" data-lang="checkin">Check-in</a>
+                    <a href="donationPage.html" data-lang="donate">Donate</a>
+                    <a href="feedback.html" data-lang="feedback">Feedback</a>
+                    <a href="profile.html" data-lang="profile">Profile</a>
+                </div>
+            </div>
+
+            <button class="register-btn" onclick="window.location.href='register.html'" data-lang="register">Register</button>
         </div>
     </header>
-
+    
     <img src="images/Untitled-design-1-1600x432.png" alt="Community cycling event" class="hero-image">
 
 
+    <div class="donation-box">
+        <div class="header">
+            <div class="raised-amount">$73,243</div>
+            <div class="target-text">raised of $250,000</div>
+        </div>
+        
+        <div class="progress-container">
+            <div class="progress-bar" style="width: 29.30%;"></div>
+        </div>
 
+        <div class="details">
+            <div class="donors">140 donors</div>
+            <div class="days-left">36 days left</div>
+        </div>
+
+        <a href="https://www.giving.sg/donate/campaign/cycle-for-seniors-2025" target="_blank" class="donate-button">
+            Donate Now
+        </a>
+    </div>
 
 
     
