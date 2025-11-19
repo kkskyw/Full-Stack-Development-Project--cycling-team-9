@@ -1,4 +1,3 @@
-// Wait for DOM to be fully loaded
 document.addEventListener('DOMContentLoaded', function () {
     // Check if user is logged in and update menu visibility
     updateMenuVisibility();
@@ -137,7 +136,7 @@ document.addEventListener('DOMContentLoaded', function() {
     }
 });
 
-// Function to handle menu visibility based on login status
+// Function to handle menu visibility based on login status AND training status
 function updateMenuVisibility() {
     const token = localStorage.getItem('token');
     const trainingLink = document.getElementById('trainingLink');
@@ -145,13 +144,13 @@ function updateMenuVisibility() {
     const registerBtn = document.getElementById('registerBtn');
     const logoutBtn = document.getElementById('logoutBtn');
     
+    // Check training status only if user is logged in
+    const isTrained = token && localStorage.getItem('userTrained') === 'true';
+    
     if (token) {
-        // User is logged in - show training button, change events link, show logout button
+        // User is logged in - show training button, show logout button
         if (trainingLink) {
             trainingLink.style.display = 'block';
-        }
-        if (eventsLink) {
-            eventsLink.href = 'viewEvent.html';
         }
         if (registerBtn) {
             registerBtn.style.display = 'none';
@@ -159,6 +158,19 @@ function updateMenuVisibility() {
         if (logoutBtn) {
             logoutBtn.style.display = 'block';
         }
+        
+        // Update events link based on training status
+        if (eventsLink) {
+            eventsLink.href = isTrained ? 'viewEvent.html' : 'eventIntroduction.html';
+        }
+        
+        // Also update any other events links in dropdown menus
+        const allEventsLinks = document.querySelectorAll('a[href="eventIntroduction.html"], a[href="viewEvent.html"]');
+        allEventsLinks.forEach(link => {
+            if (link.textContent.includes('Event') || link.getAttribute('href').includes('event')) {
+                link.href = isTrained ? 'viewEvent.html' : 'eventIntroduction.html';
+            }
+        });
     } else {
         // User is not logged in - hide training button, use default events link, show register button
         if (trainingLink) {
@@ -173,6 +185,14 @@ function updateMenuVisibility() {
         if (logoutBtn) {
             logoutBtn.style.display = 'none';
         }
+        
+        // Reset all events links to introduction page for logged out users
+        const allEventsLinks = document.querySelectorAll('a[href="eventIntroduction.html"], a[href="viewEvent.html"]');
+        allEventsLinks.forEach(link => {
+            if (link.textContent.includes('Event') || link.getAttribute('href').includes('event')) {
+                link.href = 'eventIntroduction.html';
+            }
+        });
     }
 }
 

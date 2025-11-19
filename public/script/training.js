@@ -15,7 +15,7 @@ document.addEventListener('DOMContentLoaded', function() {
     const alreadyTrainedSection = document.getElementById('alreadyTrainedSection');
     const trainingContent = document.getElementById('trainingContent');
     const eventsLink = document.getElementById('eventsLink');
-    const backBtn = document.getElementById('backBtn'); // 添加返回按钮引用
+    const backBtn = document.getElementById('backBtn');
 
     let currentQuestion = 1;
     const totalQuestions = 3;
