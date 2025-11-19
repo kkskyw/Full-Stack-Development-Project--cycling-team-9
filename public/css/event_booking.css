@@ -135,6 +135,23 @@ footer {
     text-align: center;
     color: #333;
 }
+
+.checkin-btn {
+    margin-top: 10px;
+    padding: 12px;
+    background-color: #8dd4c3;
+    border: none;
+    border-radius: 8px;
+    font-size: 16px;
+    cursor: pointer;
+    font-weight: bold;
+    width: 100%;
+}
+
+.checkin-btn:hover {
+    background-color: #7bcbb8;
+}
+
 .resend-btn {
     margin-top: 10px;
     padding: 12px;

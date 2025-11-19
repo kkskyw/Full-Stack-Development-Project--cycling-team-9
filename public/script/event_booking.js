@@ -45,8 +45,12 @@ function bookingCard(b) {
             <p><strong>Signed Up:</strong> ${new Date(b.bookingDate).toLocaleString()}</p>
             <p>${b.intro}</p>
 
+            <button class="checkin-btn" onclick="location.href='attendance.html?eventId=${b.eventId}'">
+                Check In
+            </button>
+
             <button class="resend-btn" onclick="resendReminder(${b.eventId})">
-                📧 Resend Reminder Email
+                Resend Reminder Email
             </button>
 
             <div id="status-${b.eventId}" class="booking-status"></div>

@@ -2,11 +2,39 @@ const token = localStorage.getItem("token");
 let map = null;
 let userMarker = null;
 let currentLocation = null;
+let eventId = null;
 
-// Initialize map when page loads
+// Initialize when page loads
 document.addEventListener('DOMContentLoaded', function() {
+    // Get eventId from URL parameters
+    const urlParams = new URLSearchParams(window.location.search);
+    eventId = urlParams.get('eventId');
+    
+    if (!eventId) {
+        showBackendError("checkInBtn", "No event specified. Please go back to bookings and try again.");
+        return;
+    }
+    
     initMap();
     getCurrentLocation();
+    
+    // Add modal close functionality after DOM is loaded
+    document.getElementById("closeCheckInSuccessModal").addEventListener("click", function() {
+        document.getElementById("checkInSuccessModal").style.display = "none";
+    });
+
+    document.getElementById("closeCheckOutSuccessModal").addEventListener("click", function() {
+        document.getElementById("checkOutSuccessModal").style.display = "none";
+    });
+
+    document.getElementById("confirmEarlyCheckoutBtn").addEventListener("click", function() {
+        document.getElementById("earlyCheckoutModal").style.display = "none";
+        proceedWithCheckout();
+    });
+
+    document.getElementById("cancelEarlyCheckoutBtn").addEventListener("click", function() {
+        document.getElementById("earlyCheckoutModal").style.display = "none";
+    });
 });
 
 // Initialize Leaflet map
@@ -88,7 +116,7 @@ document.getElementById('refreshLocationBtn').addEventListener('click', function
     getCurrentLocation();
 });
 
-// Updated check-in function
+// Check-in function
 document.getElementById("checkInBtn").addEventListener("click", async function () {
     removeBackendError("checkInBtn");
 
@@ -97,8 +125,12 @@ document.getElementById("checkInBtn").addEventListener("click", async function (
         return;
     }
 
+    if (!eventId) {
+        showBackendError("checkInBtn", "No event specified.");
+        return;
+    }
+
     const { lat, lon } = currentLocation;
-    const eventId = 51; // hardcode waiting for events page
     const payload = { eventId, lat, lon };
 
     try {
@@ -114,8 +146,14 @@ document.getElementById("checkInBtn").addEventListener("click", async function (
         const data = await res.json();
 
         if (res.ok) {
-            alert("Checked in successfully!");
+            // Show success modal instead of alert
+            document.getElementById("checkInSuccessModal").style.display = "block";
             document.getElementById("checkInTime").textContent = `${data.checkInTime} (${data.status})`;
+            
+            // Auto-close modal after 3 seconds
+            setTimeout(() => {
+                document.getElementById("checkInSuccessModal").style.display = "none";
+            }, 3000);
         } else {
             showBackendError("checkInBtn", data.error);
         }
@@ -124,7 +162,10 @@ document.getElementById("checkInBtn").addEventListener("click", async function (
     }
 });
 
-// Updated check-out function
+// Store checkout payload for later use
+let checkoutPayload = null;
+
+// Check-out function
 document.getElementById("checkOutBtn").addEventListener("click", async function () {
     removeBackendError("checkOutBtn");
 
@@ -133,10 +174,38 @@ document.getElementById("checkOutBtn").addEventListener("click", async function 
         return;
     }
 
-    const { lat, lon } = currentLocation;
-    const eventId = 51; // hardcode waiting for events page
-    const payload = { eventId, lat, lon };
+    if (!eventId) {
+        showBackendError("checkOutBtn", "No event specified.");
+        return;
+    }
 
+    const { lat, lon } = currentLocation;
+    checkoutPayload = { eventId, lat, lon };
+    console.log("Proceeding with checkout - backend will handle time validation");
+    proceedWithCheckout();
+});
+
+// Show early checkout confirmation modal with backend error message
+function showEarlyCheckoutConfirmation(errorMessage) {
+    // Extract just the time information from the backend error message
+    const timeMatch = errorMessage.match(/(\d+)\s+minutes?/);
+    let message;
+    
+    if (timeMatch) {
+        const minutes = timeMatch[1];
+        message = `You are checking out before the event end time. There are still ${minutes} minutes remaining in the event. Are you sure you want to check out early?`;
+    } else {
+        // Fallback if we can't extract the time
+        message = `You are checking out before the event end time. ${errorMessage}. Are you sure you want to check out early?`;
+    }
+    
+    console.log("Early checkout message:", message);
+    document.getElementById("earlyCheckoutMessage").textContent = message;
+    document.getElementById("earlyCheckoutModal").style.display = "block";
+}
+
+// Proceed with checkout after confirmation
+async function proceedWithCheckout() {
     try {
         const res = await fetch("/attendance/checkout", {
             method: "POST",
@@ -144,23 +213,62 @@ document.getElementById("checkOutBtn").addEventListener("click", async function 
                 "Content-Type": "application/json",
                 "Authorization": `Bearer ${token}`
             },
-            body: JSON.stringify(payload)
+            body: JSON.stringify(checkoutPayload)
         });
 
         const data = await res.json();
 
         if (res.ok) {
-            alert("Checked out successfully!");
+            // Show success modal
+            document.getElementById("checkOutSuccessModal").style.display = "block";
+            
+            // Update success message based on checkout status
+            const successMessage = document.querySelector("#checkOutSuccessModal p");
+            if (data.status === "Early") {
+                successMessage.textContent = `You have checked out early. You left ${data.minutesEarly} minutes before the event ended.`;
+            } else {
+                successMessage.textContent = "You have been checked out from the event.";
+            }
+            
             document.getElementById("checkOutTime").textContent = data.checkOutTime;
+            
+            // Auto-close modal after 3 seconds
+            setTimeout(() => {
+                document.getElementById("checkOutSuccessModal").style.display = "none";
+            }, 3000);
         } else {
-            showBackendError("checkOutBtn", data.error);
+            console.log("Backend returned error:", data.error);
+            // If backend returns an error about early checkout, show confirmation modal
+            if (data.error && (data.error.includes("early") || data.error.includes("minutes") || data.error.includes("Cannot check out") || data.error.includes("Event ends in"))) {
+                console.log("Early checkout detected, showing confirmation modal");
+                showEarlyCheckoutConfirmation(data.error);
+            } else {
+                showBackendError("checkOutBtn", data.error);
+            }
         }
     } catch (err) {
         showBackendError("checkOutBtn", "Something went wrong.");
     }
+}
+
+// Close modals when clicking outside
+window.addEventListener("click", function(event) {
+    const checkInModal = document.getElementById("checkInSuccessModal");
+    const checkOutModal = document.getElementById("checkOutSuccessModal");
+    const earlyCheckoutModal = document.getElementById("earlyCheckoutModal");
+    
+    if (event.target === checkInModal) {
+        checkInModal.style.display = "none";
+    }
+    if (event.target === checkOutModal) {
+        checkOutModal.style.display = "none";
+    }
+    if (event.target === earlyCheckoutModal) {
+        earlyCheckoutModal.style.display = "none";
+    }
 });
 
-// ERROR HELPERS (keep existing functions)
+// ERROR HELPERS
 function showBackendError(fieldId, message) {
     let errorMsg = document.getElementById(fieldId + "Error");
 
