@@ -3,17 +3,19 @@ function getToken() {
 }
 
 document.addEventListener("DOMContentLoaded", async () => {
+    // PAGE GUARD → Only run on event_booking.html
     const container = document.getElementById("booking-container");
+    if (!container) return;
 
     try {
-       const userId = localStorage.getItem("userId");
+        const userId = localStorage.getItem("userId");
 
-const res = await fetch(`/users/${userId}/bookings`, {
-    headers: {
-        "Authorization": `Bearer ${getToken()}`,
-        "Content-Type": "application/json"
-    }
-});
+        const res = await fetch(`/users/${userId}/bookings`, {
+            headers: {
+                "Authorization": `Bearer ${getToken()}`,
+                "Content-Type": "application/json"
+            }
+        });
 
         const data = await res.json();
 
@@ -45,8 +47,12 @@ function bookingCard(b) {
             <p><strong>Signed Up:</strong> ${new Date(b.bookingDate).toLocaleString()}</p>
             <p>${b.intro}</p>
 
+            <button class="checkin-btn" onclick="location.href='attendance.html?eventId=${b.eventId}'">
+                Check In
+            </button>
+
             <button class="resend-btn" onclick="resendReminder(${b.eventId})">
-                📧 Resend Reminder Email
+                Resend Reminder Email
             </button>
 
             <div id="status-${b.eventId}" class="booking-status"></div>
@@ -56,6 +62,7 @@ function bookingCard(b) {
 
 async function resendReminder(eventId) {
     const status = document.getElementById(`status-${eventId}`);
+    status.style.display = "block";
     status.textContent = "Sending email...";
     status.style.color = "black";
 
@@ -77,7 +84,7 @@ async function resendReminder(eventId) {
         if (!res.ok) {
             status.textContent = data.error || "Reminder failed.";
             status.style.color = "red";
-           return;
+            return;
         }
 
         status.textContent = "Reminder sent!";

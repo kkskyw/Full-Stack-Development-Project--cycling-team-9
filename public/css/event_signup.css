@@ -16,26 +16,120 @@ header {
     display: flex;
     justify-content: space-between;
     align-items: center;
+    position: relative;
 }
 
 .logo {
     height: 60px;
 }
 
+.header-buttons {
+    display: flex;
+    gap: 15px;
+    align-items: center;
+}
+
+.menu-container {
+    position: relative;
+}
+
 .menu-btn {
-    background: transparent;
+    background-color: transparent;
     border: 2px solid #333;
     padding: 8px 20px;
     border-radius: 5px;
     cursor: pointer;
+    font-size: 16px;
     display: flex;
     align-items: center;
     gap: 5px;
-    font-size: 16px;
+    transition: background-color 0.3s;
 }
 
 .menu-btn:hover {
     background-color: rgba(255, 255, 255, 0.2);
+}
+
+.language-btn {
+    background-color: transparent;
+    border: 2px solid #333;
+    padding: 8px 20px;
+    border-radius: 5px;
+    cursor: pointer;
+    font-size: 16px;
+    display: flex;
+    align-items: center;
+    gap: 5px;
+    transition: background-color 0.3s;
+}
+
+.language-btn:hover {
+    background-color: rgba(255, 255, 255, 0.2);
+}
+
+.register-btn {
+    background-color: #333;
+    color: white;
+    border: 2px solid #333;
+    padding: 8px 20px;
+    border-radius: 5px;
+    cursor: pointer;
+    font-size: 16px;
+    font-weight: bold;
+    transition: background-color 0.3s, transform 0.2s;
+}
+
+.register-btn:hover {
+    background-color: #555;
+    transform: scale(1.05);
+}
+
+.dropdown-menu {
+    display: none;
+    position: absolute;
+    top: 100%;
+    right: 0;
+    background-color: white;
+    border: 1px solid #ddd;
+    border-radius: 5px;
+    box-shadow: 0 4px 10px rgba(0, 0, 0, 0.15);
+    min-width: 180px;
+    margin-top: 10px;
+    z-index: 1000;
+    overflow: hidden;
+}
+
+.dropdown-menu.show {
+    display: block;
+    animation: slideDown 0.3s ease-out;
+}
+
+@keyframes slideDown {
+    from {
+        opacity: 0;
+        transform: translateY(-10px);
+    }
+    to {
+        opacity: 1;
+        transform: translateY(0);
+    }
+}
+
+.dropdown-menu a {
+    display: block;
+    padding: 12px 20px;
+    color: #333;
+    text-decoration: none;
+    transition: background-color 0.2s;
+    border-bottom: 1px solid #f0f0f0;
+}
+
+.dropdown-menu a:last-child {
+    border-bottom: none;
+}
+
+.dropdown-menu a:hover {
+    background-color: #8dd4c3;
 }
 
 .hero-image {
@@ -43,7 +137,6 @@ header {
     height: auto;
     display: block;
 }
-
 /* SIGNUP LAYOUT */
 .event-container {
     max-width: 850px;

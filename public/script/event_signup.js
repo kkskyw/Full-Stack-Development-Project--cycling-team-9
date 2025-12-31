@@ -4,8 +4,9 @@ function getToken() {
 
 document.addEventListener("DOMContentLoaded", () => {
     const emailBtn = document.getElementById("emailBtn");
-    const statusMsg = document.getElementById("statusMsg");
+    if (!emailBtn) return;
 
+    const statusMsg = document.getElementById("statusMsg");
     const params = new URLSearchParams(window.location.search);
     const eventId = params.get("eventId");
 
@@ -20,7 +21,6 @@ document.addEventListener("DOMContentLoaded", () => {
         statusMsg.style.color = "#333";
 
         try {
-            // Register event signup
             const signupRes = await fetch(`/events/${eventId}/email-signup`, {
                 method: "POST",
                 headers: {
@@ -37,10 +37,9 @@ document.addEventListener("DOMContentLoaded", () => {
                 return;
             }
 
-            statusMsg.textContent = "Signup successful! Scheduling email reminder...";
+            statusMsg.textContent = "Signup successful! Scheduling reminder...";
             statusMsg.style.color = "green";
 
-            // Delay slightly for smoother UI
             setTimeout(async () => {
                 const reminderRes = await fetch(`/api/sendReminder`, {
                     method: "POST",
@@ -65,9 +64,8 @@ document.addEventListener("DOMContentLoaded", () => {
                 statusMsg.textContent = "Reminder scheduled! Redirecting...";
                 statusMsg.style.color = "green";
 
-                // Redirect to booking page after 1.5 seconds
                 setTimeout(() => {
-                    window.location.href = "/event_booking.html"; 
+                    window.location.href = "/event_booking.html";
                 }, 1500);
 
             }, 1000);
@@ -75,10 +73,7 @@ document.addEventListener("DOMContentLoaded", () => {
         } catch (err) {
             statusMsg.textContent = "Server error. Try again.";
             statusMsg.style.color = "red";
+            console.error(err);
         }
     });
 });
-
-function toggleMenu() {
-    alert("Menu coming soon!");
-}

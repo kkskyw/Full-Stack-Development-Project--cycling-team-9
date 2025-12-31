@@ -9,6 +9,7 @@
     <link rel="icon" type="image/png" href="images/favicon.png">
     <!-- Leaflet CSS -->
     <link rel="stylesheet" href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css" />
+    <script src="https://unpkg.com/@dotlottie/player-component@2.7.12/dist/dotlottie-player.mjs" type="module"></script>
 </head>
 <body>
     <header>
@@ -93,6 +94,79 @@
             </div>
         </div>
     </section>
+
+    <!-- Check-in Success Modal -->
+    <div id="checkInSuccessModal" class="success-modal" style="display: none;">
+        <div class="success-modal-content">
+            <span class="close-btn" id="closeCheckInSuccessModal">&times;</span>
+            <h2>Checked In Successfully!</h2>
+            
+            <!-- Lottie Animation Container -->
+            <div class="lottie-container">
+                <dotlottie-player 
+                     src="https://lottie.host/07d2015e-12bd-4b20-95b3-add530a01150/GJJ27JsCtB.lottie" 
+                    background="transparent" 
+                    speed="1" 
+                    style="width: 200px; height: 200px;"
+                    loop 
+                    autoplay>
+                </dotlottie-player>
+            </div>
+            
+            <p>You have been checked in for the event.</p>
+        </div>
+    </div>
+
+    <!-- Check-out Success Modal -->
+    <div id="checkOutSuccessModal" class="success-modal" style="display: none;">
+        <div class="success-modal-content">
+            <span class="close-btn" id="closeCheckOutSuccessModal">&times;</span>
+            <h2>Checked Out Successfully!</h2>
+            
+            <!-- Lottie Animation Container -->
+            <div class="lottie-container">
+                <dotlottie-player 
+                    src="https://lottie.host/07d2015e-12bd-4b20-95b3-add530a01150/GJJ27JsCtB.lottie" 
+                    background="transparent" 
+                    speed="1" 
+                    style="width: 200px; height: 200px;"
+                    loop 
+                    autoplay>
+                </dotlottie-player>
+            </div>
+            
+            <p>You have been checked out from the event.</p>
+        </div>
+    </div>
+
+    <!-- Early Checkout Confirmation Modal -->
+    <div id="earlyCheckoutModal" class="success-modal" style="display: none;">
+        <div class="success-modal-content">
+            <h2>Early Checkout</h2>
+            
+            <div class="lottie-container">
+                <dotlottie-player 
+                    src="https://lottie.host/156b3cfe-bd52-48ff-976e-63530bbd101d/9lLW5NJSrr.lottie"
+                    background="transparent" 
+                    speed="1" 
+                    style="width: 150px; height: 150px;"
+                    loop 
+                    autoplay>
+                </dotlottie-player>
+            </div>
+            
+            <p id="earlyCheckoutMessage" style="text-align: center; margin: 20px 0; color: #666;"></p>
+            
+            <div style="display: flex; gap: 10px; justify-content: center; margin-top: 20px;">
+                <button id="confirmEarlyCheckoutBtn" style="background: #dc3545; color: white; padding: 10px 20px; border: none; border-radius: 5px; cursor: pointer;">
+                    Yes, Check Out
+                </button>
+                <button id="cancelEarlyCheckoutBtn" style="background: #6c757d; color: white; padding: 10px 20px; border: none; border-radius: 5px; cursor: pointer;">
+                    Cancel
+                </button>
+            </div>
+        </div>
+    </div>
 
     <footer>
         <p>Copyright Cycling Without Age Singapore 2024</p>

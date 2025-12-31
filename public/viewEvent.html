@@ -21,31 +21,33 @@
         <div class="header-buttons">
             <div class="menu-container">
                 <button class="language-btn" id="languageBtn">
-                    <span>🌐</span> Language
+                    <span>🌐</span> <span data-lang="language">Language</span>
                 </button>
                 <div class="dropdown-menu" id="languageDropdown">
-                    <a href="#" data-lang="en">English</a>
-                    <a href="#" data-lang="zh">中文 (Chinese)</a>
-                    <a href="#" data-lang="ms">Bahasa Melayu (Malay)</a>
-                    <a href="#" data-lang="ta">தமிழ் (Tamil)</a>
+                    <a href="#" value="en">English</a>
+                    <a href="#" value="zh">中文 (Chinese)</a>
+                    <a href="#" value="ms">Bahasa Melayu (Malay)</a>
+                    <a href="#" value="ta">தமிழ் (Tamil)</a>
                 </div>
             </div>
+
             <div class="menu-container">
                 <button class="menu-btn" id="menuBtn">
-                    <span>☰</span> Menu
+                    <span>☰</span> <span data-lang="menu">Menu</span>
                 </button>
                 <div class="dropdown-menu" id="dropdownMenu">
-                    <a href="viewEvent.html">Events</a>
-                    <a href="training.html">Training</a>
-                    <a href="attendance.html">Check-in</a>
-                    <a href="donationPage.html">Donate</a>
-                    <a href="feedback.html">Feedback</a>
-                    <a href="profile.html">Profile</a>
+                    <a href="eventIntroduction.html" id="eventsLink" data-lang="events">Events</a>
+                    <a href="training.html" id="trainingLink" data-lang="training" style="display: none;">Training</a>
+                    <a href="attendance.html" data-lang="checkin">Check-in</a>
+                    <a href="donationPage.html" data-lang="donate">Donate</a>
+                    <a href="feedback.html" data-lang="feedback">Feedback</a>
+                    <a href="profile.html" data-lang="profile">Profile</a>
                     <!--<a href="history.html" data-lang="history">History</a>-->
                     <a href="event_booking.html" data-lang="registeredEvents">Registered events</a>
                 </div>
             </div>
-            <button class="register-btn" onclick="window.location.href='register.html'">Register</button>
+
+            <button class="register-btn" onclick="window.location.href='register.html'" data-lang="register">Register</button>
         </div>
     </header>
 
@@ -140,6 +142,7 @@
         <p>All Rights Reserved</p>
     </footer>
 
+    <script src="script/translations.js"></script>
     <script src="script/main.js"></script>
     <script src="script/viewEvent.js"></script>
 </body>

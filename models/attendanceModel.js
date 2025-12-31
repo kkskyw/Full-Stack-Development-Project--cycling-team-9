@@ -16,6 +16,30 @@ function toSGTimeString(date) {
   return `${year}-${month}-${day} ${hours}:${minutes}:${seconds}`;
 }
 
+// Get event details including location and radius
+async function getEventDetails(eventId) {
+  let connection;
+  try {
+    connection = await sql.connect(dbConfig);
+
+    const result = await connection.request()
+      .input("eventId", eventId)
+      .query(`
+        SELECT eventId, latitude, longitude, radius_m
+        FROM events 
+        WHERE eventId = @eventId
+      `);
+
+    return result.recordset[0] || null;
+  } catch (err) {
+    console.error("Database error:", err);
+    throw err;
+  } finally {
+    if (connection) await connection.close();
+  }
+}
+
+// ... rest of your existing attendanceModel.js code remains the same ...
 // Create attendance record (only once per volunteer per event)
 async function createAttendance(userId, eventId) {
   let connection;
@@ -182,5 +206,6 @@ module.exports = {
   createAttendance,
   getAttendance,
   updateCheckIn,
-  updateCheckOut
+  updateCheckOut,
+  getEventDetails
 };
