@@ -1,4 +1,4 @@
-export const validateEvent = (req, res, next) => {
+const validateEvent = (req, res, next) => {
     const { header, intro, location, time, requiredCertificationId } = req.body;
 
     if (!header)
@@ -15,3 +15,5 @@ export const validateEvent = (req, res, next) => {
 
     next();
 };
+
+module.exports = { validateEvent };

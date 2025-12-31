@@ -12,3 +12,7 @@ debug.log
 # System files
 .DS_Store
 Thumbs.db
+
+#Cloud db 
+serviceAccountKey.json
+firebase.js

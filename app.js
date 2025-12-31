@@ -1,50 +1,54 @@
-const path = require("path");
 const express = require("express");
-const sql = require("mssql");
-const dotenv = require("dotenv");
+const path = require("path");
+require("dotenv").config();
 
-dotenv.config(); // Load environment variables
+const { admin, db } = require("./firebaseAdmin");
 
 const app = express();
-const port = process.env.PORT || 3000;
-
-const userController = require("./controllers/userController");
-const userValidation = require("./middlewares/userValidation");
-const eventController = require("./controllers/eventController");
-const eventSignupController = require("./controllers/eventSignupController");
-const verifyJWT = require("./middlewares/verifyJWT");
-const attendanceController = require("./controllers/attendanceController");
-const reminderController = require("./controllers/reminderController");
-const { getUserBookings } = require("./controllers/bookingController");
+const PORT = process.env.PORT || 3000;
 
 // Middleware
 app.use(express.json());
 app.use(express.urlencoded({ extended: true }));
 app.use(express.static(path.join(__dirname, "public")));
 
+// Validation & Auth Middleware
+const userValidation = require("./middlewares/userValidation");
+const eventValidation = require("./middlewares/eventValidation");
+const attendanceValidation = require("./middlewares/attendanceValidation");
+const verifyFirebase = require("./middlewares/verifyFirebase");
+
+// Controllers
+const userController = require("./controllers/userController");
+const eventController = require("./controllers/eventController");
+const historyController = require("./controllers/historyController");
+const eventSignupController = require("./controllers/eventSignupController");
+const reminderController = require("./controllers/reminderController");
+const bookingController = require("./controllers/bookingController");
+const attendanceController = require("./controllers/attendanceController");
 
 // User routes
 app.post("/users/register", userValidation.validateUser, userController.createUser);
-app.post("/users/login", userValidation.validateLogin, userController.loginUser);
+app.post("/login", userValidation.validateLogin, userController.loginUser);
 app.put("/users/:id", userController.updateUser);
+app.get("/:id", userController.getUserById);
 
 //events signup
-app.post("/events/:eventId/signup", verifyJWT, eventSignupController.joinEvent);
-app.get("/events/eligible", verifyJWT, eventSignupController.getEligibleEvents);
-app.get("/users/eligible-events", verifyJWT, eventSignupController.getEligibleEvents);
-app.get("/users/:id", userController.getUserById);
+app.post("/events/:eventId/signup", verifyFirebase, eventSignupController.joinEvent);
+app.get("/events/eligible", verifyFirebase, eventSignupController.getEligibleEvents);
+app.get("/users/eligible-events", verifyFirebase, eventSignupController.getEligibleEvents);
 
 //reminder
-app.post("/api/sendReminder", verifyJWT, reminderController.sendReminder);
+app.post("/api/sendReminder", verifyFirebase, reminderController.sendReminder);
 
 //booking list
-app.get("/users/:userId/bookings", verifyJWT, getUserBookings);
-app.post("/events/:eventId/email-signup", verifyJWT, eventSignupController.emailSignup);
+app.get("/users/:userId/bookings", verifyFirebase, bookingController.getUserBookings);
+app.post("/events/:eventId/email-signup", verifyFirebase, eventSignupController.emailSignup);
 
 
 // Attendance routes
-app.post("/attendance/checkin", verifyJWT, attendanceController.checkIn);
-app.post("/attendance/checkout", verifyJWT, attendanceController.checkOut);
+app.post("/attendance/checkin", verifyFirebase, attendanceController.checkIn);
+app.post("/attendance/checkout", verifyFirebase, attendanceController.checkOut);
 
 // Event routes - Yiru
 app.get("/events", eventController.getAllEvents);
@@ -60,16 +64,12 @@ app.get(['/profile.html/:id', '/profile/:id'], (req, res) => {
     res.sendFile(path.join(__dirname, 'public', 'profile.html'));
 });
 
-// Start server
-app.listen(port, () => {
-  console.log(`Server running on port ${port}`);
-  console.log(`Click http://localhost:${port}`);
+app.listen(PORT, () => {
+  console.log(`Server running on port ${PORT}`);
+  console.log(`Visit http://localhost:${PORT} to view the app`);
 });
 
-// Graceful shutdown
-process.on("SIGINT", async () => {
-  console.log("Server is gracefully shutting down");
-  await sql.close();
-  console.log("Database connections closed");
+process.on("SIGINT", () => {
+  console.log("Server shutting down");
   process.exit(0);
-});
+}); 

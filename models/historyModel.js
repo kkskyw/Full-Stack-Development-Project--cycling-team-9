@@ -1,54 +1,36 @@
-const sql = require("mssql");
-const dbConfig = require("../dbConfig");
+const { db } = require('../firebaseAdmin');
 
 async function getEventsByVolunteer(volunteerId, status) {
-  let pool;
-  try {
-    pool = await sql.connect(dbConfig);
-    const req = pool.request();
-    req.input("volunteerId", sql.Int, volunteerId);
+  const attSnap = await db.collection('attendance').where('userId', '==', String(volunteerId)).get();
+  if (attSnap.empty) return [];
 
-    let timeClause = "";
-    if (status === "past") timeClause = "AND eventTime < GETDATE()";
-    else if (status === "upcoming") timeClause = "AND eventTime >= GETDATE()";
+  const eventIds = attSnap.docs.map(d => d.data().eventId);
+  if (eventIds.length === 0) return [];
 
-    // preferred: read from a view vwVolunteerEvents (create this in DB)
-    const query = `
-      SELECT eventId, title, intro, location, eventTime, volunteerStatus, attendees
-      FROM vwVolunteerEvents
-      WHERE volunteerId = @volunteerId
-      ${timeClause}
-      ORDER BY eventTime DESC;
-    `;
-
-    const result = await req.query(query);
-    return result.recordset || [];
-  } catch (err) {
-    console.error("historyModel.getEventsByVolunteer error:", err);
-    // If the view doesn't exist, you can replace above query with a JOIN:
-    // (uncomment and adapt this fallback if needed)
-    /*
-    if (pool) {
-      const fallbackReq = pool.request();
-      fallbackReq.input("volunteerId", sql.Int, volunteerId);
-      const fallbackQuery = `
-        SELECT E.eventId, E.header AS title, E.intro, E.location, E.time AS eventTime,
-               A.status AS volunteerStatus,
-               (SELECT COUNT(*) FROM Attendance A2 WHERE A2.EventId = E.eventId) AS attendees
-        FROM events E
-        INNER JOIN Attendance A ON A.EventId = E.eventId AND A.UserId = @volunteerId
-        WHERE 1=1
-        ${timeClause.replace(/eventTime/g, "E.time")}
-        ORDER BY E.time DESC;
-      `;
-      const fb = await fallbackReq.query(fallbackQuery);
-      return fb.recordset || [];
-    }
-    */
-    throw err;
-  } finally {
-    if (pool) await pool.close();
+  const events = [];
+  // batch get events (Firestore limits apply; for many ids use chunking)
+  const promises = eventIds.map(id => db.collection('events').doc(String(id)).get());
+  const docs = await Promise.all(promises);
+  for (const d of docs) {
+    if (!d.exists) continue;
+    const data = d.data();
+    const attendeesSnap = await db.collection('attendance').where('eventId', '==', d.id).get();
+    const volunteerAtt = attSnap.docs.find(a => a.data().eventId === d.id);
+    events.push({
+      eventId: d.id,
+      header: data.header,
+      intro: data.intro,
+      location: data.location,
+      time: data.time, // store as ISO or Firestore Timestamp consistently
+      attendees: attendeesSnap.size,
+      volunteerStatus: volunteerAtt ? volunteerAtt.data().status : null
+    });
   }
+
+  // optional status filter
+  if (status === 'past') return events.filter(e => new Date(e.time).getTime() < Date.now()).sort((a,b)=>new Date(b.time)-new Date(a.time));
+  if (status === 'upcoming') return events.filter(e => new Date(e.time).getTime() >= Date.now()).sort((a,b)=>new Date(b.time)-new Date(a.time));
+  return events.sort((a,b)=>new Date(b.time)-new Date(a.time));
 }
 
 module.exports = { getEventsByVolunteer };

@@ -1,27 +1,42 @@
-const sql = require("mssql");
-const dbConfig = require("../dbConfig");
+const { db } = require('../firebaseAdmin');
 
 async function getUserBookings(req, res) {
     try {
-        const userId = req.user.userId;
+        const userId = req.user.userId || req.user.uid;
 
         if (!userId) {
             return res.status(400).json({ error: "Invalid user id" });
         }
 
-        const pool = await sql.connect(dbConfig);
+        // Get bookings for this user
+        const bookingsSnap = await db.collection('bookedEvents')
+            .where('userId', '==', String(userId))
+            .orderBy('bookingDate', 'desc')
+            .get();
 
-        const result = await pool.request()
-            .input("userId", sql.Int, userId)
-            .query(`
-                SELECT e.header, e.location, e.intro, b.bookingDate, b.eventId
-                FROM bookedEvents b
-                JOIN events e ON b.eventId = e.eventId
-                WHERE b.userId = @userId
-                ORDER BY b.bookingDate DESC
-            `);
+        if (bookingsSnap.empty) {
+            return res.json({ bookings: [] });
+        }
 
-        res.json({ bookings: result.recordset });
+        // Get event details for each booking
+        const bookings = [];
+        for (const doc of bookingsSnap.docs) {
+            const booking = doc.data();
+            const eventDoc = await db.collection('events').doc(String(booking.eventId)).get();
+            
+            if (eventDoc.exists) {
+                const event = eventDoc.data();
+                bookings.push({
+                    header: event.header,
+                    location: event.location,
+                    intro: event.intro,
+                    bookingDate: booking.bookingDate,
+                    eventId: booking.eventId
+                });
+            }
+        }
+
+        res.json({ bookings });
 
     } catch (err) {
         console.error("Error fetching bookings:", err);

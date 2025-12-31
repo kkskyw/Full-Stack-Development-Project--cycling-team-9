@@ -1,6 +1,15 @@
+import { initializeApp } from "firebase/app";
+import { getAnalytics } from "firebase/analytics";
+import {firebaseConfig} from "./firebase.js";
+
 const openBtn = document.getElementById('openMenu');
 const closeBtn = document.getElementById('closeMenu');
 const overlay = document.getElementById('menuOverlay');
+
+
+// Initialize Firebase
+const app = initializeApp(firebaseConfig);
+const analytics = getAnalytics(app);
 
 function openMenu(){ if (!overlay) return; overlay.style.display = 'flex'; overlay.setAttribute('aria-hidden','false'); }
 function closeMenu(){ if (!overlay) return; overlay.style.display = 'none'; overlay.setAttribute('aria-hidden','true'); }
