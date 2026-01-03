@@ -16,7 +16,7 @@ app.use(express.static(path.join(__dirname, "public")));
 const userValidation = require("./middlewares/userValidation");
 const eventValidation = require("./middlewares/eventValidation");
 const attendanceValidation = require("./middlewares/attendanceValidation");
-const verifyFirebase = require("./middlewares/verifyFirebase");
+const verifyJWT = require("./middlewares/verifyJWT");
 
 // Controllers
 const userController = require("./controllers/userController");
@@ -30,32 +30,30 @@ const attendanceController = require("./controllers/attendanceController");
 // User routes
 app.post("/users/register", userValidation.validateUser, userController.createUser);
 app.post("/login", userValidation.validateLogin, userController.loginUser);
+app.get("/users/:id", userController.getUserById);
 app.put("/users/:id", userController.updateUser);
 
 // Event routes - Yiru (MUST be before parameterized routes**)
 app.get("/mrt-stations", eventController.getMRTStations);
-app.get("/events/eligible", verifyFirebase, eventSignupController.getEligibleEvents);
+app.get("/events/eligible", verifyJWT, eventSignupController.getEligibleEvents);
 app.get("/events", eventController.getAllEvents);
-app.post("/events/:eventId/signup", verifyFirebase, eventSignupController.joinEvent);
-app.post("/events/:eventId/email-signup", verifyFirebase, eventSignupController.emailSignup);
+app.post("/events/:eventId/signup", verifyJWT, eventSignupController.joinEvent);
+app.post("/events/:eventId/email-signup", verifyJWT, eventSignupController.emailSignup);
 app.get("/events/:id", eventController.getEventById);
 
 //reminder
-app.post("/api/sendReminder", verifyFirebase, reminderController.sendReminder);
+app.post("/api/sendReminder", verifyJWT, reminderController.sendReminder);
 
 //booking list
-app.get("/users/:userId/bookings", verifyFirebase, bookingController.getUserBookings);
-app.get("/users/eligible-events", verifyFirebase, eventSignupController.getEligibleEvents);
+app.get("/users/:userId/bookings", verifyJWT, bookingController.getUserBookings);
+app.get("/users/eligible-events", verifyJWT, eventSignupController.getEligibleEvents);
 
 // History routes
-app.get("/volunteers/:id/events", verifyFirebase, historyController.getEventsByVolunteer);
+app.get("/volunteers/:id/events", verifyJWT, historyController.getEventsByVolunteer);
 
 // Attendance routes
-app.post("/attendance/checkin", verifyFirebase, attendanceController.checkIn);
-app.post("/attendance/checkout", verifyFirebase, attendanceController.checkOut);
-
-// User by ID (MUST be last to avoid catching other routes)
-app.get("/:id", userController.getUserById);
+app.post("/attendance/checkin", verifyJWT, attendanceController.checkIn);
+app.post("/attendance/checkout", verifyJWT, attendanceController.checkOut);
 
 // serve main.html at root
 app.get('/', (req, res) => {

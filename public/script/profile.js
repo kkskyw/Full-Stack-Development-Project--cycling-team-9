@@ -1,15 +1,6 @@
-import { initializeApp } from "firebase/app";
-import { getAnalytics } from "firebase/analytics";
-import {firebaseConfig} from "./firebase.js";
-
 const openBtn = document.getElementById('openMenu');
 const closeBtn = document.getElementById('closeMenu');
 const overlay = document.getElementById('menuOverlay');
-
-
-// Initialize Firebase
-const app = initializeApp(firebaseConfig);
-const analytics = getAnalytics(app);
 
 function openMenu(){ if (!overlay) return; overlay.style.display = 'flex'; overlay.setAttribute('aria-hidden','false'); }
 function closeMenu(){ if (!overlay) return; overlay.style.display = 'none'; overlay.setAttribute('aria-hidden','true'); }
@@ -25,7 +16,12 @@ function getUserIdFromUrl() {
   if (params.get('id')) return params.get('id');
   if (localStorage.getItem('userId')) return localStorage.getItem('userId');
   const parts = window.location.pathname.split('/').filter(Boolean);
-  for (let i = parts.length - 1; i >= 0; i--) if (/^\d+$/.test(parts[i])) return parts[i];
+  // Look for any non-empty part that's not 'profile' or 'profile.html'
+  for (let i = parts.length - 1; i >= 0; i--) {
+    if (parts[i] !== 'profile' && parts[i] !== 'profile.html' && parts[i].length > 0) {
+      return parts[i];
+    }
+  }
   return null;
 }
 
