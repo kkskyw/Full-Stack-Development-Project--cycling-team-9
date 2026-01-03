@@ -1,80 +1,63 @@
 // Yiru
-const sql = require("mssql");
-const dbConfig = require("../dbConfig");
-
-let pool;
-
-const getPool = async () => {
-    if (pool) {
-        return pool;
-    }
-    try {
-        pool = await sql.connect(dbConfig);
-        console.log('Database connection pool created successfully');
-        return pool;
-    } catch (err) {
-        console.error('Database connection failed:', err.message);
-        throw err;
-    }
-};
+const { db } = require('../firebaseAdmin');
 
 const getAllEvents = async (page = 1, pageSize = 5, filters = {}) => {
     try {
-        const pool = await getPool();
-        const offset = (page - 1) * pageSize;
+        let query = db.collection('events');
         
-        let baseQuery = `
-            SELECT eventId, header, intro, location, time, nearestMRT, longIntro
-            FROM events
-            WHERE 1=1
-        `;
-        
-        let countQuery = `
-            SELECT COUNT(*) as totalCount 
-            FROM events 
-            WHERE 1=1
-        `;
-        
-        const request = pool.request();
-        
-        // Add time filter if provided
-        if (filters.time) {
-            baseQuery += ` AND DATEPART(HOUR, time) = @time`;
-            countQuery += ` AND DATEPART(HOUR, time) = @time`;
-            request.input('time', sql.Int, filters.time);
-        }
-        
-        // Add MRT filter if provided
+        // Apply filters
         if (filters.mrt) {
-            baseQuery += ` AND nearestMRT = @mrt`;
-            countQuery += ` AND nearestMRT = @mrt`;
-            request.input('mrt', sql.VarChar, filters.mrt);
+            query = query.where('nearestMRT', '==', filters.mrt);
         }
         
-        // Add MRT letter filter if provided
         if (filters.mrtLetter && filters.mrtLetter !== '') {
-            baseQuery += ` AND UPPER(LEFT(nearestMRT, 1)) = @mrtLetter`;
-            countQuery += ` AND UPPER(LEFT(nearestMRT, 1)) = @mrtLetter`;
-            request.input('mrtLetter', sql.VarChar, filters.mrtLetter);
+            // For Firestore, we can use >= and < for prefix matching
+            const letter = filters.mrtLetter.toUpperCase();
+            query = query.where('nearestMRT', '>=', letter)
+                        .where('nearestMRT', '<', letter + '\uf8ff');
         }
         
-        baseQuery += ` ORDER BY time OFFSET @offset ROWS FETCH NEXT @pageSize ROWS ONLY`;
+        // Get all matching documents
+        const snapshot = await query.get();
         
-        request.input('offset', sql.Int, offset);
-        request.input('pageSize', sql.Int, pageSize);
+        let events = [];
+        snapshot.forEach(doc => {
+            const data = doc.data();
+            // Convert Firestore Timestamps to ISO strings
+            if (data.time && data.time.toDate) {
+                data.time = data.time.toDate().toISOString();
+            }
+            if (data.start_time && data.start_time.toDate) {
+                data.start_time = data.start_time.toDate().toISOString();
+            }
+            if (data.end_time && data.end_time.toDate) {
+                data.end_time = data.end_time.toDate().toISOString();
+            }
+            events.push({
+                eventId: doc.id,
+                ...data
+            });
+        });
         
-        console.log('Executing events query:', baseQuery);
-        console.log('Executing count query:', countQuery);
+        // Filter by time hour if provided (client-side filter)
+        if (filters.time) {
+            events = events.filter(event => {
+                const eventTime = new Date(event.time);
+                return eventTime.getHours() === parseInt(filters.time);
+            });
+        }
         
-        // Execute both queries
-        const eventsResult = await request.query(baseQuery);
-        const countResult = await request.query(countQuery);
+        // Sort by time
+        events.sort((a, b) => new Date(a.time) - new Date(b.time));
         
-        const totalCount = countResult.recordset[0].totalCount;
+        // Calculate pagination
+        const totalCount = events.length;
         const totalPages = Math.ceil(totalCount / pageSize);
+        const offset = (page - 1) * pageSize;
+        const paginatedEvents = events.slice(offset, offset + pageSize);
         
         return {
-            events: eventsResult.recordset,
+            events: paginatedEvents,
             totalCount: totalCount,
             currentPage: page,
             totalPages: totalPages
@@ -87,26 +70,25 @@ const getAllEvents = async (page = 1, pageSize = 5, filters = {}) => {
 
 const getMRTStations = async (letter = '') => {
     try {
-        const pool = await getPool();
-        let query = `
-            SELECT DISTINCT nearestMRT 
-            FROM events 
-            WHERE nearestMRT IS NOT NULL AND nearestMRT != ''
-        `;
-        
-        const request = pool.request();
+        let query = db.collection('events');
         
         if (letter && letter !== '') {
-            query += ` AND UPPER(LEFT(nearestMRT, 1)) = @letter`;
-            request.input('letter', sql.VarChar, letter);
+            const upperLetter = letter.toUpperCase();
+            query = query.where('nearestMRT', '>=', upperLetter)
+                        .where('nearestMRT', '<', upperLetter + '\uf8ff');
         }
         
-        query += ` ORDER BY nearestMRT`;
+        const snapshot = await query.get();
         
-        console.log('Executing MRT query:', query);
+        const mrtSet = new Set();
+        snapshot.forEach(doc => {
+            const data = doc.data();
+            if (data.nearestMRT) {
+                mrtSet.add(data.nearestMRT);
+            }
+        });
         
-        const result = await request.query(query);
-        return result.recordset.map(row => row.nearestMRT);
+        return Array.from(mrtSet).sort();
     } catch (error) {
         console.error('Error in eventModel.getMRTStations:', error);
         throw error;
@@ -115,25 +97,28 @@ const getMRTStations = async (letter = '') => {
 
 const getEventById = async (eventId) => {
     try {
-        const pool = await getPool();
-        const request = pool.request();
+        const eventDoc = await db.collection('events').doc(String(eventId)).get();
         
-        const query = `
-            SELECT eventId, header, intro, location, time, nearestMRT, longIntro
-            FROM events
-            WHERE eventId = @eventId
-        `;
-        
-        request.input('eventId', sql.Int, eventId);
-        
-        const result = await request.query(query);
-        console.log('Event query result:', result.recordset);
-        
-        if (result.recordset.length === 0) {
+        if (!eventDoc.exists) {
             return null;
         }
         
-        return result.recordset[0];
+        const data = eventDoc.data();
+        // Convert Firestore Timestamps to ISO strings
+        if (data.time && data.time.toDate) {
+            data.time = data.time.toDate().toISOString();
+        }
+        if (data.start_time && data.start_time.toDate) {
+            data.start_time = data.start_time.toDate().toISOString();
+        }
+        if (data.end_time && data.end_time.toDate) {
+            data.end_time = data.end_time.toDate().toISOString();
+        }
+        
+        return {
+            eventId: eventDoc.id,
+            ...data
+        };
     } catch (error) {
         console.error('Error in eventModel.getEventById:', error);
         throw error;

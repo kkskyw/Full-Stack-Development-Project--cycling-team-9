@@ -31,29 +31,31 @@ const attendanceController = require("./controllers/attendanceController");
 app.post("/users/register", userValidation.validateUser, userController.createUser);
 app.post("/login", userValidation.validateLogin, userController.loginUser);
 app.put("/users/:id", userController.updateUser);
-app.get("/:id", userController.getUserById);
 
-//events signup
-app.post("/events/:eventId/signup", verifyFirebase, eventSignupController.joinEvent);
+// Event routes - Yiru (MUST be before parameterized routes**)
+app.get("/mrt-stations", eventController.getMRTStations);
 app.get("/events/eligible", verifyFirebase, eventSignupController.getEligibleEvents);
-app.get("/users/eligible-events", verifyFirebase, eventSignupController.getEligibleEvents);
+app.get("/events", eventController.getAllEvents);
+app.post("/events/:eventId/signup", verifyFirebase, eventSignupController.joinEvent);
+app.post("/events/:eventId/email-signup", verifyFirebase, eventSignupController.emailSignup);
+app.get("/events/:id", eventController.getEventById);
 
 //reminder
 app.post("/api/sendReminder", verifyFirebase, reminderController.sendReminder);
 
 //booking list
 app.get("/users/:userId/bookings", verifyFirebase, bookingController.getUserBookings);
-app.post("/events/:eventId/email-signup", verifyFirebase, eventSignupController.emailSignup);
+app.get("/users/eligible-events", verifyFirebase, eventSignupController.getEligibleEvents);
 
+// History routes
+app.get("/volunteers/:id/events", verifyFirebase, historyController.getEventsByVolunteer);
 
 // Attendance routes
 app.post("/attendance/checkin", verifyFirebase, attendanceController.checkIn);
 app.post("/attendance/checkout", verifyFirebase, attendanceController.checkOut);
 
-// Event routes - Yiru
-app.get("/events", eventController.getAllEvents);
-app.get("/mrt-stations", eventController.getMRTStations);
-app.get("/events/:id", eventController.getEventById);
+// User by ID (MUST be last to avoid catching other routes)
+app.get("/:id", userController.getUserById);
 
 // serve main.html at root
 app.get('/', (req, res) => {

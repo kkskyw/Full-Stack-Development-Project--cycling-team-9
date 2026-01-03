@@ -64,7 +64,7 @@ const getMRTStations = async (req, res) => {
 
 const getEventById = async (req, res) => {
     try {
-        const eventId = parseInt(req.params.id);
+        const eventId = req.params.id;
         console.log('Getting event by ID:', eventId);
         
         const event = await eventModel.getEventById(eventId);

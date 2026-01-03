@@ -1,8 +1,14 @@
 const historyModel = require("../models/historyModel");
 
 async function getEventsByVolunteer(req, res) {
-  const id = req.params.id;
+  // Use authenticated user's ID (Firebase UID = Firestore userId)
+  const id = req.user.userId || req.user.uid;
   const status = req.query.status;
+  
+  if (!id) {
+    return res.status(400).json({ error: "User ID not found" });
+  }
+  
   try {
     const events = await historyModel.getEventsByVolunteer(id, status);
     res.json(events);

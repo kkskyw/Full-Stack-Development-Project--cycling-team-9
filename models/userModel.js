@@ -9,9 +9,10 @@ async function getUserById(id) {
   return { userId: doc.id, ...doc.data() };
 }
 
-// Create user - FIX: Store userId in document
-async function createUser(userData) {
-  const ref = usersCol.doc(); // Let Firestore generate ID
+// Create user - Use Firebase Auth UID as document ID
+async function createUser(userData, firebaseUid = null) {
+  // If firebaseUid provided, use it as document ID; otherwise generate one
+  const ref = firebaseUid ? usersCol.doc(firebaseUid) : usersCol.doc();
   const userId = ref.id;
   
   // Store userId inside the document for consistency

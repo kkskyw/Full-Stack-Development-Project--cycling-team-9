@@ -8,7 +8,12 @@ async function verifyFirebase(req, res, next) {
 
   try {
     const decoded = await admin.auth().verifyIdToken(idToken);
-    req.user = { uid: decoded.uid, email: decoded.email };
+    // Since we use Firebase UID as Firestore document ID, userId === uid
+    req.user = { 
+      uid: decoded.uid, 
+      userId: decoded.uid,
+      email: decoded.email 
+    };
     next();
   } catch (err) {
     console.error('Firebase token verify error', err);
