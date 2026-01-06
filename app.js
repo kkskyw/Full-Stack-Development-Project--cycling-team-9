@@ -26,12 +26,18 @@ const eventSignupController = require("./controllers/eventSignupController");
 const reminderController = require("./controllers/reminderController");
 const bookingController = require("./controllers/bookingController");
 const attendanceController = require("./controllers/attendanceController");
+const resetPwController = require("./controllers/resetPwController");
 
 // User routes
 app.post("/users/register", userValidation.validateUser, userController.createUser);
 app.post("/login", userValidation.validateLogin, userController.loginUser);
 app.get("/users/:id", userController.getUserById);
 app.put("/users/:id", userController.updateUser);
+
+// ========== PASSWORD RESET ROUTES ==========
+app.post("/auth/request-otp", userValidation.validateResetRequest, resetPwController.requestPasswordReset);
+app.post("/auth/verify-otp", userValidation.validateOtpVerification, resetPwController.verifyOtp);
+app.post("/auth/reset-password", userValidation.validatePasswordReset, resetPwController.resetPassword);
 
 // Event routes - Yiru (MUST be before parameterized routes**)
 app.get("/mrt-stations", eventController.getMRTStations);
