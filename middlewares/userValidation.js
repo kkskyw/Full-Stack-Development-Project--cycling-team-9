@@ -65,7 +65,94 @@ function validateLogin(req, res, next) {
   next();
 }
 
+// Password reset request validation
+const resetRequestSchema = Joi.object({
+  email: Joi.string().email().required().messages({
+    "string.email": "Email must be a valid email address",
+    "string.empty": "Email cannot be empty",
+    "any.required": "Email is required",
+  }),
+});
+
+// OTP verification validation
+const otpVerificationSchema = Joi.object({
+  email: Joi.string().email().required().messages({
+    "string.email": "Email must be a valid email address",
+    "string.empty": "Email cannot be empty",
+    "any.required": "Email is required",
+  }),
+  otp: Joi.string().pattern(/^\d{6}$/).required().messages({
+    "string.pattern.base": "OTP must be a 6-digit number",
+    "string.empty": "OTP cannot be empty",
+    "any.required": "OTP is required",
+  }),
+});
+
+// Password reset validation
+const passwordResetSchema = Joi.object({
+  email: Joi.string().email().required().messages({
+    "string.email": "Email must be a valid email address",
+    "string.empty": "Email cannot be empty",
+    "any.required": "Email is required",
+  }),
+  otp: Joi.string().pattern(/^\d{6}$/).required().messages({
+    "string.pattern.base": "OTP must be a 6-digit number",
+    "string.empty": "OTP cannot be empty",
+    "any.required": "OTP is required",
+  }),
+  newPassword: Joi.string()
+    .min(8)
+    .pattern(/^(?=.*[a-z])(?=.*[A-Z])(?=.*\d)(?=.*[@$!%*?&])[A-Za-z\d@$!%*?&]/)
+    .required()
+    .messages({
+      "string.min": "Password must be at least 8 characters",
+      "string.pattern.base": "Password must contain at least one uppercase letter, one lowercase letter, one number, and one special character",
+      "string.empty": "Password cannot be empty",
+      "any.required": "Password is required",
+    }),
+});
+
+// Validate request body for user creation
+function validateUser(req, res, next) {
+  const { error } = userSchema.validate(req.body, { abortEarly: false });
+  if (error) {
+    const messages = error.details.map((d) => d.message).join(", ");
+    return res.status(400).json({ error: messages });
+  }
+  next();
+}
+
+// Validate password reset request
+function validateResetRequest(req, res, next) {
+  const { error } = resetRequestSchema.validate(req.body);
+  if (error) {
+    return res.status(400).json({ error: error.details.map(d => d.message).join(", ") });
+  }
+  next();
+}
+
+// Validate OTP verification request
+function validateOtpVerification(req, res, next) {
+  const { error } = otpVerificationSchema.validate(req.body);
+  if (error) {
+    return res.status(400).json({ error: error.details.map(d => d.message).join(", ") });
+  }
+  next();
+}
+
+// Validate password reset request
+function validatePasswordReset(req, res, next) {
+  const { error } = passwordResetSchema.validate(req.body);
+  if (error) {
+    return res.status(400).json({ error: error.details.map(d => d.message).join(", ") });
+  }
+  next();
+}
+
 module.exports = {
   validateUser,
-  validateLogin
+  validateLogin,
+  validateResetRequest,
+  validateOtpVerification,
+  validatePasswordReset
 };
