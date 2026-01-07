@@ -41,15 +41,7 @@ async function createUser(req, res) {
     const salt = await bcrypt.genSalt(10);
     const hashedPassword = await bcrypt.hash(password, salt);
 
-    // Create Firebase Auth user first to get UID
-    const { admin } = require('../firebaseAdmin');
-    const firebaseUser = await admin.auth().createUser({
-      email: email,
-      password: password,
-      displayName: name
-    });
-
-    // Use Firebase UID as Firestore document ID
+    // Create user in Firestore
     const newUser = await userModel.createUser({
       name,
       email,
@@ -58,7 +50,7 @@ async function createUser(req, res) {
       password: hashedPassword,
       preferredLanguage: preferredLanguage || 'en',
       role: role || 'Volunteer'
-    }, firebaseUser.uid);
+    });
 
     res.status(201).json(newUser);
   } catch (error) {

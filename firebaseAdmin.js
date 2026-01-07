@@ -17,6 +17,7 @@ if (process.env.FIREBASE_SA) {
 
 admin.initializeApp({
   credential: admin.credential.cert(serviceAccount),
+  projectId: serviceAccount.project_id,
 });
 
 const db = admin.firestore();
