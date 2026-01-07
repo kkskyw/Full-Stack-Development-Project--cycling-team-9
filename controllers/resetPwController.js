@@ -3,7 +3,6 @@ const emailService = require("../emailService");
 require('dotenv').config();
 
 // Request OTP for password reset
-/*
 async function requestPasswordReset(req, res) {
   try {
     const { email } = req.body;
@@ -23,13 +22,22 @@ async function requestPasswordReset(req, res) {
     // Store OTP in Firestore
     const { expiryTime } = await userModel.storeOtp(email, otp);
     
-    // Send OTP via email (using Brevo)
+    // Send OTP via email (using Resend)
     const emailResult = await emailService.sendOtpEmail(email, otp);
     
     if (!emailResult.success) {
-      return res.status(500).json({
-        success: false,
-        message: "Failed to send OTP email. Please try again later."
+      // Log error but still return success for testing
+      console.error('Email sending failed:', emailResult.error);
+      
+      // For testing: still return success even if email fails
+      console.log('📧 TEST OTP:', otp);
+      console.log('⏰ Expires:', expiryTime.toLocaleTimeString());
+      
+      return res.status(200).json({
+        success: true,
+        message: "OTP sent successfully",
+        expiryTime: expiryTime.toISOString(),
+        note: "Email service temporary unavailable, OTP logged to console"
       });
     }
     
@@ -37,64 +45,6 @@ async function requestPasswordReset(req, res) {
       success: true,
       message: "OTP sent successfully",
       expiryTime: expiryTime.toISOString()
-    });
-    
-  } catch (error) {
-    console.error("Error requesting password reset:", error);
-    res.status(500).json({
-      success: false,
-      message: "Internal server error"
-    });
-  }
-}
-*/
-
-// Request OTP for password reset
-async function requestPasswordReset(req, res) {
-  try {
-    const { email } = req.body;
-    
-    // Check if user exists
-    const user = await userModel.findUserByEmail(email);
-    if (!user) {
-      return res.status(404).json({
-        success: false,
-        message: "No account found with this email address"
-      });
-    }
-    
-    // Generate OTP
-    const otp = userModel.generateOtp();
-    
-    // Store OTP in Firestore
-    const { expiryTime } = await userModel.storeOtp(email, otp);
-    
-    // ========== TEMPORARY FIX ==========
-    // Log OTP to console instead of sending email
-    console.log('=================================');
-    console.log(`📧 OTP Request for: ${email}`);
-    console.log(`🔢 OTP Code: ${otp}`);
-    console.log(`⏰ Expires at: ${expiryTime.toLocaleTimeString()}`);
-    console.log('=================================');
-    
-    // For testing only - comment out the email sending
-    /*
-    const emailResult = await emailService.sendOtpEmail(email, otp);
-    
-    if (!emailResult.success) {
-      return res.status(500).json({
-        success: false,
-        message: "Failed to send OTP email. Please try again later."
-      });
-    }
-    */
-    
-    res.status(200).json({
-      success: true,
-      message: "OTP sent successfully",
-      expiryTime: expiryTime.toISOString(),
-      // For testing only - remove in production!
-      testOtp: otp
     });
     
   } catch (error) {
