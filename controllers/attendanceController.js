@@ -70,11 +70,17 @@ async function checkIn(req, res) {
     let attendance = await attendanceModel.getAttendance(userId, eventId);
     if (!attendance) {
       attendance = await attendanceModel.createAttendance(userId, eventId);
+      // Fetch again to get the event_start_time_string populated
+      attendance = await attendanceModel.getAttendance(userId, eventId);
     }
 
     const now = getSGTime();
     
     const eventStartString = attendance.event_start_time_string;
+    if (!eventStartString) {
+      return res.status(500).json({ error: "Event start time not found" });
+    }
+    
     const eventStartSgTime = parseDateTimeString(eventStartString);
 
     const status = now <= eventStartSgTime ? "On Time" : "Late";

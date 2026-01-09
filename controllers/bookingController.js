@@ -11,7 +11,6 @@ async function getUserBookings(req, res) {
         // Get bookings for this user
         const bookingsSnap = await db.collection('bookedEvents')
             .where('userId', '==', String(userId))
-            .orderBy('bookingDate', 'desc')
             .get();
 
         if (bookingsSnap.empty) {
@@ -35,6 +34,9 @@ async function getUserBookings(req, res) {
                 });
             }
         }
+
+        // Sort by bookingDate descending in JavaScript
+        bookings.sort((a, b) => new Date(b.bookingDate) - new Date(a.bookingDate));
 
         res.json({ bookings });
 

@@ -24,10 +24,24 @@ async function getEventDetails(eventId) {
     }
     
     const data = eventDoc.data();
+    
+    // Extract latitude and longitude from geolocation GeoPoint or separate fields
+    let latitude, longitude;
+    
+    if (data.geolocation && data.geolocation._latitude !== undefined) {
+      // Firestore GeoPoint format
+      latitude = data.geolocation._latitude;
+      longitude = data.geolocation._longitude;
+    } else if (data.latitude !== undefined && data.longitude !== undefined) {
+      // Separate fields format
+      latitude = data.latitude;
+      longitude = data.longitude;
+    }
+    
     return {
       eventId: eventDoc.id,
-      latitude: data.latitude,
-      longitude: data.longitude,
+      latitude: latitude,
+      longitude: longitude,
       radius_m: data.radius_m || 100 // default 100m if not set
     };
   } catch (err) {
