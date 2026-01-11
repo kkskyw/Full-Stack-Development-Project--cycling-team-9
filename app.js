@@ -7,7 +7,6 @@ dotenv.config(); // Load environment variables
 
 const app = express();
 const port = process.env.PORT || 3000;
-
 const userController = require("./controllers/userController");
 const userValidation = require("./middlewares/userValidation");
 const eventController = require("./controllers/eventController");
@@ -16,6 +15,7 @@ const verifyJWT = require("./middlewares/verifyJWT");
 const attendanceController = require("./controllers/attendanceController");
 const reminderController = require("./controllers/reminderController");
 const { getUserBookings } = require("./controllers/bookingController");
+const telegramController = require("./controllers/telegramController");
 
 // Middleware
 app.use(express.json());
@@ -51,6 +51,10 @@ app.get("/events", eventController.getAllEvents);
 app.get("/mrt-stations", eventController.getMRTStations);
 app.get("/events/:id", eventController.getEventById);
 
+// Telegram routes
+app.post("/api/telegram/set-webhook", telegramController.setWebhook);
+app.post("/api/telegram/webhook", telegramController.webhook);
+
 // serve main.html at root
 app.get('/', (req, res) => {
   res.sendFile(path.join(__dirname, 'public', 'main.html'));
@@ -65,6 +69,7 @@ app.listen(port, () => {
   console.log(`Server running on port ${port}`);
   console.log(`Click http://localhost:${port}`);
 });
+
 
 // Graceful shutdown
 process.on("SIGINT", async () => {

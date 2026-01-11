@@ -1,159 +1,37 @@
-document.addEventListener('DOMContentLoaded', function() {
-    const trainingForm = document.getElementById('trainingForm');
-    const prevBtn = document.getElementById('prevBtn');
-    const nextBtn = document.getElementById('nextBtn');
-    const submitBtn = document.getElementById('submitBtn');
-    const progressFill = document.getElementById('progressFill');
-    const currentQuestionSpan = document.getElementById('currentQuestion');
-    const resultsSection = document.getElementById('resultsSection');
-    const successMessage = document.getElementById('successMessage');
-    const failureMessage = document.getElementById('failureMessage');
-    const failureText = document.getElementById('failureText');
-    const wrongCountSpan = document.getElementById('wrongCount');
+function getToken() {
+    return localStorage.getItem("token");
+}
 
-    let currentQuestion = 1;
-    const totalQuestions = 3;
+async function applyRole(role) {
+    const statusMsg = document.getElementById("statusMsg");
+    statusMsg.style.color = "#333";
+    statusMsg.textContent = "Submitting application...";
 
-    // Correct answers for training
-    const correctAnswers = {
-        q1: 'B',
-        q2: 'C',
-        q3: 'B'
-    };
-
-    // Initialize UI
-    init();
-
-    function init() {
-        updateProgress();
-        setupEventListeners();
-    }
-
-    function setupEventListeners() {
-        prevBtn.addEventListener('click', goToPreviousQuestion);
-        nextBtn.addEventListener('click', goToNextQuestion);
-        trainingForm.addEventListener('submit', handleFormSubmit);
-
-        // Enable/disable buttons when user clicks options
-        document.querySelectorAll('input[type="radio"]').forEach(radio => {
-            radio.addEventListener('change', updateNavigationButtons);
-        });
-    }
-
-    function updateProgress() {
-        const progress = ((currentQuestion - 1) / totalQuestions) * 100;
-        progressFill.style.width = `${progress}%`;
-        currentQuestionSpan.textContent = currentQuestion;
-
-        // Show only current question
-        document.querySelectorAll('.question-card').forEach((card, index) => {
-            card.classList.toggle('active', (index + 1) === currentQuestion);
+    try {
+        const res = await fetch("/api/training/apply", {
+            method: "POST",
+            headers: {
+                "Authorization": `Bearer ${getToken()}`,
+                "Content-Type": "application/json"
+            },
+            body: JSON.stringify({ role })
         });
 
-        updateNavigationButtons();
-    }
+        const data = await res.json();
 
-    function updateNavigationButtons() {
-        const currentQuestionName = `q${currentQuestion}`;
-        const isAnswered =
-            document.querySelector(`input[name="${currentQuestionName}"]:checked`) !== null;
-
-        // Prev button disabled for Q1
-        prevBtn.disabled = currentQuestion === 1;
-
-        if (currentQuestion === totalQuestions) {
-            nextBtn.style.display = 'none';
-            submitBtn.style.display = isAnswered ? 'inline-block' : 'none';
-        } else {
-            nextBtn.style.display = isAnswered ? 'inline-block' : 'none';
-            submitBtn.style.display = 'none';
-        }
-        
-        showResults(wrongAnswers);
-    }
-
-        nextBtn.disabled = !isAnswered;
-    }
-
-    function goToPreviousQuestion() {
-        if (currentQuestion > 1) {
-            currentQuestion--;
-            updateProgress();
-        }
-    }
-
-    function goToNextQuestion() {
-        if (currentQuestion < totalQuestions) {
-            currentQuestion++;
-            updateProgress();
-        }
-    }
-
-    function handleFormSubmit(event) {
-        event.preventDefault();
-
-        const formData = new FormData(trainingForm);
-        let wrongAnswers = 0;
-
-        // Count wrong answers
-        for (let i = 1; i <= totalQuestions; i++) {
-            const q = `q${i}`;
-            const userAnswer = formData.get(q);
-            if (userAnswer !== correctAnswers[q]) wrongAnswers++;
+        if (!res.ok) {
+            statusMsg.style.color = "red";
+            statusMsg.textContent =
+                data.message || "Failed to submit application.";
+            return;
         }
 
-        showResults(wrongAnswers);
+        statusMsg.style.color = "green";
+        statusMsg.textContent =
+            "Application submitted successfully! Training details have been sent to your email.";
+
+    } catch (err) {
+        statusMsg.style.color = "red";
+        statusMsg.textContent = "Server error. Please try again later.";
     }
-
-    function showResults(wrongAnswers) {
-        trainingForm.style.display = 'none';
-        resultsSection.style.display = 'block';
-
-        if (wrongAnswers === 0) {
-            // SUCCESS
-            successMessage.style.display = 'block';
-            failureMessage.style.display = 'none';
-
-            // 🟢 GIVE ALL CERTIFICATIONS
-            const allCertifications = [
-                "Trishaw Pilot Certification",
-                "Cyclist Certification"
-            ];
-
-            localStorage.setItem("certifications", JSON.stringify(allCertifications));
-            localStorage.setItem("userTrained", "true");
-
-        } else {
-            // FAILURE
-            successMessage.style.display = 'none';
-            failureMessage.style.display = 'block';
-
-            wrongCountSpan.textContent = wrongAnswers;
-
-            if (wrongAnswers === 1) {
-                failureText.innerHTML =
-                    'You answered <span id="wrongCount">1</span> question incorrectly.';
-            } else {
-                failureText.innerHTML =
-                    `You answered <span id="wrongCount">${wrongAnswers}</span> questions incorrectly.`;
-            }
-        }
-    }
-
-    // Redirects
-    window.handleSuccess = function() {
-        window.location.href = 'viewEvent.html';
-    };
-
-    window.retryTraining = function() {
-        trainingForm.reset();
-        trainingForm.style.display = 'block';
-        resultsSection.style.display = 'none';
-        currentQuestion = 1;
-        updateProgress();
-    };
-
-    window.goToIntroduction = function() {
-        window.location.href = 'eventIntroduction.html';
-    };
-});
+}

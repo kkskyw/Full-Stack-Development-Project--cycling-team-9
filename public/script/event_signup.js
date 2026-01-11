@@ -4,6 +4,7 @@ function getToken() {
 
 document.addEventListener("DOMContentLoaded", () => {
     const emailBtn = document.getElementById("emailBtn");
+    const telegramBtn = document.getElementById("telegramBtn");
     const statusMsg = document.getElementById("statusMsg");
 
     const params = new URLSearchParams(window.location.search);
@@ -15,68 +16,70 @@ document.addEventListener("DOMContentLoaded", () => {
         return;
     }
 
-    emailBtn.addEventListener("click", async () => {
+    async function signupWithMethod(method) {
         statusMsg.textContent = "Submitting signup...";
         statusMsg.style.color = "#333";
 
         try {
-            // Register event signup
+            // 1️⃣ Sign up for event
             const signupRes = await fetch(`/events/${eventId}/email-signup`, {
                 method: "POST",
                 headers: {
                     "Authorization": `Bearer ${getToken()}`,
                     "Content-Type": "application/json"
-                }
+                },
+                body: JSON.stringify({ method })
             });
 
             const signupData = await signupRes.json();
 
             if (!signupRes.ok) {
-                statusMsg.textContent = signupData.error || "Signup failed.";
+                statusMsg.textContent = signupData.message || "Signup failed.";
                 statusMsg.style.color = "red";
                 return;
             }
 
-            statusMsg.textContent = "Signup successful! Scheduling email reminder...";
+            statusMsg.textContent = "Signup successful! Scheduling reminder...";
             statusMsg.style.color = "green";
 
-            // Delay slightly for smoother UI
-            setTimeout(async () => {
-                const reminderRes = await fetch(`/api/sendReminder`, {
-                    method: "POST",
-                    headers: {
-                        "Authorization": `Bearer ${getToken()}`,
-                        "Content-Type": "application/json"
-                    },
-                    body: JSON.stringify({
-                        eventId: eventId,
-                        method: "email"
-                    })
-                });
+            // 2️⃣ Trigger reminder
+            const reminderRes = await fetch(`/api/sendReminder`, {
+                method: "POST",
+                headers: {
+                    "Authorization": `Bearer ${getToken()}`,
+                    "Content-Type": "application/json"
+                },
+                body: JSON.stringify({
+                    eventId: eventId,
+                    method: method
+                })
+            });
 
-                const rd = await reminderRes.json();
+            const reminderData = await reminderRes.json();
 
-                if (!reminderRes.ok) {
-                    statusMsg.textContent = rd.error || "Failed to send reminder.";
-                    statusMsg.style.color = "red";
-                    return;
-                }
+            if (!reminderRes.ok) {
+                statusMsg.textContent =
+                    reminderData.message ||
+                    "Failed to send reminder. Make sure Telegram is linked.";
+                statusMsg.style.color = "red";
+                return;
+            }
 
-                statusMsg.textContent = "Reminder scheduled! Redirecting...";
-                statusMsg.style.color = "green";
+            statusMsg.textContent = "Reminder scheduled! Redirecting...";
+            statusMsg.style.color = "green";
 
-                // Redirect to booking page after 1.5 seconds
-                setTimeout(() => {
-                    window.location.href = "/event_booking.html"; 
-                }, 1500);
-
-            }, 1000);
+            setTimeout(() => {
+                window.location.href = "/event_booking.html";
+            }, 1500);
 
         } catch (err) {
-            statusMsg.textContent = "Server error. Try again.";
+            statusMsg.textContent = "Server error. Please try again.";
             statusMsg.style.color = "red";
         }
-    });
+    }
+
+    emailBtn.addEventListener("click", () => signupWithMethod("email"));
+    telegramBtn.addEventListener("click", () => signupWithMethod("telegram"));
 });
 
 function toggleMenu() {

@@ -1,4 +1,5 @@
 const { signupForEvent, getEligibleEvents } = require("../models/eventSignupModel");
+const telegramController = require("./telegramController");
 
 async function joinEvent(req, res) {
     try {
