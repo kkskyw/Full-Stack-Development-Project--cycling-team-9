@@ -3,7 +3,7 @@ node_modules/
 npm-debug.log
 serviceAccountKey.json
 .env
-
+firebase.js
 # Logs
 logs
 *.log
