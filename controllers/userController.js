@@ -4,14 +4,13 @@ const jwt = require("jsonwebtoken");
 
 // Get user by ID
 async function getUserById(req, res) {
-  const id = parseInt(req.params.id, 10);
-  if (isNaN(id)) return res.status(400).json({ error: "Invalid user id" });
+  const id = req.params.id;
+  if (!id) return res.status(400).json({ error: "Invalid user id" });
 
   try {
     const user = await userModel.getUserById(id);
     if (!user) return res.status(404).json({ error: "User not found" });
 
-    // Remove sensitive fields before sending
     if (user.password) delete user.password;
     res.json(user);
   } catch (error) {
@@ -42,14 +41,15 @@ async function createUser(req, res) {
     const salt = await bcrypt.genSalt(10);
     const hashedPassword = await bcrypt.hash(password, salt);
 
+    // Create user in Firestore
     const newUser = await userModel.createUser({
       name,
       email,
       phone,
       dob,
       password: hashedPassword,
-      preferredLanguage,
-      role
+      preferredLanguage: preferredLanguage || 'en',
+      role: role || 'Volunteer'
     });
 
     res.status(201).json(newUser);
@@ -79,8 +79,8 @@ async function loginUser(req, res) {
 
     const token = jwt.sign(
       { userId: user.userId, role: user.role },
-      process.env.JWT_SECRET,
-      { expiresIn: process.env.JWT_EXPIRES_IN }
+      process.env.JWT_SECRET || 'your-secret-key',
+      { expiresIn: process.env.JWT_EXPIRES_IN || '24h' }
     );
 
     res.status(200).json({
@@ -99,8 +99,8 @@ async function loginUser(req, res) {
 
 // Update User
 async function updateUser(req, res) {
-  const id = parseInt(req.params.id, 10);
-  if (isNaN(id)) return res.status(400).json({ error: 'Invalid user id' });
+  const id = req.params.id;
+  if (!id) return res.status(400).json({ error: 'Invalid user id' });
 
   const updateData = { ...req.body };
 

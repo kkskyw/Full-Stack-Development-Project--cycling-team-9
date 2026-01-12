@@ -6,7 +6,6 @@ document.addEventListener("DOMContentLoaded", () => {
     const emailBtn = document.getElementById("emailBtn");
     const telegramBtn = document.getElementById("telegramBtn");
     const statusMsg = document.getElementById("statusMsg");
-
     const params = new URLSearchParams(window.location.search);
     const eventId = params.get("eventId");
 
@@ -39,6 +38,7 @@ document.addEventListener("DOMContentLoaded", () => {
                 return;
             }
 
+            statusMsg.textContent = "Signup successful! Scheduling reminder...";
             statusMsg.textContent = "Signup successful! Scheduling reminder...";
             statusMsg.style.color = "green";
 
@@ -75,13 +75,10 @@ document.addEventListener("DOMContentLoaded", () => {
         } catch (err) {
             statusMsg.textContent = "Server error. Please try again.";
             statusMsg.style.color = "red";
+            console.error(err);
         }
     }
 
     emailBtn.addEventListener("click", () => signupWithMethod("email"));
     telegramBtn.addEventListener("click", () => signupWithMethod("telegram"));
 });
-
-function toggleMenu() {
-    alert("Menu coming soon!");
-}

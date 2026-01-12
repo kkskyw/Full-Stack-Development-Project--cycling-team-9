@@ -64,26 +64,9 @@ exports.sendReminder = async (req, res) => {
                         text: `⏰ Reminder!\n\nYou have an upcoming event.\nEvent ID: ${eventId}`
                     });
 
-                    console.log(`EMAIL REMINDER SENT TO ${email}`);
-                }
-
-                // 💬 TELEGRAM (SMS-style)
-                if (method === "telegram") {
-                    if (!telegramChatId) {
-                        console.error("Telegram not linked for user:", userId);
-                        return;
-                    }
-
-                    await telegramController.sendTelegramReminder(
-                        telegramChatId,
-                        `⏰ Event Reminder!\n\nYou have an upcoming event.\nEvent ID: ${eventId}\n\nSee you there 💙`
-                    );
-
-                    console.log(`TELEGRAM REMINDER SENT TO ${telegramChatId}`);
-                }
-
+                console.log(`EMAIL REMINDER SENT TO ${userEmail}`);
             } catch (err) {
-                console.error("Failed to send reminder:", err);
+                console.error("Failed to send email reminder:", err);
             }
         }, delay);
 

@@ -1,41 +1,448 @@
-.attendance-container {
-  width: 100%;
-  max-width: 450px;
-  margin: auto;
-  text-align: center;
-  padding: 20px;
+/* attendance.css */
+* {
+    margin: 0;
+    padding: 0;
+    box-sizing: border-box;
 }
 
+body {
+    font-family: Arial, sans-serif;
+    line-height: 1.6;
+    color: #333;
+    background-color: #f8f9fa;
+    min-height: 100vh;
+    display: flex;
+    flex-direction: column;
+}
+
+/* Main content area - WIDER CONTAINER */
+body > .attendance-container {
+    flex: 1;
+    max-width: 800px; /* Increased from 600px */
+    margin: 40px auto;
+    padding: 40px; /* Increased padding */
+    background: white;
+    border-radius: 15px;
+    box-shadow: 0 8px 25px rgba(0, 0, 0, 0.1);
+    font-family: 'Open Sans', sans-serif;
+    width: 90%; /* Added width for better responsiveness */
+}
+
+.attendance-container h2 {
+    text-align: center;
+    margin-bottom: 30px;
+    color: #333;
+    font-size: 32px; /* Slightly larger */
+    font-weight: 600;
+}
+
+/* Map Container - LARGER MAP */
+.map-container {
+    position: relative;
+    margin: 25px 0;
+    border-radius: 12px;
+    overflow: hidden;
+    box-shadow: 0 4px 15px rgba(0, 0, 0, 0.1);
+    border: 2px solid #e9ecef;
+}
+
+#locationMap {
+    height: 350px; /* Increased from 280px */
+    width: 100%;
+    border-radius: 10px;
+}
+
+.map-overlay {
+    position: absolute;
+    top: 12px;
+    right: 12px;
+    z-index: 1000;
+}
+
+.refresh-btn {
+    background: #fff;
+    border: 2px solid #8dd4c3;
+    border-radius: 8px;
+    padding: 10px 16px;
+    cursor: pointer;
+    font-size: 13px;
+    font-weight: 600;
+    color: #333;
+    box-shadow: 0 2px 8px rgba(0, 0, 0, 0.15);
+    transition: all 0.3s ease;
+}
+
+.refresh-btn:hover {
+    background: #8dd4c3;
+    color: white;
+    transform: translateY(-2px);
+}
+
+.coordinates-display {
+    background: linear-gradient(135deg, #f8f9fa 0%, #e9ecef 100%);
+    padding: 15px;
+    border-radius: 10px;
+    margin: 20px 0;
+    font-family: 'Courier New', monospace;
+    font-size: 14px;
+    font-weight: 600;
+    border-left: 4px solid #8dd4c3;
+    color: #495057;
+    box-shadow: 0 2px 8px rgba(0, 0, 0, 0.08);
+}
+
+/* Buttons - BETTER SPACING */
 .attendance-container button {
-  width: 100%;
-  padding: 12px;
-  margin-top: 10px;
-  font-size: 1rem;
-  border: none;
-  background-color: #5271FF;
-  color: white;
-  border-radius: 5px;
-  cursor: pointer;
+    width: 100%;
+    padding: 16px;
+    margin: 12px 0;
+    background: linear-gradient(135deg, #8dd4c3 0%, #7bc4b2 100%);
+    color: #333;
+    border: none;
+    border-radius: 10px;
+    cursor: pointer;
+    font-size: 17px;
+    font-weight: 600;
+    transition: all 0.3s ease;
+    box-shadow: 0 4px 12px rgba(141, 212, 195, 0.3);
 }
 
 .attendance-container button:hover {
-  background-color: #3d54cc;
+    background: linear-gradient(135deg, #7bc4b2 0%, #6bb4a2 100%);
+    transform: translateY(-3px);
+    box-shadow: 0 6px 18px rgba(141, 212, 195, 0.4);
 }
 
+.attendance-container button:active {
+    transform: translateY(-1px);
+}
+
+#checkOutBtn {
+    background: linear-gradient(135deg, #6c757d 0%, #5a6268 100%);
+    box-shadow: 0 4px 12px rgba(108, 117, 125, 0.3);
+}
+
+#checkOutBtn:hover {
+    background: linear-gradient(135deg, #5a6268 0%, #495057 100%);
+    box-shadow: 0 6px 18px rgba(108, 117, 125, 0.4);
+}
+
+/* Time Display */
 .time-display {
-  margin-top: 15px;
-  font-size: 1.1rem;
-  font-weight: bold;
+    margin: 20px 0;
+    padding: 18px;
+    background: linear-gradient(135deg, #f8f9fa 0%, #e9ecef 100%);
+    border-radius: 10px;
+    font-size: 16px;
+    font-weight: 600;
+    color: #495057;
+    border: 2px solid #dee2e6;
+    transition: all 0.3s ease;
+}
+
+.time-display:hover {
+    border-color: #8dd4c3;
+    transform: translateY(-2px);
+    box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
+}
+
+.time-display span {
+    color: #8dd4c3;
+    font-weight: 700;
+    font-size: 17px;
+}
+
+/* Error Messages */
+.shake {
+    animation: shake 0.5s ease-in-out;
 }
 
 @keyframes shake {
-  0% { transform: translateX(0); }
-  25% { transform: translateX(-4px); }
-  50% { transform: translateX(4px); }
-  75% { transform: translateX(-4px); }
-  100% { transform: translateX(0); }
+    0%, 100% { transform: translateX(0); }
+    25% { transform: translateX(-8px); }
+    75% { transform: translateX(8px); }
 }
 
-.shake {
-  animation: shake 0.3s;
+.error-message {
+    color: #dc3545;
+    font-size: 14px;
+    font-weight: 600;
+    margin-top: 8px;
+    padding: 10px;
+    background: #f8d7da;
+    border: 1px solid #f5c6cb;
+    border-radius: 6px;
+    text-align: center;
+}
+
+/* Status Indicators */
+.status-on-time {
+    color: #28a745;
+    font-weight: 700;
+}
+
+.status-late {
+    color: #dc3545;
+    font-weight: 700;
+}
+
+.status-absent {
+    color: #6c757d;
+    font-weight: 700;
+}
+
+/* Loading States */
+.loading {
+    opacity: 0.7;
+    pointer-events: none;
+    position: relative;
+}
+
+.loading::after {
+    content: '';
+    position: absolute;
+    top: 50%;
+    left: 50%;
+    width: 20px;
+    height: 20px;
+    margin: -10px 0 0 -10px;
+    border: 2px solid #f3f3f3;
+    border-top: 2px solid #8dd4c3;
+    border-radius: 50%;
+    animation: spin 1s linear infinite;
+}
+
+@keyframes spin {
+    0% { transform: rotate(0deg); }
+    100% { transform: rotate(360deg); }
+}
+
+/* Success States */
+.success-message {
+    color: #28a745;
+    font-size: 14px;
+    font-weight: 600;
+    margin-top: 8px;
+    padding: 10px;
+    background: #d4edda;
+    border: 1px solid #c3e6cb;
+    border-radius: 6px;
+    text-align: center;
+}
+
+/* Back Button Styles */
+.back-button-container {
+    margin-bottom: 30px;
+}
+
+.back-btn {
+    display: inline-flex;
+    align-items: center;
+    gap: 8px;
+    padding: 12px 20px;
+    background-color: #f8f9fa;
+    border: 2px solid #ddd;
+    border-radius: 8px;
+    font-size: 16px;
+    font-weight: 600;
+    color: #333;
+    cursor: pointer;
+    transition: all 0.3s ease;
+    text-decoration: none;
+}
+
+.back-btn:hover {
+    background-color: #e9ecef;
+    border-color: #8dd4c3;
+    transform: translateX(-5px);
+}
+
+/* Mobile Responsive */
+@media (max-width: 768px) {
+    body > .attendance-container {
+        margin: 20px 15px;
+        padding: 25px;
+        max-width: none; /* Remove max-width on mobile */
+        width: auto; /* Auto width on mobile */
+    }
+    
+    .attendance-container h2 {
+        font-size: 24px;
+    }
+    
+    #locationMap {
+        height: 250px; /* Adjusted for mobile */
+    }
+    
+    .refresh-btn {
+        padding: 8px 12px;
+        font-size: 12px;
+    }
+    
+    .coordinates-display {
+        font-size: 12px;
+        padding: 12px;
+    }
+    
+    .attendance-container button {
+        padding: 14px;
+        font-size: 16px;
+    }
+    
+    .time-display {
+        padding: 15px;
+        font-size: 15px;
+    }
+    
+    .back-button-container {
+        margin-bottom: 20px;
+    }
+    
+    .back-btn {
+        padding: 10px 16px;
+        font-size: 14px;
+    }
+}
+
+@media (max-width: 480px) {
+    body > .attendance-container {
+        margin: 10px;
+        padding: 20px;
+    }
+    
+    .attendance-container h2 {
+        font-size: 22px;
+    }
+    
+    #locationMap {
+        height: 200px;
+    }
+    
+    .map-overlay {
+        top: 8px;
+        right: 8px;
+    }
+}
+
+/* Print Styles */
+@media print {
+    .map-container,
+    .refresh-btn,
+    .attendance-container button {
+        display: none;
+    }
+    
+    .attendance-container {
+        box-shadow: none;
+        border: 1px solid #ccc;
+    }
+    
+    header, .contact-section, footer {
+        display: none;
+    }
+}
+
+/* Success Modal Styling */
+.success-modal {
+    display: none;
+    position: fixed;
+    z-index: 1000;
+    left: 0;
+    top: 0;
+    width: 100%;
+    height: 100%;
+    background-color: rgba(0, 0, 0, 0.5);
+    justify-content: center;
+    align-items: center;
+}
+
+.success-modal-content {
+    background-color: white;
+    padding: 40px 30px;
+    border-radius: 15px;
+    width: 90%;
+    max-width: 450px;
+    text-align: center;
+    position: relative;
+    box-shadow: 0 10px 30px rgba(0, 0, 0, 0.3);
+    margin: 0 auto;
+}
+
+.success-modal h2 {
+    color: #8dd4c3;
+    margin-bottom: 20px;
+    font-size: 28px;
+}
+
+.success-modal p {
+    color: #666;
+    font-size: 16px;
+    margin-top: 15px;
+    line-height: 1.5;
+}
+
+.success-modal .close-btn {
+    position: absolute;
+    top: 15px;
+    right: 20px;
+    color: #aaa;
+    font-size: 28px;
+    font-weight: bold;
+    cursor: pointer;
+    transition: color 0.3s;
+    line-height: 1;
+}
+
+.success-modal .close-btn:hover {
+    color: #333;
+}
+
+/* Lottie Animation Container */
+.lottie-container {
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    margin: 20px 0;
+    background: transparent;
+    width: 100%;
+}
+
+.lottie-container dotlottie-player {
+    background: transparent !important;
+    display: block !important;
+    margin: 0 auto !important;
+}
+
+/* Center everything in success modal */
+.success-modal-content {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+}
+
+/* Force center positioning */
+.success-modal {
+    display: none;
+    position: fixed;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    background-color: rgba(0, 0, 0, 0.5);
+    z-index: 9999;
+}
+
+.success-modal:not([style*="display: none"]) {
+    display: flex !important;
+    justify-content: center !important;
+    align-items: center !important;
+}
+
+#confirmEarlyCheckoutBtn:hover {
+    background: #c82333 !important;
+}
+
+#cancelEarlyCheckoutBtn:hover {
+    background: #5a6268 !important;
 }

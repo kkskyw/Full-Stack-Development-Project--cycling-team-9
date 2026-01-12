@@ -10,7 +10,7 @@
 <body>
   <header>
 <div class="logo-container">
-            <img src="/images/cropped-logox2.png" alt="Cycling Without Age Logo" class="logo">
+            <img src="/images/cropped-logox2.png" alt="Cycling Without Age Logo" class="logo" href="main.html">
             <div class="logo-text">
                 <p>Cycling Without Age</p>
             </div>
@@ -22,7 +22,7 @@
                     <span>☰</span> Menu
                 </button>
                 <div class="dropdown-menu" id="dropdownMenu">
-                    <a href="events.html">Events</a>
+                    <a href="viewEvent.html">Events</a>
                     <a href="checkin.html">Check-in</a>
                     <a href="donationPage.html">Donate</a>
                     <a href="feedback.html">Feedback</a>
@@ -44,7 +44,6 @@
         </div>
         <div class="tabs">
           <button class="tab active" data-filter="all">All</button>
-          <button class="tab" data-filter="past">Past</button>
           <button class="tab" data-filter="volunteer">Volunteer</button>
         </div>
       </div>
@@ -54,10 +53,6 @@
       <div class="card">
         <div class="label">Total Events</div>
         <div class="value" id="totalEvents">—</div>
-      </div>
-      <div class="card">
-        <div class="label">Past</div>
-        <div class="value" id="pastEvents">—</div>
       </div>
       <div class="card">
         <div class="label">Total Attendees</div>
@@ -72,19 +67,17 @@
             <th>Ref ID</th>
             <th>Event Date</th>
             <th>Title</th>
-            <th>Type</th>
             <th>Location</th>
             <th>Attendees</th>
             <th><Ri:a>Role</Ri:a></th>
           </tr>
         </thead>
         <tbody>
-          <!-- Event rows will be populated here dynamically -->
         </tbody>
       </table>
     </section>
   </main>
 
-  <script src="/script/history.js"></script>
+  <script src="script/history.js"></script>
 </body>
 </html>

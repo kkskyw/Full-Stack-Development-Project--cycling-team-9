@@ -6,15 +6,20 @@ async function joinEvent(req, res) {
         const userId = req.user.userId;
         const eventId = req.params.eventId;
 
+        console.log("Signup attempt:", { userId, eventId });
+
         const result = await signupForEvent(userId, eventId);
+
+        console.log("Signup SUCCESS:", result);
 
         return res.json({ message: "Signup successful!" });
 
     } catch (err) {
-        console.error("Error signing up:", err);
-        return res.status(500).json({ error: "Failed to sign up for event" });
+        console.error("SIGNUP ERROR:", err);   
+        return res.status(500).json({ error: err.message });
     }
 }
+
 
 // GET ELIGIBLE EVENTS
 async function fetchEligibleEvents(req, res) {

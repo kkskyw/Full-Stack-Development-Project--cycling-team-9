@@ -1,20 +1,32 @@
-const sql = require("mssql");
-const dbConfig = require("../dbConfig");
+const { db } = require('../firebaseAdmin');
 
 async function getUserBookings(userId) {
-    const pool = await sql.connect(dbConfig);
+    const bookingsSnap = await db.collection('bookedEvents')
+        .where('userId', '==', String(userId))
+        .get();
 
-    const result = await pool.request()
-        .input("userId", sql.Int, userId)
-        .query(`
-            SELECT es.signupDate, e.*
-            FROM eventSignups es
-            JOIN events e ON e.eventId = es.eventId
-            WHERE es.userId = @userId
-            ORDER BY es.signupDate DESC
-        `);
+    if (bookingsSnap.empty) {
+        return [];
+    }
 
-    return result.recordset;
+    const bookings = [];
+    for (const doc of bookingsSnap.docs) {
+        const booking = doc.data();
+        const eventDoc = await db.collection('events').doc(String(booking.eventId)).get();
+        
+        if (eventDoc.exists) {
+            bookings.push({
+                signupDate: booking.bookingDate,
+                ...eventDoc.data(),
+                eventId: eventDoc.id
+            });
+        }
+    }
+
+    // Sort by signup date descending
+    bookings.sort((a, b) => new Date(b.signupDate) - new Date(a.signupDate));
+
+    return bookings;
 }
 
 module.exports = { getUserBookings };

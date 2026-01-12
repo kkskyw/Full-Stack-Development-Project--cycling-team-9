@@ -1,91 +1,135 @@
-const sql = require("mssql");
-const dbConfig = require("../dbConfig");
+const { db } = require('../firebaseAdmin');
 
 async function signupForEvent(userId, eventId) {
-    const pool = await sql.connect(dbConfig);
-
     // 1️⃣ CHECK: Already booked this exact event?
-    const existing = await pool.request()
-        .input("userId", sql.Int, userId)
-        .input("eventId", sql.Int, eventId)
-        .query(`
-            SELECT 1 
-            FROM eventSignups 
-            WHERE userId = @userId AND eventId = @eventId
-        `);
+    const existingSnap = await db.collection('bookedEvents')
+        .where('userId', '==', String(userId))
+        .where('eventId', '==', String(eventId))
+        .limit(1)
+        .get();
 
-    if (existing.recordset.length > 0) {
+    if (!existingSnap.empty) {
         throw new Error("You have already booked this event.");
     }
 
-    // 2️⃣ GET the event date
-    const eventData = await pool.request()
-        .input("eventId", sql.Int, eventId)
-        .query(`
-            SELECT start_time
-            FROM events 
-            WHERE eventId = @eventId
-        `);
+    // 2️⃣ GET event details
+    const eventDoc = await db.collection('events').doc(String(eventId)).get();
 
-    if (eventData.recordset.length === 0) {
+    if (!eventDoc.exists) {
         throw new Error("Event not found.");
     }
 
-    const eventDate = eventData.recordset[0].start_time;
-
-    // 3️⃣ CHECK: Already have an event on the same date?
-    const dateCheck = await pool.request()
-        .input("userId", sql.Int, userId)
-        .input("eventDate", sql.Date, eventDate)
-        .query(`
-            SELECT 1
-            FROM eventSignups es
-            JOIN events e ON es.eventId = e.eventId
-            WHERE es.userId = @userId
-              AND CAST(e.start_time AS DATE) = CAST(@eventDate AS DATE)
-        `);
-
-    if (dateCheck.recordset.length > 0) {
-        throw new Error("You already have an event booked on this date.");
+    const eventData = eventDoc.data();
+    let eventTime = eventData.time || eventData.start_time;
+    
+    // Convert Firestore Timestamp to Date
+    if (eventTime && eventTime.toDate) {
+        eventTime = eventTime.toDate();
+    } else if (typeof eventTime === 'string') {
+        eventTime = new Date(eventTime);
     }
 
-    // 4️⃣ INSERT into eventSignups (REAL signup)
-    await pool.request()
-        .input("eventId", sql.Int, eventId)
-        .input("userId", sql.Int, userId)
-        .query(`
-            INSERT INTO eventSignups (eventId, userId)
-            VALUES (@eventId, @userId)
-        `);
+    // 3️⃣ CHECK: Already booked another event on same date
+    if (eventTime) {
+        const eventDate = new Date(eventTime);
+        const startOfDay = new Date(eventDate);
+        startOfDay.setHours(0, 0, 0, 0);
+        const endOfDay = new Date(eventDate);
+        endOfDay.setHours(23, 59, 59, 999);
 
-    // 5️⃣ INSERT into bookedEvents (so booking page can show it)
-    return pool.request()
-        .input("eventId", sql.Int, eventId)
-        .input("userId", sql.Int, userId)
-        .query(`
-            INSERT INTO bookedevents (eventId, userId, bookingDate)
-            VALUES (@eventId, @userId, GETDATE())
-        `);
+        const dateCheckSnap = await db.collection('bookedEvents')
+            .where('userId', '==', String(userId))
+            .get();
+
+        for (const doc of dateCheckSnap.docs) {
+            const booking = doc.data();
+            const bookedEventDoc = await db.collection('events').doc(String(booking.eventId)).get();
+            
+            if (bookedEventDoc.exists) {
+                const bookedEventData = bookedEventDoc.data();
+                let bookedEventTime = bookedEventData.time || bookedEventData.start_time;
+                
+                // Convert Firestore Timestamp to Date
+                if (bookedEventTime && bookedEventTime.toDate) {
+                    bookedEventTime = bookedEventTime.toDate();
+                } else {
+                    bookedEventTime = new Date(bookedEventTime);
+                }
+                
+                if (bookedEventTime >= startOfDay && bookedEventTime <= endOfDay) {
+                    throw new Error("You already have an event booked on this date.");
+                }
+            }
+        }
+    }
+
+    // 4️⃣ INSERT into bookedEvents collection
+    await db.collection('bookedEvents').add({
+        userId: String(userId),
+        eventId: String(eventId),
+        bookingDate: new Date().toISOString(),
+        status: 'confirmed'
+    });
+
+    return true;
 }
 
-
 async function getUserBookings(userId) {
-    const pool = await sql.connect(dbConfig);
+    const bookingsSnap = await db.collection('bookedEvents')
+        .where('userId', '==', String(userId))
+        .get();
 
-    const result = await pool.request()
-        .input("userId", sql.Int, userId)
-        .query(`
-            SELECT es.signupDate, e.*
-            FROM eventSignups es
-            JOIN events e ON e.eventId = es.eventId
-            WHERE es.userId = @userId
-            ORDER BY es.signupDate DESC
-        `);
+    if (bookingsSnap.empty) {
+        return [];
+    }
 
-    return result.recordset;
+    const bookings = [];
+    for (const doc of bookingsSnap.docs) {
+        const booking = doc.data();
+        const eventDoc = await db.collection('events').doc(String(booking.eventId)).get();
+        
+        if (eventDoc.exists) {
+            bookings.push({
+                signupDate: booking.bookingDate,
+                ...eventDoc.data(),
+                eventId: eventDoc.id
+            });
+        }
+    }
+
+    // Sort by signup date descending
+    bookings.sort((a, b) => new Date(b.signupDate) - new Date(a.signupDate));
+
+    return bookings;
+}
+
+async function getEligibleEvents(userId) {
+    // Get all events
+    const eventsSnap = await db.collection('events').get();
+    
+    // Get user's bookings
+    const bookingsSnap = await db.collection('bookedEvents')
+        .where('userId', '==', String(userId))
+        .get();
+    
+    const bookedEventIds = new Set(bookingsSnap.docs.map(doc => doc.data().eventId));
+    
+    // Filter out already booked events
+    const eligibleEvents = [];
+    eventsSnap.forEach(doc => {
+        if (!bookedEventIds.has(doc.id)) {
+            eligibleEvents.push({
+                eventId: doc.id,
+                ...doc.data()
+            });
+        }
+    });
+    
+    return eligibleEvents;
 }
 
 module.exports = {
     signupForEvent,
-    getUserBookings
+    getUserBookings,
+    getEligibleEvents
 };

@@ -1,4 +1,4 @@
-// public/script/viewEvent.js
+// Yiru
 document.addEventListener('DOMContentLoaded', function() {
     const eventsGrid = document.getElementById('eventsGrid');
     const pagination = document.getElementById('pagination');
@@ -9,7 +9,7 @@ document.addEventListener('DOMContentLoaded', function() {
     const backBtn = document.getElementById('backBtn');
     if (backBtn) {
         backBtn.addEventListener('click', function() {
-            window.location.href = 'main.html'; // 或者返回首页
+            window.location.href = 'main.html';
         });
     }
     
@@ -179,7 +179,9 @@ document.addEventListener('DOMContentLoaded', function() {
         const eventCard = document.createElement('div');
         eventCard.className = 'event-card';
         
-        const eventDate = new Date(event.start_time);
+        const eventDateTime = event.time || event.start_time;
+        const eventDate = eventDateTime ? new Date(eventDateTime) : new Date();
+        
         const formattedDate = eventDate.toLocaleDateString('en-US', {
             timeZone: 'UTC', 
             weekday: 'long',

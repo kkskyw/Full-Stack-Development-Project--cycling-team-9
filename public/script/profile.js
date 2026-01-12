@@ -16,7 +16,12 @@ function getUserIdFromUrl() {
   if (params.get('id')) return params.get('id');
   if (localStorage.getItem('userId')) return localStorage.getItem('userId');
   const parts = window.location.pathname.split('/').filter(Boolean);
-  for (let i = parts.length - 1; i >= 0; i--) if (/^\d+$/.test(parts[i])) return parts[i];
+  // Look for any non-empty part that's not 'profile' or 'profile.html'
+  for (let i = parts.length - 1; i >= 0; i--) {
+    if (parts[i] !== 'profile' && parts[i] !== 'profile.html' && parts[i].length > 0) {
+      return parts[i];
+    }
+  }
   return null;
 }
 

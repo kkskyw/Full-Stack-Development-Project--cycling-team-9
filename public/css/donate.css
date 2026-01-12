@@ -6,7 +6,6 @@
 
 body {
     font-family: Arial, sans-serif;
-    padding: 20px;
     line-height: 1.6;
     background-color: #f0f0f0;
     color: #333;
@@ -303,6 +302,7 @@ footer {
 .donation-section{
     padding-top: 20px;
     padding-bottom: 20px;
+
 }
 
 .donation-section h1{
@@ -314,6 +314,11 @@ footer {
 .donation-section p.intro{
     font-weight: bold;
     margin-bottom: 20px;
+}
+
+.donation-section p.point1{
+    font-weight: normal;
+    margin-bottom: 10px;
 }
 
 .text-brand-green{
@@ -349,6 +354,7 @@ footer {
     cursor:pointer;
     transition: background-color 0.2s, box-shadow 0.2s;
     box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+    margin-top: 30px;
 }
 
 .header{

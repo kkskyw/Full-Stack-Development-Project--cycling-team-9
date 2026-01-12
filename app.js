@@ -1,9 +1,8 @@
-const path = require("path");
 const express = require("express");
-const sql = require("mssql");
-const dotenv = require("dotenv");
+const path = require("path");
+require("dotenv").config();
 
-dotenv.config(); // Load environment variables
+const { admin, db } = require("./firebaseAdmin");
 
 const app = express();
 const port = process.env.PORT || 3000;
@@ -16,40 +15,61 @@ const attendanceController = require("./controllers/attendanceController");
 const reminderController = require("./controllers/reminderController");
 const { getUserBookings } = require("./controllers/bookingController");
 const telegramController = require("./controllers/telegramController");
+const PORT = process.env.PORT || 3000;
 
 // Middleware
 app.use(express.json());
 app.use(express.urlencoded({ extended: true }));
 app.use(express.static(path.join(__dirname, "public")));
 
+// Validation & Auth Middleware
+const userValidation = require("./middlewares/userValidation");
+const eventValidation = require("./middlewares/eventValidation");
+const attendanceValidation = require("./middlewares/attendanceValidation");
+const verifyJWT = require("./middlewares/verifyJWT");
+
+// Controllers
+const userController = require("./controllers/userController");
+const eventController = require("./controllers/eventController");
+const historyController = require("./controllers/historyController");
+const eventSignupController = require("./controllers/eventSignupController");
+const reminderController = require("./controllers/reminderController");
+const bookingController = require("./controllers/bookingController");
+const attendanceController = require("./controllers/attendanceController");
+const resetPwController = require("./controllers/resetPwController");
 
 // User routes
 app.post("/users/register", userValidation.validateUser, userController.createUser);
-app.post("/users/login", userValidation.validateLogin, userController.loginUser);
+app.post("/login", userValidation.validateLogin, userController.loginUser);
+app.get("/users/:id", userController.getUserById);
 app.put("/users/:id", userController.updateUser);
 
-//events signup
-app.post("/events/:eventId/signup", verifyJWT, eventSignupController.joinEvent);
+// ========== PASSWORD RESET ROUTES ==========
+app.post("/auth/request-otp", userValidation.validateResetRequest, resetPwController.requestPasswordReset);
+app.post("/auth/verify-otp", userValidation.validateOtpVerification, resetPwController.verifyOtp);
+app.post("/auth/reset-password", userValidation.validatePasswordReset, resetPwController.resetPassword);
+
+// Event routes - Yiru (MUST be before parameterized routes**)
+app.get("/mrt-stations", eventController.getMRTStations);
 app.get("/events/eligible", verifyJWT, eventSignupController.getEligibleEvents);
-app.get("/users/eligible-events", verifyJWT, eventSignupController.getEligibleEvents);
-app.get("/users/:id", userController.getUserById);
+app.get("/events", eventController.getAllEvents);
+app.post("/events/:eventId/signup", verifyJWT, eventSignupController.joinEvent);
+app.post("/events/:eventId/email-signup", verifyJWT, eventSignupController.emailSignup);
+app.get("/events/:id", eventController.getEventById);
 
 //reminder
 app.post("/api/sendReminder", verifyJWT, reminderController.sendReminder);
 
 //booking list
-app.get("/users/:userId/bookings", verifyJWT, getUserBookings);
-app.post("/events/:eventId/email-signup", verifyJWT, eventSignupController.emailSignup);
+app.get("/users/:userId/bookings", verifyJWT, bookingController.getUserBookings);
+app.get("/users/eligible-events", verifyJWT, eventSignupController.getEligibleEvents);
 
+// History routes
+app.get("/volunteers/:id/events", verifyJWT, historyController.getEventsByVolunteer);
 
 // Attendance routes
 app.post("/attendance/checkin", verifyJWT, attendanceController.checkIn);
 app.post("/attendance/checkout", verifyJWT, attendanceController.checkOut);
-
-// Event routes
-app.get("/events", eventController.getAllEvents);
-app.get("/mrt-stations", eventController.getMRTStations);
-app.get("/events/:id", eventController.getEventById);
 
 // Telegram routes
 app.post("/api/telegram/set-webhook", telegramController.setWebhook);
@@ -64,17 +84,13 @@ app.get(['/profile.html/:id', '/profile/:id'], (req, res) => {
     res.sendFile(path.join(__dirname, 'public', 'profile.html'));
 });
 
-// Start server
-app.listen(port, () => {
-  console.log(`Server running on port ${port}`);
-  console.log(`Click http://localhost:${port}`);
+app.listen(PORT, () => {
+  console.log(`Server running on port ${PORT}`);
+  console.log(`Visit http://localhost:${PORT} to view the app`);
 });
 
 
-// Graceful shutdown
-process.on("SIGINT", async () => {
-  console.log("Server is gracefully shutting down");
-  await sql.close();
-  console.log("Database connections closed");
+process.on("SIGINT", () => {
+  console.log("Server shutting down");
   process.exit(0);
-});
+}); 
