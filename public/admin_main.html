@@ -1,0 +1,76 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Admin Dashboard - CWAS</title>
+    <link rel="stylesheet" href="css/main.css">
+    <link rel="stylesheet" href="css/eventDetail.css"> <link rel="stylesheet" href="css/admin_main.css">
+</head>
+<body>
+    <header>
+        <div class="logo-container">
+            <img src="images/cropped-logox2.png" alt="Cycling Without Age Logo" class="logo">
+            <div class="logo-text">
+                <p>Cycling Without Age <span class="admin-badge">Admin</span></p>
+            </div>
+        </div>
+
+        <div class="header-buttons">
+            <div class="menu-container">
+                <button class="language-btn" id="languageBtn">
+                    <span>🌐</span> <span>Language</span>
+                </button>
+                <div class="dropdown-menu" id="languageDropdown">
+                    <a href="#" value="en">English</a>
+                    <a href="#" value="zh">中文</a>
+                </div>
+            </div>
+
+            <div class="menu-container">
+                <button class="menu-btn" id="menuBtn">
+                    <span>☰</span> <span>Management</span>
+                </button>
+                <div class="dropdown-menu" id="dropdownMenu">
+                    <a href="admin_volunteers.html">Manage Volunteers</a>
+                    <a href="adminEvents.html">Event Scheduling</a>
+                    <a href="admin_donations.html">Donation Records</a>
+                    <a href="admin_feedback.html">Review Feedback</a>
+                </div>
+            </div>
+            <button class="back-btn" id="logoutBtn" style="padding: 8px 15px;">Log Out</button>
+        </div>
+    </header>
+
+    <main class="event-detail-container">
+        <div class="event-detail-card" style="margin-bottom: 30px;">
+            <div class="event-header-section" style="padding: 30px;">
+                <h1 class="event-title" style="margin-bottom: 10px;">Administrator Portal</h1>
+                <p style="color: white; opacity: 0.9;">Welcome back! Here is a summary of the system status.</p>
+            </div>
+        </div>
+
+        <div class="stats-grid">
+            <div class="event-detail-card stat-card">
+                <h3>Total Volunteers</h3>
+                <p class="stat-number">1,248</p>
+            </div>
+            <div class="event-detail-card stat-card">
+                <h3>Upcoming Events</h3>
+                <p class="stat-number">12</p>
+            </div>
+            <div class="event-detail-card stat-card">
+                <h3>New Feedback</h3>
+                <p class="stat-number">5</p>
+            </div>
+        </div>
+
+        <div class="event-detail-card">
+            <div class="event-content-section">
+                <h2 style="color: #333; margin-bottom: 25px; border-bottom: 2px solid #8dd4c3; padding-bottom: 10px;">Quick Actions</h2>
+                <div class="action-buttons-grid">
+                    <button class="signup-btn" onclick="window.location.href='adminEvents.html'">
+                        <span>➕</span> Create New Event
+                    </button>
+                    <button class="signup-btn" onclick="window.location.href='volunteer_verify.html'">
+                        <span>✅</span> Verify Volunteers
