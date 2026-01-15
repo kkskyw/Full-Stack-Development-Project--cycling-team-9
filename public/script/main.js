@@ -2,6 +2,8 @@
 document.addEventListener('DOMContentLoaded', function () {
     // Check if user is logged in and update menu visibility
     updateMenuVisibility();
+    // Setup font size selector
+    setupFontSizeSelector();
 
     // Add logout button event listener
     const logoutBtn = document.getElementById('logoutBtn');
@@ -207,4 +209,95 @@ function handleLogout() {
     
     // Redirect to main page
     window.location.href = 'main.html';
+}
+
+// Add this function to handle font size changes
+function setupFontSizeSelector() {
+    const fontSizeBtn = document.getElementById('fontSizeBtn');
+    const fontSizeDropdown = document.getElementById('fontSizeDropdown');
+    const fontSizeIndicator = document.getElementById('fontSizeIndicator');
+    const fontSizeOptions = fontSizeDropdown.querySelectorAll('.font-size-option');
+    
+    // Load saved font size preference
+    const savedFontSize = localStorage.getItem('fontSize') || 'medium';
+    applyFontSize(savedFontSize);
+    updateFontSizeIndicator(savedFontSize);
+    setActiveFontSizeOption(savedFontSize);
+    
+    // Toggle dropdown
+    fontSizeBtn.addEventListener('click', function (e) {
+        e.stopPropagation();
+        fontSizeDropdown.classList.toggle('show');
+    });
+    
+    // Handle font size selection
+    fontSizeOptions.forEach(option => {
+        option.addEventListener('click', function (e) {
+            e.preventDefault();
+            const selectedSize = this.getAttribute('data-size');
+            applyFontSize(selectedSize);
+            updateFontSizeIndicator(selectedSize);
+            setActiveFontSizeOption(selectedSize);
+            fontSizeDropdown.classList.remove('show');
+            
+            // Save preference
+            localStorage.setItem('fontSize', selectedSize);
+        });
+    });
+    
+    // Close dropdown when clicking outside
+    document.addEventListener('click', function (e) {
+        if (!fontSizeBtn.contains(e.target) && !fontSizeDropdown.contains(e.target)) {
+            fontSizeDropdown.classList.remove('show');
+        }
+    });
+    
+    // Close dropdown on Escape key
+    document.addEventListener('keydown', function (e) {
+        if (e.key === 'Escape' && fontSizeDropdown.classList.contains('show')) {
+            fontSizeDropdown.classList.remove('show');
+        }
+    });
+}
+
+function applyFontSize(size) {
+    // Remove all font size classes
+    document.body.classList.remove('font-small', 'font-medium', 'font-large', 'font-xlarge');
+    
+    // Add the selected class
+    switch(size) {
+        case 'small':
+            document.body.classList.add('font-small');
+            break;
+        case 'medium':
+            document.body.classList.add('font-medium');
+            break;
+        case 'large':
+            document.body.classList.add('font-large');
+            break;
+        case 'xlarge':
+            document.body.classList.add('font-xlarge');
+            break;
+    }
+}
+
+function updateFontSizeIndicator(size) {
+    const indicator = document.getElementById('fontSizeIndicator');
+    const sizeNames = {
+        'small': 'Small',
+        'medium': 'Medium',
+        'large': 'Large',
+        'xlarge': 'Extra Large'
+    };
+    indicator.textContent = sizeNames[size] || 'Medium';
+}
+
+function setActiveFontSizeOption(selectedSize) {
+    const options = document.querySelectorAll('.font-size-option');
+    options.forEach(option => {
+        option.classList.remove('active');
+        if (option.getAttribute('data-size') === selectedSize) {
+            option.classList.add('active');
+        }
+    });
 }
