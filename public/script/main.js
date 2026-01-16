@@ -261,24 +261,33 @@ function setupFontSizeSelector() {
 }
 
 function applyFontSize(size) {
-    // Remove all font size classes
-    document.body.classList.remove('font-small', 'font-medium', 'font-large', 'font-xlarge');
+    // Remove all font size classes from html
+    document.documentElement.classList.remove(
+        'font-small-html', 
+        'font-medium-html', 
+        'font-large-html', 
+        'font-xlarge-html'
+    );
     
-    // Add the selected class
+    // Add the selected class to html element
     switch(size) {
         case 'small':
-            document.body.classList.add('font-small');
+            document.documentElement.classList.add('font-small-html');
             break;
         case 'medium':
-            document.body.classList.add('font-medium');
+            document.documentElement.classList.add('font-medium-html');
             break;
         case 'large':
-            document.body.classList.add('font-large');
+            document.documentElement.classList.add('font-large-html');
             break;
         case 'xlarge':
-            document.body.classList.add('font-xlarge');
+            document.documentElement.classList.add('font-xlarge-html');
             break;
     }
+    
+    // Also apply to body for any direct body styles
+    document.body.classList.remove('font-small', 'font-medium', 'font-large', 'font-xlarge');
+    document.body.classList.add(`font-${size}`);
 }
 
 function updateFontSizeIndicator(size) {
