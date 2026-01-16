@@ -469,6 +469,91 @@ footer {
     flex-wrap: wrap;
 }
 
+/* Simple font size system */
+:root {
+    --base-font-size: 16px;
+}
+
+/* Font size classes that change the root variable */
+.font-small-html {
+    --base-font-size: 14px;
+}
+
+.font-medium-html {
+    --base-font-size: 16px;
+}
+
+.font-large-html {
+    --base-font-size: 18px;
+}
+
+.font-xlarge-html {
+    --base-font-size: 20px;
+}
+
+/* Update ALL font sizes to use the variable */
+html {
+    font-size: var(--base-font-size);
+}
+
+body {
+    font-size: calc(var(--base-font-size) * 1.1);
+    line-height: 1.8;
+    color: #333;
+    font-family: Arial, sans-serif;
+}
+
+.welcome-section h1 {
+    font-size: calc(var(--base-font-size) * 2.5);
+    margin-bottom: 25px;
+}
+
+.welcome-section .mission {
+    font-size: calc(var(--base-font-size) * 1.3);
+    margin-bottom: 35px;
+}
+
+.welcome-section p {
+    font-size: calc(var(--base-font-size) * 1.15);
+    margin-bottom: 25px;
+    line-height: 1.9;
+}
+
+.award-section h2 {
+    font-size: calc(var(--base-font-size) * 2.5);
+    margin-bottom: 30px;
+}
+
+.award-section p {
+    font-size: calc(var(--base-font-size) * 1.15);
+    margin-bottom: 20px;
+    line-height: 1.9;
+}
+
+.contact-section h2 {
+    font-size: calc(var(--base-font-size) * 2.2);
+    margin-bottom: 20px;
+}
+
+.contact-section a {
+    font-size: calc(var(--base-font-size) * 1.2);
+}
+
+.social-section h3 {
+    font-size: calc(var(--base-font-size) * 1.8);
+    margin-bottom: 25px;
+}
+
+.btn {
+    font-size: calc(var(--base-font-size) * 1.2);
+    padding: calc(var(--base-font-size) * 1.1) calc(var(--base-font-size) * 2.8);
+}
+
+.menu-btn, .language-btn, .register-btn, .logout-btn, .font-size-btn {
+    font-size: calc(var(--base-font-size) * 1.1);
+    padding: calc(var(--base-font-size) * 0.625) calc(var(--base-font-size) * 1.563);
+}
+
 /* Mobile adjustments */
 @media (max-width: 768px) {
     body {
