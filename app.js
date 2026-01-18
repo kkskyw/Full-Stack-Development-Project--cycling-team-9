@@ -30,6 +30,7 @@ const verifyJWT = require("./middlewares/verifyJWT");
 app.use(express.json());
 app.use(express.urlencoded({ extended: true }));
 app.use(express.static(path.join(__dirname, "public")));
+const feedbackController = require("./controllers/feedbackController");
 
 // User routes
 app.post("/users/register", userValidation.validateUser, userController.createUser);
@@ -69,6 +70,11 @@ app.post("/attendance/checkout", verifyJWT, attendanceController.checkOut);
 app.post("/api/telegram/set-webhook", telegramController.setWebhook);
 app.post("/api/telegram/webhook", telegramController.webhook);
 
+
+// Feedback routes
+app.post("/feedback", feedbackController.submitFeedback);
+app.get("/feedback", verifyJWT, feedbackController.getFeedback); 
+
 // serve main.html at root
 app.get("/", (req, res) => {
   res.sendFile(path.join(__dirname, "public", "main.html"));
@@ -87,3 +93,5 @@ process.on("SIGINT", () => {
   console.log("Server shutting down");
   process.exit(0);
 });
+}); 
+

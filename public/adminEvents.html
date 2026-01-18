@@ -1,0 +1,109 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Manage Events - Admin | CWAS</title>
+    <link rel="stylesheet" href="css/main.css">
+    <link rel="stylesheet" href="css/eventDetail.css"> <link rel="stylesheet" href="css/adminEvents.css">
+</head>
+<body>
+    <header>
+        <div class="logo-container">
+            <img src="images/cropped-logox2.png" alt="Logo" class="logo">
+            <div class="logo-text"><p>Admin Dashboard</p></div>
+        </div>
+        <div class="header-buttons">
+            <button class="register-btn" onclick="window.location.href='viewEvent.html'">View Public Site</button>
+        </div>
+    </header>
+
+    <main class="event-detail-container">
+        <div class="admin-controls">
+            <h1>Event Management</h1>
+            <button class="signup-btn" id="createNewBtn">+ Create New Event</button>
+        </div>
+
+        <div class="event-detail-card list-card">
+            <div class="table-responsive">
+                <table class="admin-table">
+                    <thead>
+                        <tr>
+                            <th>ID</th>
+                            <th>Event Header</th>
+                            <th>Location</th>
+                            <th>Start Time</th>
+                            <th>Actions</th>
+                        </tr>
+                    </thead>
+                    <tbody id="eventTableBody">
+                        </tbody>
+                </table>
+            </div>
+        </div>
+
+        <div id="formModal" class="modal">
+            <div class="event-detail-card form-card">
+                <div class="event-header-section">
+                    <h2 id="formTitle" class="event-title">Create New Event</h2>
+                </div>
+                <form id="eventForm" class="event-content-section">
+                    <input type="hidden" id="eventId">
+                    
+                    <div class="form-grid">
+                        <div class="form-group">
+                            <label>Event Header (Title)</label>
+                            <input type="text" id="header" required placeholder="e.g. East Coast Park Ride">
+                        </div>
+                        <div class="form-group">
+                            <label>Location Name</label>
+                            <input type="text" id="location" required placeholder="e.g. East Coast Park">
+                        </div>
+                        <div class="form-group">
+                            <label>Nearest MRT</label>
+                            <input type="text" id="nearestMRT" required placeholder="e.g. Marine Terrace MRT">
+                        </div>
+                        <div class="form-group">
+                            <label>Radius (meters)</label>
+                            <input type="number" id="radius_m" value="100" required>
+                        </div>
+                        <div class="form-group">
+                            <label>Latitude</label>
+                            <input type="number" step="any" id="latitude" required placeholder="1.3069">
+                        </div>
+                        <div class="form-group">
+                            <label>Longitude</label>
+                            <input type="number" step="any" id="longitude" required placeholder="103.9125">
+                        </div>
+                        <div class="form-group">
+                            <label>Start Time</label>
+                            <input type="datetime-local" id="start_time" required>
+                        </div>
+                        <div class="form-group">
+                            <label>End Time</label>
+                            <input type="datetime-local" id="end_time" required>
+                        </div>
+                    </div>
+
+                    <div class="form-group">
+                        <label>Short Intro</label>
+                        <input type="text" id="intro" required placeholder="Brief summary for list view">
+                    </div>
+
+                    <div class="form-group">
+                        <label>Long Description</label>
+                        <textarea id="longIntro" rows="6" required placeholder="Detailed information for the detail page"></textarea>
+                    </div>
+
+                    <div class="form-actions">
+                        <button type="button" class="back-btn" id="cancelBtn">Cancel</button>
+                        <button type="submit" class="signup-btn">Save Event</button>
+                    </div>
+                </form>
+            </div>
+        </div>
+    </main>
+
+    <script src="script/adminEvents.js"></script>
+</body>
+</html>
