@@ -1,77 +1,66 @@
-const sql = require("mssql");
-const dbConfig = require("../dbConfig");
-const nodemailer = require("nodemailer");
-const telegramController = require("./telegramController");
+const { db } = require("../firebaseAdmin");
+const { Resend } = require("resend");
 
-// Email sender
-const emailTransporter = nodemailer.createTransport({
-    service: "gmail",
-    auth: {
-        user: process.env.EMAIL_USER,
-        pass: process.env.EMAIL_PASS
+const resend = new Resend(process.env.RESEND_API_KEY);
+
+async function sendReminder(req, res) {
+  try {
+    const userId = req.user.userId;
+    const { eventId } = req.body;
+
+    if (!userId) {
+      return res.status(401).json({ error: "Unauthorized" });
     }
-});
 
-exports.sendReminder = async (req, res) => {
-    try {
-        const { eventId, method } = req.body;
+    if (!eventId) {
+      return res.status(400).json({ error: "Missing eventId" });
+    }
 
-        if (!eventId || !method) {
-            return res.status(400).json({ error: "Missing eventId or method" });
-        }
+    // Get user from Firestore
+    const userSnap = await db.collection("users").doc(userId).get();
 
-        const userId = req.user.userId;
+    if (!userSnap.exists) {
+      return res.status(404).json({ error: "User not found" });
+    }
 
-        const pool = await sql.connect(dbConfig);
+    const { name, email } = userSnap.data();
 
-        // Fetch user details
-        const userResult = await pool.request()
-            .input("userId", sql.Int, userId)
-            .query(`
-                SELECT email, phone, telegramChatId
-                FROM users
-                WHERE userId = @userId
-            `);
+    if (!email) {
+      return res.status(400).json({ error: "User email not found" });
+    }
 
-        if (userResult.recordset.length === 0) {
-            return res.status(404).json({ error: "User not found" });
-        }
+    // Optional delay (demo-friendly)
+    const delayMs = 10_000;
 
-        const { email, telegramChatId } = userResult.recordset[0];
+    res.json({
+      message: "Reminder scheduled. Email will be sent shortly."
+    });
 
-        // delay in milliseconds (10 seconds)
-        const delay = 10000;
-
-        // Respond immediately so frontend doesn't hang
-        res.json({
-            message: `${method.toUpperCase()} reminder will be sent in ${delay / 1000} seconds`
+    setTimeout(async () => {
+      try {
+        await resend.emails.send({
+          from: "onboarding@resend.dev",
+          to: email,
+          subject: "Event Reminder",
+          html: `
+            <p>Hi ${name},</p>
+            <p>This is a reminder for your upcoming event.</p>
+            <p><strong>Event ID:</strong> ${eventId}</p>
+          `
         });
 
-        // Send reminder after delay
-        setTimeout(async () => {
-            try {
-                // 📧 EMAIL
-                if (method === "email") {
-                    if (!email) {
-                        console.error("User has no email on record");
-                        return;
-                    }
+        console.log("📧 Reminder email sent to", email);
+      } catch (err) {
+        console.error("Reminder email failed:", err);
+      }
+    }, delayMs);
 
-                    await emailTransporter.sendMail({
-                        from: process.env.EMAIL_USER,
-                        to: email,
-                        subject: "Event Reminder",
-                        text: `⏰ Reminder!\n\nYou have an upcoming event.\nEvent ID: ${eventId}`
-                    });
+  } catch (err) {
+    console.error("sendReminder error:", err);
+    res.status(500).json({ error: "Internal server error" });
+  }
+}
 
-                console.log(`EMAIL REMINDER SENT TO ${userEmail}`);
-            } catch (err) {
-                console.error("Failed to send email reminder:", err);
-            }
-        }, delay);
-
-    } catch (err) {
-        console.error("Error in sendReminder:", err);
-        res.status(500).json({ error: "Internal server error" });
-    }
+module.exports = {
+  sendReminder
 };
