@@ -27,6 +27,7 @@ const reminderController = require("./controllers/reminderController");
 const bookingController = require("./controllers/bookingController");
 const attendanceController = require("./controllers/attendanceController");
 const resetPwController = require("./controllers/resetPwController");
+const feedbackController = require("./controllers/feedbackController");
 
 // User routes
 app.post("/users/register", userValidation.validateUser, userController.createUser);
@@ -61,6 +62,12 @@ app.get("/volunteers/:id/events", verifyJWT, historyController.getEventsByVolunt
 app.post("/attendance/checkin", verifyJWT, attendanceController.checkIn);
 app.post("/attendance/checkout", verifyJWT, attendanceController.checkOut);
 
+
+
+// Feedback routes
+app.post("/feedback", feedbackController.submitFeedback);
+app.get("/feedback", verifyJWT, feedbackController.getFeedback); 
+
 // serve main.html at root
 app.get('/', (req, res) => {
   res.sendFile(path.join(__dirname, 'public', 'main.html'));
@@ -79,3 +86,4 @@ process.on("SIGINT", () => {
   console.log("Server shutting down");
   process.exit(0);
 }); 
+
