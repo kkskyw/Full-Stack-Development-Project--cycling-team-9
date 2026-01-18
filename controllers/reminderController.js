@@ -1,83 +1,66 @@
-const nodemailer = require("nodemailer");
 const { db } = require("../firebaseAdmin");
+const { Resend } = require("resend");
 
-// Email transporter
-const emailTransporter = nodemailer.createTransport({
-    service: "gmail",
-    auth: {
-        user: process.env.EMAIL_USER,
-        pass: process.env.EMAIL_PASS
+const resend = new Resend(process.env.RESEND_API_KEY);
+
+async function sendReminder(req, res) {
+  try {
+    const userId = req.user.userId;
+    const { eventId } = req.body;
+
+    if (!userId) {
+      return res.status(401).json({ error: "Unauthorized" });
     }
-});
 
-exports.sendReminder = async (req, res) => {
-    try {
-        const { eventId } = req.body;
-        const userId = req.user.userId; // from JWT
+    if (!eventId) {
+      return res.status(400).json({ error: "Missing eventId" });
+    }
 
-        if (!eventId) {
-            return res.status(400).json({ error: "Missing eventId" });
-        }
+    // Get user from Firestore
+    const userSnap = await db.collection("users").doc(userId).get();
 
-        // 🔹 Get user from Firestore
-        const userDoc = await db.collection("users").doc(userId).get();
+    if (!userSnap.exists) {
+      return res.status(404).json({ error: "User not found" });
+    }
 
-        if (!userDoc.exists) {
-            return res.status(404).json({ error: "User not found" });
-        }
+    const { name, email } = userSnap.data();
 
-        const user = userDoc.data();
+    if (!email) {
+      return res.status(400).json({ error: "User email not found" });
+    }
 
-        if (!user.email) {
-            return res.status(400).json({ error: "User has no email" });
-        }
+    // Optional delay (demo-friendly)
+    const delayMs = 10_000;
 
-        // 🔹 Get event
-        const eventDoc = await db.collection("events").doc(eventId).get();
+    res.json({
+      message: "Reminder scheduled. Email will be sent shortly."
+    });
 
-        if (!eventDoc.exists) {
-            return res.status(404).json({ error: "Event not found" });
-        }
-
-        const event = eventDoc.data();
-
-        // ⏰ Delay (10s)
-        const delay = 10000;
-
-        res.json({
-            message: "Email reminder will be sent in 10 seconds"
+    setTimeout(async () => {
+      try {
+        await resend.emails.send({
+          from: "onboarding@resend.dev",
+          to: email,
+          subject: "Event Reminder",
+          html: `
+            <p>Hi ${name},</p>
+            <p>This is a reminder for your upcoming event.</p>
+            <p><strong>Event ID:</strong> ${eventId}</p>
+          `
         });
 
-        setTimeout(async () => {
-            try {
-                const date = event.start_time.toDate();
+        console.log("📧 Reminder email sent to", email);
+      } catch (err) {
+        console.error("Reminder email failed:", err);
+      }
+    }, delayMs);
 
-                await emailTransporter.sendMail({
-                    from: process.env.EMAIL_USER,
-                    to: user.email,
-                    subject: `Reminder: ${event.header}`,
-                    text: `
-                Hi ${user.name},
+  } catch (err) {
+    console.error("sendReminder error:", err);
+    res.status(500).json({ error: "Internal server error" });
+  }
+}
 
-                This is a reminder for your upcoming event.
-
-                Event: ${event.header}
-                Location: ${event.location}
-                Date: ${date.toLocaleDateString()}
-                Time: ${date.toLocaleTimeString()}
-
-                See you soon!
-
-                Cycling Without Age Singapore
-                `
-                });
-            } catch (err) {
-                console.error("Email failed:", err);
-            }
-        }, delay);
-
-    } catch (err) {
-        console.error("sendReminder error:", err);
-        res.status(500).json({ error: "Server error" });
-    }
+module.exports = {
+  sendReminder
 };
