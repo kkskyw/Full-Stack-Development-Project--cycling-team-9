@@ -16,15 +16,22 @@ async function getEventsByVolunteer(volunteerId, status) {
     const data = d.data();
     const attendeesSnap = await db.collection('attendance').where('eventId', '==', d.id).get();
     const volunteerAtt = attSnap.docs.find(a => a.data().eventId === d.id);
-    events.push({
-      eventId: d.id,
-      header: data.header,
-      intro: data.intro,
-      location: data.location,
-      time: data.time, // store as ISO or Firestore Timestamp consistently
-      attendees: attendeesSnap.size,
-      volunteerStatus: volunteerAtt ? volunteerAtt.data().status : null
-    });
+    const attData = volunteerAtt ? volunteerAtt.data() : null;
+    
+    // Only include events where volunteer has checked in
+    if (attData && attData.check_in_time) {
+      events.push({
+        eventId: d.id,
+        header: data.header,
+        intro: data.intro,
+        location: data.location,
+        time: data.time, // store as ISO or Firestore Timestamp consistently
+        attendees: attendeesSnap.size,
+        volunteerStatus: attData.status,
+        checkInTime: attData.check_in_time,
+        checkOutTime: attData.check_out_time
+      });
+    }
   }
 
   // optional status filter

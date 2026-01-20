@@ -9,7 +9,14 @@ document.addEventListener('DOMContentLoaded', () => {
   const tabs = Array.from(document.querySelectorAll('.tab'));
   const totalEventsEl = document.getElementById('totalEvents');
   const totalAttendeesEl = document.getElementById('totalAttendees');
+  const totalAttendeesCard = document.getElementById('totalAttendeesCard');
   const tableBody = document.querySelector('#eventsTable tbody');
+
+  // Check user role and hide total attendees for volunteers
+  const userRole = localStorage.getItem('userRole');
+  if (totalAttendeesCard && userRole !== 'Admin') {
+    totalAttendeesCard.style.display = 'none';
+  }
 
   // --- Dropdown menu behavior ---
   if (menuBtn && dropdownMenu) {
@@ -39,6 +46,27 @@ document.addEventListener('DOMContentLoaded', () => {
 
   function formatDate(val) {
     if (!val) return '—';
+    
+    // Handle Firestore Timestamp objects
+    if (val && typeof val === 'object') {
+      // Firestore Timestamp has _seconds and _nanoseconds
+      if (val._seconds !== undefined) {
+        const d = new Date(val._seconds * 1000);
+        if (!isNaN(d)) return d.toLocaleString();
+      }
+      // Try toDate() method if available
+      if (typeof val.toDate === 'function') {
+        const d = val.toDate();
+        if (!isNaN(d)) return d.toLocaleString();
+      }
+      // Try seconds property (alternative format)
+      if (val.seconds !== undefined) {
+        const d = new Date(val.seconds * 1000);
+        if (!isNaN(d)) return d.toLocaleString();
+      }
+    }
+    
+    // Handle ISO string or timestamp
     const d = new Date(val);
     if (isNaN(d)) return String(val);
     return d.toLocaleString();
@@ -75,7 +103,6 @@ document.addEventListener('DOMContentLoaded', () => {
         <td>${escapeHtml(id)}</td>
         <td>${escapeHtml(formatDate(time))}</td>
         <td>${escapeHtml(title)}</td>
-        <td>${escapeHtml(type)}</td>
         <td>${escapeHtml(location)}</td>
         <td>${escapeHtml(attendees)}</td>
         <td>${escapeHtml(role)}</td>
@@ -95,9 +122,37 @@ document.addEventListener('DOMContentLoaded', () => {
       return;
     }
 
+    const token = localStorage.getItem('token');
+    if (!token) {
+      tableBody.innerHTML = '<tr><td colspan="7">Please log in to view your event history.</td></tr>';
+      renderSummary([]);
+      // Redirect to login after 2 seconds
+      setTimeout(() => {
+        window.location.href = 'login.html';
+      }, 2000);
+      return;
+    }
+
     const q = status ? `?status=${encodeURIComponent(status)}` : '';
     try {
-      const res = await fetch(`/volunteers/${encodeURIComponent(vid)}/events${q}`);
+      const res = await fetch(`/volunteers/${encodeURIComponent(vid)}/events${q}`, {
+        headers: {
+          'Authorization': `Bearer ${token}`,
+          'Content-Type': 'application/json'
+        }
+      });
+      
+      // Handle authentication errors
+      if (res.status === 401 || res.status === 403) {
+        tableBody.innerHTML = '<tr><td colspan="7">Your session has expired. Redirecting to login...</td></tr>';
+        renderSummary([]);
+        localStorage.removeItem('token');
+        setTimeout(() => {
+          window.location.href = 'login.html';
+        }, 2000);
+        return [];
+      }
+      
       if (!res.ok) throw new Error(`Server ${res.status}`);
       const data = await res.json();
       return Array.isArray(data) ? data : [];
@@ -108,8 +163,8 @@ document.addEventListener('DOMContentLoaded', () => {
   }
 
   function applyDateFilter(list) {
-    const from = fromDateEl?.value ? new Date(fromDateEl.value) : null;
-    const to = toDateEl?.value ? new Date(toDateEl.value) : null;
+    const from = fromDateEl?.value ? parseMMDDYYYY(fromDateEl.value) : null;
+    const to = toDateEl?.value ? parseMMDDYYYY(toDateEl.value) : null;
     if (!from && !to) return list;
     return list.filter(ev => {
       const t = new Date(ev.time ?? ev.eventTime ?? ev.date ?? null);
@@ -119,6 +174,20 @@ document.addEventListener('DOMContentLoaded', () => {
       return true;
     });
   }
+  
+  function parseMMDDYYYY(dateStr) {
+    // Parse mm/dd/yyyy format
+    const parts = dateStr.split('/');
+    if (parts.length !== 3) return null;
+    const month = parseInt(parts[0], 10);
+    const day = parseInt(parts[1], 10);
+    const year = parseInt(parts[2], 10);
+    if (isNaN(month) || isNaN(day) || isNaN(year)) return null;
+    if (month < 1 || month > 12 || day < 1 || day > 31) return null;
+    const date = new Date(year, month - 1, day);
+    return isNaN(date) ? null : date;
+  }
+  
   function startOfDay(d){ const x=new Date(d); x.setHours(0,0,0,0); return x; }
   function endOfDay(d){ const x=new Date(d); x.setHours(23,59,59,999); return x; }
 
@@ -130,6 +199,22 @@ document.addEventListener('DOMContentLoaded', () => {
   }
 
   // --- Event listeners ---
+  
+  // Add date input formatting
+  [fromDateEl, toDateEl].forEach(input => {
+    if (!input) return;
+    input.addEventListener('input', (e) => {
+      let value = e.target.value.replace(/\D/g, ''); // Remove non-digits
+      if (value.length >= 2) {
+        value = value.slice(0, 2) + '/' + value.slice(2);
+      }
+      if (value.length >= 5) {
+        value = value.slice(0, 5) + '/' + value.slice(5, 9);
+      }
+      e.target.value = value;
+    });
+  });
+  
   tabs.forEach(t => {
     t.addEventListener('click', async () => {
       tabs.forEach(x => x.classList.remove('active'));
@@ -157,8 +242,8 @@ document.addEventListener('DOMContentLoaded', () => {
     const firstCell = tr.querySelector('td');
     if (!firstCell) return;
     const eventId = firstCell.textContent.trim();
-    // navigate to event detail / signup page
-    window.location.href = `/viewEvent.html?id=${encodeURIComponent(eventId)}`;
+    // navigate to event detail page
+    window.location.href = `eventDetail.html?id=${encodeURIComponent(eventId)}`;
   });
   loadAndRender('past');
 });

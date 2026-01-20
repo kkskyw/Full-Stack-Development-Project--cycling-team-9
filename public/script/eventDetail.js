@@ -8,6 +8,10 @@ document.addEventListener('DOMContentLoaded', function() {
     const eventDescription = document.getElementById('eventDescription');
     const backBtn = document.getElementById('backBtn');
     const signupBtn = document.getElementById('signupBtn');
+    const startAddress = document.getElementById('startAddress');
+    const directionsBtn = document.getElementById('directionsBtn');
+    
+    let currentEventLocation = '';
 
     // Get event ID from URL parameters
     const urlParams = new URLSearchParams(window.location.search);
@@ -36,6 +40,34 @@ document.addEventListener('DOMContentLoaded', function() {
         backBtn.addEventListener('click', function() {
             window.location.href = 'viewEvent.html';
         });
+        
+        // Get Directions button
+        directionsBtn.addEventListener('click', function() {
+            const origin = startAddress.value.trim();
+            if (!origin) {
+                alert('Please enter your starting address or postal code');
+                startAddress.focus();
+                return;
+            }
+            
+            if (!currentEventLocation) {
+                alert('Event location not available');
+                return;
+            }
+            
+            // Open Google Maps with directions
+            const destination = encodeURIComponent(currentEventLocation + ', Singapore');
+            const originEncoded = encodeURIComponent(origin + ', Singapore');
+            const url = `https://www.google.com/maps/dir/?api=1&origin=${originEncoded}&destination=${destination}&travelmode=transit`;
+            window.open(url, '_blank');
+        });
+        
+        // Allow Enter key to trigger directions
+        startAddress.addEventListener('keypress', function(e) {
+            if (e.key === 'Enter') {
+                directionsBtn.click();
+            }
+        });
 
         signupBtn.addEventListener("click", async function() {
 
@@ -59,9 +91,24 @@ document.addEventListener('DOMContentLoaded', function() {
 
         const data = await res.json();
 
+        // Check if token expired (403 Forbidden)
+        if (res.status === 403) {
+            alert("Your session has expired. Please log in again.");
+            localStorage.removeItem("token");
+            window.location.href = "login.html";
+            return;
+        }
+
+        // Check if not authenticated (401 Unauthorized)
+        if (res.status === 401) {
+            alert("Please log in to sign up for events.");
+            window.location.href = "login.html";
+            return;
+        }
+
         //  Backend says not allowed (duplicate or same-day)
         if (!res.ok) {
-            alert(data.error);
+            alert(data.error || "Unable to sign up for this event.");
             return;
         }
 
@@ -130,6 +177,9 @@ document.addEventListener('DOMContentLoaded', function() {
         eventLocation.textContent = event.location;
         eventMRT.textContent = event.nearestMRT;
         eventDescription.textContent = event.longIntro || event.intro || 'No detailed description available.';
+        
+        // Store location for directions
+        currentEventLocation = event.location;
 
         // Update page title
         document.title = `${event.header} - Cycling Without Age Singapore`;
