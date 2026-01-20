@@ -167,7 +167,25 @@ document.addEventListener('DOMContentLoaded', () => {
     const to = toDateEl?.value ? parseMMDDYYYY(toDateEl.value) : null;
     if (!from && !to) return list;
     return list.filter(ev => {
-      const t = new Date(ev.time ?? ev.eventTime ?? ev.date ?? null);
+      const timeValue = ev.time ?? ev.eventTime ?? ev.date ?? null;
+      if (!timeValue) return false;
+      
+      // Handle Firestore Timestamp objects
+      let t;
+      if (timeValue && typeof timeValue === 'object') {
+        if (timeValue._seconds !== undefined) {
+          t = new Date(timeValue._seconds * 1000);
+        } else if (typeof timeValue.toDate === 'function') {
+          t = timeValue.toDate();
+        } else if (timeValue.seconds !== undefined) {
+          t = new Date(timeValue.seconds * 1000);
+        } else {
+          t = new Date(timeValue);
+        }
+      } else {
+        t = new Date(timeValue);
+      }
+      
       if (isNaN(t)) return false;
       if (from && t < startOfDay(from)) return false;
       if (to && t > endOfDay(to)) return false;
@@ -245,5 +263,7 @@ document.addEventListener('DOMContentLoaded', () => {
     // navigate to event detail page
     window.location.href = `eventDetail.html?id=${encodeURIComponent(eventId)}`;
   });
-  loadAndRender('past');
+  
+  // Load events on page load
+  loadAndRender();
 });
