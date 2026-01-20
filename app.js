@@ -7,10 +7,18 @@ const { admin, db } = require("./firebaseAdmin");
 const app = express();
 const PORT = process.env.PORT || 3000;
 
-// Middleware
-app.use(express.json());
-app.use(express.urlencoded({ extended: true }));
-app.use(express.static(path.join(__dirname, "public")));
+// Controllers
+const userController = require("./controllers/userController");
+const eventController = require("./controllers/eventController");
+const eventSignupController = require("./controllers/eventSignupController");
+const attendanceController = require("./controllers/attendanceController");
+const reminderController = require("./controllers/reminderController");
+const bookingController = require("./controllers/bookingController");
+const historyController = require("./controllers/historyController");
+const resetPwController = require("./controllers/resetPwController");
+const telegramController = require("./controllers/telegramController");
+const trainingController = require("./controllers/trainingController");
+
 
 // Validation & Auth Middleware
 const userValidation = require("./middlewares/userValidation");
@@ -18,15 +26,11 @@ const eventValidation = require("./middlewares/eventValidation");
 const attendanceValidation = require("./middlewares/attendanceValidation");
 const verifyJWT = require("./middlewares/verifyJWT");
 
-// Controllers
-const userController = require("./controllers/userController");
-const eventController = require("./controllers/eventController");
-const historyController = require("./controllers/historyController");
-const eventSignupController = require("./controllers/eventSignupController");
-const reminderController = require("./controllers/reminderController");
-const bookingController = require("./controllers/bookingController");
-const attendanceController = require("./controllers/attendanceController");
-const resetPwController = require("./controllers/resetPwController");
+// Middleware
+app.use(express.json());
+app.use(express.urlencoded({ extended: true }));
+app.use(express.static(path.join(__dirname, "public")));
+const feedbackController = require("./controllers/feedbackController");
 
 // User routes
 app.post("/users/register", userValidation.validateUser, userController.createUser);
@@ -49,6 +53,7 @@ app.get("/events/:id", eventController.getEventById);
 
 //reminder
 app.post("/api/sendReminder", verifyJWT, reminderController.sendReminder);
+app.post("/api/training/apply",verifyJWT,trainingController.applyForTraining);
 
 //booking list
 app.get("/users/:userId/bookings", verifyJWT, bookingController.getUserBookings);
@@ -61,13 +66,22 @@ app.get("/volunteers/:id/events", verifyJWT, historyController.getEventsByVolunt
 app.post("/attendance/checkin", verifyJWT, attendanceController.checkIn);
 app.post("/attendance/checkout", verifyJWT, attendanceController.checkOut);
 
+// Telegram routes
+app.post("/api/telegram/set-webhook", telegramController.setWebhook);
+app.post("/api/telegram/webhook", telegramController.webhook);
+
+
+// Feedback routes
+app.post("/feedback", feedbackController.submitFeedback);
+app.get("/feedback", verifyJWT, feedbackController.getFeedback); 
+
 // serve main.html at root
-app.get('/', (req, res) => {
-  res.sendFile(path.join(__dirname, 'public', 'main.html'));
+app.get("/", (req, res) => {
+  res.sendFile(path.join(__dirname, "public", "main.html"));
 });
 
-app.get(['/profile.html/:id', '/profile/:id'], (req, res) => {
-    res.sendFile(path.join(__dirname, 'public', 'profile.html'));
+app.get(["/profile.html/:id", "/profile/:id"], (req, res) => {
+  res.sendFile(path.join(__dirname, "public", "profile.html"));
 });
 
 app.listen(PORT, () => {
@@ -78,4 +92,6 @@ app.listen(PORT, () => {
 process.on("SIGINT", () => {
   console.log("Server shutting down");
   process.exit(0);
+});
 }); 
+

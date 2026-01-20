@@ -1,6 +1,3 @@
-// Firebase is already initialized in the HTML file
-// Access via window.firebaseApp if needed
-
 document.getElementById("loginForm").addEventListener("submit", async function (e) {
   e.preventDefault();
 
@@ -30,27 +27,34 @@ document.getElementById("loginForm").addEventListener("submit", async function (
     localStorage.setItem("userRole", data.role);
     localStorage.setItem("userName", data.name);
 
+    // Decide redirect based on role
+    let redirectUrl = "main.html";
+
+    if (data.role === "Admin") {
+      redirectUrl = "admin_main.html";
+    }
+
     // Show success modal
-    document.getElementById("loginSuccessModal").style.display = "flex";
+    const modal = document.getElementById("loginSuccessModal");
+    modal.style.display = "flex";
+
+    // Close modal button
+    document.getElementById("closeLoginSuccessModal").onclick = function () {
+      modal.style.display = "none";
+      window.location.href = redirectUrl;
+    };
+
+    // Click outside modal
+    window.onclick = function (event) {
+      if (event.target === modal) {
+        modal.style.display = "none";
+        window.location.href = redirectUrl;
+      }
+    };
 
   } catch (error) {
     console.error("Login error:", error);
     showBackendError("email", "Network error. Please try again.");
-  }
-});
-
-// Close login success modal and redirect
-document.getElementById("closeLoginSuccessModal").addEventListener("click", function() {
-  document.getElementById("loginSuccessModal").style.display = "none";
-  window.location.href = "main.html";
-});
-
-// Close modal when clicking outside
-window.addEventListener("click", function(event) {
-  const modal = document.getElementById("loginSuccessModal");
-  if (event.target === modal) {
-    modal.style.display = "none";
-    window.location.href = "main.html";
   }
 });
 

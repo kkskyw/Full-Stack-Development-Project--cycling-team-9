@@ -1,115 +1,66 @@
-const sql = require("mssql");
-const dbConfig = require("../dbConfig");
-const nodemailer = require("nodemailer");
+const { db } = require("../firebaseAdmin");
+const { Resend } = require("resend");
 
-// Email sender (your verified Gmail)
-const { addBooking } = require("../models/bookingModel");
-const emailTransporter = nodemailer.createTransport({
-    service: "gmail",
-    auth: {
-        user: process.env.EMAIL_USER,  // SENDER
-        pass: process.env.EMAIL_PASS
+const resend = new Resend(process.env.RESEND_API_KEY);
+
+async function sendReminder(req, res) {
+  try {
+    const userId = req.user.userId;
+    const { eventId } = req.body;
+
+    if (!userId) {
+      return res.status(401).json({ error: "Unauthorized" });
     }
-});
 
+    if (!eventId) {
+      return res.status(400).json({ error: "Missing eventId" });
+    }
 
-exports.sendReminder = async (req, res) => {
-    try {
-        const { eventId, method } = req.body;
+    // Get user from Firestore
+    const userSnap = await db.collection("users").doc(userId).get();
 
-        if (!eventId || !method) {
-            return res.status(400).json({ error: "Missing eventId or method" });
-        }
+    if (!userSnap.exists) {
+      return res.status(404).json({ error: "User not found" });
+    }
 
-        const userId = req.user.userId;
+    const { name, email } = userSnap.data();
 
-        // Fetch user email + phone directly from DB
-        const pool = await sql.connect(dbConfig);
-        const userResult = await pool.request()
-            .input("userId", sql.Int, userId)
-            .query("SELECT email, phone FROM users WHERE userId = @userId");
+    if (!email) {
+      return res.status(400).json({ error: "User email not found" });
+    }
 
-        if (userResult.recordset.length === 0) {
-            return res.status(404).json({ error: "User not found" });
-        }
+    // Optional delay (demo-friendly)
+    const delayMs = 10_000;
 
-        const userEmail = userResult.recordset[0].email;
-        const userPhone = userResult.recordset[0].phone;
+    res.json({
+      message: "Reminder scheduled. Email will be sent shortly."
+    });
 
-        if (method === "email" && !userEmail) {
-            return res.status(400).json({ error: "User has no email on record" });
-        }
-
-        // delay in milliseconds (10 seconds)
-        const delay = 10000;
-
-        res.json({
-            message: `Email reminder will be sent in ${delay / 1000} seconds`
+    setTimeout(async () => {
+      try {
+        await resend.emails.send({
+          from: "onboarding@resend.dev",
+          to: email,
+          subject: "Event Reminder",
+          html: `
+            <p>Hi ${name},</p>
+            <p>This is a reminder for your upcoming event.</p>
+            <p><strong>Event ID:</strong> ${eventId}</p>
+          `
         });
 
-        // Send email after delay
-        setTimeout(async () => {
-    try {
-        // 1️⃣ Fetch user info
-        const userResult = await pool.request()
-            .input("userId", sql.Int, userId)
-            .query(`
-                SELECT name, email
-                FROM users
-                WHERE userId = @userId
-            `);
+        console.log("📧 Reminder email sent to", email);
+      } catch (err) {
+        console.error("Reminder email failed:", err);
+      }
+    }, delayMs);
 
-        const userName = userResult.recordset[0].name;
+  } catch (err) {
+    console.error("sendReminder error:", err);
+    res.status(500).json({ error: "Internal server error" });
+  }
+}
 
-        // 2️⃣ Fetch event info
-        const eventResult = await pool.request()
-            .input("eventId", sql.Int, eventId)
-            .query(`
-                SELECT header, location, start_time
-                FROM events
-                WHERE eventId = @eventId
-            `);
-
-        const event = eventResult.recordset[0];
-
-        const formattedDate = new Date(event.start_time).toLocaleDateString();
-        const formattedTime = new Date(event.start_time).toLocaleTimeString();
-
-        // 3️⃣ Send professional email
-        await emailTransporter.sendMail({
-            from: process.env.EMAIL_USER,
-            to: userEmail,
-            subject: `Reminder: ${event.header}`,
-            text: `
-                Hi ${userName},
-
-                This is a friendly reminder about your upcoming event with Cycling Without Age Singapore.
-
-                Event: ${event.header}
-                Location: ${event.location}
-                Date: ${formattedDate}
-                Time: ${formattedTime}
-
-                Thank you for supporting our mission to bring joy and mobility to seniors in our community.
-
-                We look forward to seeing you at the event!
-
-                Warm regards,
-                Cycling Without Age Singapore
-                            `
-        });
-
-        console.log(`EMAIL REMINDER SENT TO ${userEmail}`);
-
-    } catch (err) {
-        console.error("Failed to send email reminder:", err);
-    }
-}, delay);
-
-
-    } catch (err) {
-        console.error("Error in sendReminder:", err);
-        res.status(500).json({ error: "Internal server error" });
-    }
+module.exports = {
+  sendReminder
 };
-
