@@ -1,0 +1,42 @@
+.admin-training {
+  padding: 60px 10%;
+}
+
+.admin-training h1 {
+  text-align: center;
+  margin-bottom: 30px;
+}
+
+table {
+  width: 100%;
+  border-collapse: collapse;
+  background: #fff;
+}
+
+th, td {
+  padding: 14px;
+  border-bottom: 1px solid #ddd;
+  text-align: center;
+}
+
+th {
+  background: #f4f4f4;
+}
+
+button {
+  padding: 8px 14px;
+  border: none;
+  border-radius: 5px;
+  cursor: pointer;
+}
+
+.approve {
+  background: #28a745;
+  color: white;
+}
+
+.reject {
+  background: #dc3545;
+  color: white;
+  margin-left: 8px;
+}

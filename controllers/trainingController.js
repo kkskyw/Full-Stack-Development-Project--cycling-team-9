@@ -28,20 +28,34 @@ async function applyForTraining(req, res) {
       return res.status(400).json({ message: "Email not found" });
     }
 
+    // ✅ 1. SAVE TRAINING APPLICATION
+    await db.collection("trainingApplications").add({
+      userId,
+      name,
+      email,
+      roleApplied: role,
+      status: "pending",
+      createdAt: new Date()
+    });
+
+    // ✅ 2. SEND EMAIL
     await resend.emails.send({
-      from: "onboarding@resend.dev",
+      from: "Training <onboarding@resend.dev>",
       to: email,
-      subject: "Training Registration Confirmed",
+      subject: "Training Application Received",
       html: `
         <p>Hi ${name},</p>
-        <p>You are registered for the <b>${role}</b> role.</p>
+        <p>Your application for <b>${role}</b> has been received.</p>
+
         <p><strong>📍 In-Person Training</strong></p>
         <p>Ngee Ann Polytechnic</p>
+
+        <p>We will notify you once an admin approves your training.</p>
       `
     });
 
     res.json({
-      message: "Application successful. Training email sent."
+      message: "Training application submitted"
     });
 
   } catch (err) {
