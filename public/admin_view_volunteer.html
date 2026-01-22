@@ -1,0 +1,154 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Admin - View Volunteer</title>
+    <link href="https://fonts.googleapis.com/css2?family=Open+Sans:wght@400;500;600;700&display=swap" rel="stylesheet" />
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <link rel="stylesheet" href="../css/admin_view_volunteer.css" />
+    <link rel="icon" type="image/png" href="/images/favicon.png">
+</head>
+<body>
+
+<div class="modal">
+    <a href="admin_main.html" class="back-btn" title="Back to Dashboard">
+        <i class="fas fa-arrow-left"></i>
+    </a>
+
+    <h2>
+        <i class="fas fa-user-circle"></i>
+        Volunteer Profile
+    </h2>
+
+    <div id="volunteerInfo" class="info-box">
+        <!-- Volunteer info will be loaded here -->
+        <div class="loading">
+            <div class="loading-spinner"></div>
+            <p>Loading volunteer information...</p>
+        </div>
+    </div>
+
+    <h3>
+        <i class="fas fa-calendar-check"></i>
+        Events Attended
+        <span id="totalEvents" class="counter-badge">0 events</span>
+    </h3>
+
+    <div class="table-wrapper">
+        <table>
+            <thead>
+                <tr>
+                    <th>Event</th>
+                    <th>Check In</th>
+                    <th>Check Out</th>
+                    <th>Status</th>
+                </tr>
+            </thead>
+            <tbody id="attendanceTable">
+                <tr>
+                    <td colspan="4" class="no-data">
+                        <i class="fas fa-spinner fa-spin"></i>
+                        Loading attendance records...
+                    </td>
+                </tr>
+            </tbody>
+        </table>
+    </div>
+
+    <div class="action-buttons">
+        <button onclick="printProfile()" class="btn btn-print">
+            <i class="fas fa-print"></i> Print Profile
+        </button>
+        <button onclick="exportData()" class="btn btn-export">
+            <i class="fas fa-file-export"></i> Export Data
+        </button>
+        <button onclick="sendMessage()" class="btn btn-message">
+            <i class="fas fa-envelope"></i> Send Message
+        </button>
+    </div>
+
+</div>
+
+<!-- Loading Spinner CSS -->
+<style>
+.loading {
+    text-align: center;
+    padding: 40px;
+}
+
+.loading-spinner {
+    border: 4px solid #f3f3f3;
+    border-top: 4px solid #667eea;
+    border-radius: 50%;
+    width: 40px;
+    height: 40px;
+    animation: spin 1s linear infinite;
+    margin: 0 auto 15px;
+}
+
+@keyframes spin {
+    0% { transform: rotate(0deg); }
+    100% { transform: rotate(360deg); }
+}
+
+.counter-badge {
+    background: #667eea;
+    color: white;
+    padding: 4px 12px;
+    border-radius: 20px;
+    font-size: 14px;
+    margin-left: 10px;
+}
+
+.action-buttons {
+    display: flex;
+    justify-content: center;
+    gap: 15px;
+    margin-top: 30px;
+    flex-wrap: wrap;
+}
+
+.btn {
+    padding: 10px 20px;
+    border: none;
+    border-radius: 5px;
+    cursor: pointer;
+    font-weight: 600;
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    transition: all 0.3s;
+}
+
+.btn-print {
+    background: #6c757d;
+    color: white;
+}
+
+.btn-print:hover {
+    background: #5a6268;
+}
+
+.btn-export {
+    background: #17a2b8;
+    color: white;
+}
+
+.btn-export:hover {
+    background: #138496;
+}
+
+.btn-message {
+    background: #28a745;
+    color: white;
+}
+
+.btn-message:hover {
+    background: #218838;
+}
+</style>
+
+<script src="../script/admin_view_volunteer.js"></script>
+</body>
+</html>

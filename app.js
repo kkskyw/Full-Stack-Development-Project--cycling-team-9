@@ -18,6 +18,7 @@ const historyController = require("./controllers/historyController");
 const resetPwController = require("./controllers/resetPwController");
 const telegramController = require("./controllers/telegramController");
 const trainingController = require("./controllers/trainingController");
+const adminVolunteerController = require("./controllers/adminVolunteerController");
 
 
 // Validation & Auth Middleware
@@ -25,6 +26,7 @@ const userValidation = require("./middlewares/userValidation");
 const eventValidation = require("./middlewares/eventValidation");
 const attendanceValidation = require("./middlewares/attendanceValidation");
 const verifyJWT = require("./middlewares/verifyJWT");
+const verifyAdmin = require("./middlewares/verifyAdmin");
 
 // Middleware
 app.use(express.json());
@@ -65,11 +67,11 @@ app.get("/volunteers/:id/events", verifyJWT, historyController.getEventsByVolunt
 // Attendance routes
 app.post("/attendance/checkin", verifyJWT, attendanceController.checkIn);
 app.post("/attendance/checkout", verifyJWT, attendanceController.checkOut);
+app.get("/admin/volunteers/:id", verifyJWT, verifyAdmin, adminVolunteerController.getVolunteerDetails);
 
 // Telegram routes
 app.post("/api/telegram/set-webhook", telegramController.setWebhook);
 app.post("/api/telegram/webhook", telegramController.webhook);
-
 
 // Feedback routes
 app.post("/feedback", feedbackController.submitFeedback);
