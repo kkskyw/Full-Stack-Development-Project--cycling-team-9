@@ -45,12 +45,14 @@ async function applyForTraining(req, res) {
       subject: "Training Application Received",
       html: `
         <p>Hi ${name},</p>
-        <p>Your application for <b>${role}</b> has been received.</p>
 
-        <p><strong>📍 In-Person Training</strong></p>
-        <p>Ngee Ann Polytechnic</p>
+        <p>Your application for <strong>${role}</strong> has been received.</p>
 
-        <p>We will notify you once an admin approves your training.</p>
+        <p>Please attend the in-person training session.</p>
+        <p>An admin will verify your attendance on-site.</p>
+
+        <br/>
+        <p>Cycling Without Age Team</p>
       `
     });
 

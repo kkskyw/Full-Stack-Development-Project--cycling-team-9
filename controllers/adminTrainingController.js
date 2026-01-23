@@ -5,7 +5,7 @@ const { db } = require("../firebaseAdmin");
  */
 async function getPendingApplications(req, res) {
   try {
-    if (req.user.role !== "Admin") {
+    if (!req.user || req.user.role.toLowerCase() !== "admin") {
       return res.status(403).json({ message: "Forbidden" });
     }
 
@@ -31,7 +31,7 @@ async function getPendingApplications(req, res) {
  */
 async function approveTraining(req, res) {
   try {
-    if (req.user.role !== "Admin") {
+    if (!req.user || req.user.role.toLowerCase() !== "admin") {
       return res.status(403).json({ message: "Forbidden" });
     }
 
@@ -46,10 +46,8 @@ async function approveTraining(req, res) {
 
     const { userId, roleApplied } = appSnap.data();
 
-    // 1. Mark application approved
     await appRef.update({ status: "approved" });
 
-    // 2. Update user role
     await db.collection("users").doc(userId).update({
       role: roleApplied
     });
@@ -66,7 +64,7 @@ async function approveTraining(req, res) {
  */
 async function rejectTraining(req, res) {
   try {
-    if (req.user.role !== "Admin") {
+    if (!req.user || req.user.role.toLowerCase() !== "admin") {
       return res.status(403).json({ message: "Forbidden" });
     }
 
