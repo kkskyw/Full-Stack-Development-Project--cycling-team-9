@@ -20,6 +20,7 @@ const telegramController = require("./controllers/telegramController");
 const trainingController = require("./controllers/trainingController");
 const adminVolunteerController = require("./controllers/adminVolunteerController");
 const adminTrainingController = require("./controllers/adminTrainingController");
+const adminEventsController = require("./controllers/adminEventsController");
 
 // Validation & Auth Middleware
 const userValidation = require("./middlewares/userValidation");
@@ -63,6 +64,12 @@ app.post("/api/admin/approve-training", verifyJWT, adminTrainingController.appro
 app.post("/api/admin/reject-training", verifyJWT, adminTrainingController.rejectTraining);
 app.get("/api/training/status", verifyJWT, trainingController.getMyTrainingStatus);
 
+// ========== ADMIN EVENT MANAGEMENT ROUTES ==========
+app.post("/admin/events", verifyJWT, verifyAdmin, adminEventsController.createEvent);
+app.get("/admin/events", verifyJWT, verifyAdmin, adminEventsController.getAllEvents);
+app.get("/admin/events/:id", verifyJWT, verifyAdmin, adminEventsController.getEventById);
+app.put("/admin/events/:id", verifyJWT, verifyAdmin, adminEventsController.updateEvent);
+app.delete("/admin/events/:id", verifyJWT, verifyAdmin, adminEventsController.deleteEvent);
 
 //booking list
 app.get("/users/:userId/bookings", verifyJWT, bookingController.getUserBookings);
