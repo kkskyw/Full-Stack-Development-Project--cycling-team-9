@@ -8,48 +8,95 @@ async function applyForTraining(req, res) {
     const userId = req.user.userId;
     const { role } = req.body;
 
-    if (!userId) {
-      return res.status(401).json({ message: "Unauthorized" });
-    }
-
     if (!role) {
       return res.status(400).json({ message: "Missing role" });
     }
 
-    const userSnap = await db.collection("users").doc(userId).get();
+    const userRef = db.collection("users").doc(userId);
+    const userSnap = await userRef.get();
 
     if (!userSnap.exists) {
       return res.status(404).json({ message: "User not found" });
     }
 
-    const { name, email } = userSnap.data();
+    const userData = userSnap.data();
 
-    if (!email) {
-      return res.status(400).json({ message: "Email not found" });
+    // 🚫 Admins cannot apply
+    if (userData.role?.toLowerCase() === "admin") {
+      return res.status(403).json({ message: "Admins cannot apply for training roles" });
     }
 
+    const trainingRoles = userData.trainingRoles || [];
+
+    if (trainingRoles.includes(role)) {
+      return res.status(409).json({ message: "Training role already granted" });
+    }
+
+    const existingApp = await db
+      .collection("trainingApplications")
+      .where("userId", "==", userId)
+      .where("roleApplied", "==", role)
+      .where("status", "in", ["pending", "approved"])
+      .get();
+
+    if (!existingApp.empty) {
+      return res.status(409).json({ message: "Application already submitted" });
+    }
+
+    await db.collection("trainingApplications").add({
+      userId,
+      name: userData.name,
+      email: userData.email,
+      roleApplied: role,
+      status: "pending",
+      createdAt: new Date()
+    });
+
     await resend.emails.send({
-      from: "onboarding@resend.dev",
-      to: email,
-      subject: "Training Registration Confirmed",
+      from: "Training <onboarding@resend.dev>",
+      to: userData.email,
+      subject: "Training Application Received",
       html: `
-        <p>Hi ${name},</p>
-        <p>You are registered for the <b>${role}</b> role.</p>
-        <p><strong>📍 In-Person Training</strong></p>
-        <p>Ngee Ann Polytechnic</p>
+        <p>Hi ${userData.name},</p>
+        <p>Your application for <strong>${role}</strong> has been received.</p>
+        <p>An admin will verify your attendance.</p>
       `
     });
 
-    res.json({
-      message: "Application successful. Training email sent."
-    });
+    res.json({ message: "Training application submitted" });
 
   } catch (err) {
-    console.error("applyForTraining error:", err);
+    console.error(err);
     res.status(500).json({ message: "Server error" });
   }
 }
 
+async function getMyTrainingStatus(req, res) {
+  try {
+    const userId = req.user.userId;
+
+    const userSnap = await db.collection("users").doc(userId).get();
+    if (!userSnap.exists) {
+      return res.status(404).json({ message: "User not found" });
+    }
+
+    const appsSnap = await db
+      .collection("trainingApplications")
+      .where("userId", "==", userId)
+      .get();
+
+    res.json({
+      trainingRoles: userSnap.data().trainingRoles || [],
+      applications: appsSnap.docs.map(d => d.data())
+    });
+
+  } catch (err) {
+    console.error(err);
+    res.status(500).json({ message: "Failed to load training status" });
+  }
+}
+
 module.exports = {
-  applyForTraining
+  applyForTraining,
+  getMyTrainingStatus
 };

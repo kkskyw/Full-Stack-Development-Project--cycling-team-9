@@ -19,7 +19,7 @@ const resetPwController = require("./controllers/resetPwController");
 const telegramController = require("./controllers/telegramController");
 const trainingController = require("./controllers/trainingController");
 const adminVolunteerController = require("./controllers/adminVolunteerController");
-
+const adminTrainingController = require("./controllers/adminTrainingController");
 
 // Validation & Auth Middleware
 const userValidation = require("./middlewares/userValidation");
@@ -56,6 +56,13 @@ app.get("/events/:id", eventController.getEventById);
 //reminder
 app.post("/api/sendReminder", verifyJWT, reminderController.sendReminder);
 app.post("/api/training/apply",verifyJWT,trainingController.applyForTraining);
+
+//admin training
+app.get("/api/admin/training-applications", verifyJWT, adminTrainingController.getPendingApplications);
+app.post("/api/admin/approve-training", verifyJWT, adminTrainingController.approveTraining);
+app.post("/api/admin/reject-training", verifyJWT, adminTrainingController.rejectTraining);
+app.get("/api/training/status", verifyJWT, trainingController.getMyTrainingStatus);
+
 
 //booking list
 app.get("/users/:userId/bookings", verifyJWT, bookingController.getUserBookings);
@@ -95,3 +102,5 @@ process.on("SIGINT", () => {
   console.log("Server shutting down");
   process.exit(0);
 });
+
+
