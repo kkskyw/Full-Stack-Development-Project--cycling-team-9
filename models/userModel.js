@@ -22,6 +22,7 @@ async function createUser(userData, firebaseUid = null) {
   // Store userId inside the document for consistency
   const userWithId = {
     ...userData,
+    trainingRoles: userData.trainingRoles || [],
     userId: userId,
     createdAt: new Date().toISOString()
   };

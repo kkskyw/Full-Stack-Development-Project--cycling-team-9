@@ -56,9 +56,11 @@ app.post("/api/sendReminder", verifyJWT, reminderController.sendReminder);
 app.post("/api/training/apply",verifyJWT,trainingController.applyForTraining);
 
 //admin training
-app.get("/api/admin/training-applications",verifyJWT,adminTrainingController.getPendingApplications);
-app.post("/api/admin/reject-training",verifyJWT,adminTrainingController.rejectTraining);
-app.get("/api/admin/training-applications",verifyJWT,adminTrainingController.getPendingApplications);
+app.get("/api/admin/training-applications", verifyJWT, adminTrainingController.getPendingApplications);
+app.post("/api/admin/approve-training", verifyJWT, adminTrainingController.approveTraining);
+app.post("/api/admin/reject-training", verifyJWT, adminTrainingController.rejectTraining);
+app.get("/api/training/status", verifyJWT, trainingController.getMyTrainingStatus);
+
 
 //booking list
 app.get("/users/:userId/bookings", verifyJWT, bookingController.getUserBookings);

@@ -1,11 +1,14 @@
 const { db } = require("../firebaseAdmin");
+const { Resend } = require("resend");
+
+const resend = new Resend(process.env.RESEND_API_KEY);
 
 /**
  * GET all pending applications
  */
 async function getPendingApplications(req, res) {
   try {
-    if (!req.user || req.user.role.toLowerCase() !== "admin") {
+    if (req.user.role.toLowerCase() !== "admin") {
       return res.status(403).json({ message: "Forbidden" });
     }
 
@@ -21,17 +24,17 @@ async function getPendingApplications(req, res) {
 
     res.json(applications);
   } catch (err) {
-    console.error("getPendingApplications error:", err);
+    console.error(err);
     res.status(500).json({ message: "Server error" });
   }
 }
 
 /**
- * APPROVE training
+ * APPROVE training (CORRECT)
  */
 async function approveTraining(req, res) {
   try {
-    if (!req.user || req.user.role.toLowerCase() !== "admin") {
+    if (req.user.role.toLowerCase() !== "admin") {
       return res.status(403).json({ message: "Forbidden" });
     }
 
@@ -44,17 +47,48 @@ async function approveTraining(req, res) {
       return res.status(404).json({ message: "Application not found" });
     }
 
-    const { userId, roleApplied } = appSnap.data();
+    const { userId, roleApplied, email, name } = appSnap.data();
 
     await appRef.update({ status: "approved" });
 
-    await db.collection("users").doc(userId).update({
-      role: roleApplied
+    const userRef = db.collection("users").doc(userId);
+    const userSnap = await userRef.get();
+
+    if (!userSnap.exists) {
+      return res.status(404).json({ message: "User not found" });
+    }
+
+    const userData = userSnap.data();
+
+    if (userData.role?.toLowerCase() === "admin") {
+      return res.status(400).json({ message: "Admins cannot receive training roles" });
+    }
+
+    const currentRoles = userData.trainingRoles || [];
+
+    if (!currentRoles.includes(roleApplied)) {
+      await userRef.update({
+        trainingRoles: [...currentRoles, roleApplied]
+      });
+    }
+
+    await resend.emails.send({
+      from: "Training <onboarding@resend.dev>",
+      to: email,
+      subject: "Training Attendance Verified",
+      html: `
+        <p>Hi ${name},</p>
+        <p>Your attendance has been successfully verified.</p>
+        <p>You are now approved as <strong>${roleApplied}</strong>.</p>
+        <br/>
+        <p>Cycling Without Age Team</p>
+      `
     });
 
-    res.json({ message: "Training approved" });
+    res.json({ message: "Training role granted" });
+
   } catch (err) {
-    console.error("approveTraining error:", err);
+    console.error(err);
     res.status(500).json({ message: "Server error" });
   }
 }
@@ -64,7 +98,7 @@ async function approveTraining(req, res) {
  */
 async function rejectTraining(req, res) {
   try {
-    if (!req.user || req.user.role.toLowerCase() !== "admin") {
+    if (req.user.role.toLowerCase() !== "admin") {
       return res.status(403).json({ message: "Forbidden" });
     }
 
@@ -77,7 +111,7 @@ async function rejectTraining(req, res) {
 
     res.json({ message: "Application rejected" });
   } catch (err) {
-    console.error("rejectTraining error:", err);
+    console.error(err);
     res.status(500).json({ message: "Server error" });
   }
 }
