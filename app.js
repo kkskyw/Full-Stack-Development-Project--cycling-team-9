@@ -21,6 +21,7 @@ const trainingController = require("./controllers/trainingController");
 const adminVolunteerController = require("./controllers/adminVolunteerController");
 const adminTrainingController = require("./controllers/adminTrainingController");
 const adminEventsController = require("./controllers/adminEventsController");
+const companyEventsController = require('./controllers/companyEventsController');
 
 // Validation & Auth Middleware
 const userValidation = require("./middlewares/userValidation");
@@ -70,6 +71,12 @@ app.get("/admin/events", verifyJWT, verifyAdmin, adminEventsController.getAllEve
 app.get("/admin/events/:id", verifyJWT, verifyAdmin, adminEventsController.getEventById);
 app.put("/admin/events/:id", verifyJWT, verifyAdmin, adminEventsController.updateEvent);
 app.delete("/admin/events/:id", verifyJWT, verifyAdmin, adminEventsController.deleteEvent);
+
+// Company booking routes
+app.get('/company/events', companyEventsController.getEventsForCompanies);
+app.post('/company/bookings', companyEventsController.createCompanyBooking);
+app.get('/company/bookings', companyEventsController.getCompanyBookings);
+app.put('/company/bookings/:bookingId/status', verifyJWT, verifyAdmin, companyEventsController.updateBookingStatus);
 
 //booking list
 app.get("/users/:userId/bookings", verifyJWT, bookingController.getUserBookings);
