@@ -21,7 +21,6 @@ async function applyForTraining(req, res) {
 
     const userData = userSnap.data();
 
-    // 🚫 Admins cannot apply
     if (userData.role?.toLowerCase() === "admin") {
       return res.status(403).json({ message: "Admins cannot apply for training roles" });
     }
