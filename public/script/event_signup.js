@@ -21,7 +21,7 @@ document.addEventListener("DOMContentLoaded", () => {
 
         try {
             // 1️⃣ Sign up for event
-            const signupRes = await fetch(`/events/${eventId}/email-signup`, {
+            const signupRes = await fetch(`/api/events/${eventId}/email-signup`, {
                 method: "POST",
                 headers: {
                     "Authorization": `Bearer ${getToken()}`,

@@ -139,8 +139,8 @@
 
         <script type="module">
     // Import the functions you need from the SDKs you need
-    import { initializeApp } from "https://www.gstatic.com/firebasejs/12.6.0/firebase-app.js";
-    import { getFirestore } from "https://www.gstatic.com/firebasejs/12.6.0/firebase-firestore.js";
+    import { initializeApp } from "https://www.gstatic.com/firebasejs/12.6.0/firebase-app.js?v=2";
+    import { getFirestore } from "https://www.gstatic.com/firebasejs/12.6.0/firebase-firestore.js?v=2";
     // TODO: Add SDKs for Firebase products that you want to use
     // https://firebase.google.com/docs/web/setup#available-libraries
 
@@ -161,7 +161,7 @@
     const db = getFirestore(app);
     db.settings({timestampsInSnapshots:true});
     </script>
-    <script src="script/translations.js"></script>
-    <script src="script/main.js"></script>
+    <script src="script/translations.js?v=2"></script>
+    <script src="script/main.js?v=2"></script>
 </body>
 </html>

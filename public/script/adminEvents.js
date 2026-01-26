@@ -40,7 +40,7 @@ document.addEventListener('DOMContentLoaded', function() {
             longIntro: document.getElementById('longIntro').value
         };
 
-        const url = eventId ? `/events/${eventId}` : '/events';
+        const url = eventId ? `/api/events/${eventId}` : '/api/events';
         const method = eventId ? 'PUT' : 'POST';
 
         try {
@@ -69,7 +69,7 @@ document.addEventListener('DOMContentLoaded', function() {
 
     async function loadEvents() {
         try {
-            const res = await fetch('/events');
+            const res = await fetch('/api/events');
             const result = await res.json();
             
             // Note: Adjust result.data based on your specific API structure
@@ -95,7 +95,7 @@ document.addEventListener('DOMContentLoaded', function() {
     // Window-scoped functions for button clicks
     window.editEvent = async (id) => {
         try {
-            const res = await fetch(`/events/${id}`);
+            const res = await fetch(`/api/events/${id}`);
             const result = await res.json();
             const event = result.data;
 
@@ -124,7 +124,7 @@ document.addEventListener('DOMContentLoaded', function() {
         if (!confirm('Are you sure you want to delete this event?')) return;
 
         try {
-            const res = await fetch(`/events/${id}`, {
+            const res = await fetch(`/api/events/${id}`, {
                 method: 'DELETE',
                 headers: { 'Authorization': `Bearer ${localStorage.getItem('token')}` }
             });

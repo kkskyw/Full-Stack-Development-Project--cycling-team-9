@@ -72,7 +72,7 @@ document.getElementById("checkInBtn").addEventListener("click", async () => {
   
   const { lat, lon } = currentLocation;
   try {
-    const res = await fetch("/attendance/checkin", {
+    const res = await fetch("/api/attendance/checkin", {
       method: "POST",
       headers: { "Content-Type": "application/json", "Authorization": `Bearer ${token}` },
       body: JSON.stringify({ eventId, lat, lon })
@@ -107,7 +107,7 @@ function showEarlyCheckoutConfirmation(errorMessage) {
 async function proceedWithCheckout(force=false) {
   const payload = { ...checkoutPayload, forceCheckout: force };
   try {
-    const res = await fetch("/attendance/checkout", {
+    const res = await fetch("/api/attendance/checkout", {
       method: "POST",
       headers: { "Content-Type": "application/json", "Authorization": `Bearer ${token}` },
       body: JSON.stringify(payload)

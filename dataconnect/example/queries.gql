@@ -1,0 +1,37 @@
+mutation CreateOrganization($name: String!, $email: String!) @auth(level: USER) {
+  organization_insert(data: {
+    name: $name,
+    email: $email,
+    createdAt_expr: "request.time"
+  })
+}
+
+query ListEvents @auth(level: PUBLIC, insecureReason: "This operation is safe to expose to the public") {
+  events {
+    id
+    title
+    date
+    time
+    location
+    description
+  }
+}
+
+mutation SignupForEvent($volunteerId: UUID!, $eventId: UUID!) @auth(level: USER) {
+  eventSignup_insert(data: {
+    volunteerId: $volunteerId,
+    eventId: $eventId,
+    signupDate_expr: "request.time",
+    status: "pending"
+  })
+}
+
+query ListVolunteers @auth(level: USER, insecureReason: "This operation is safe to expose to all logged in users.") {
+  volunteers {
+    id
+    displayName
+    email
+    phoneNumber
+    skills
+  }
+}

@@ -5,10 +5,66 @@
     <meta name="viewport" content="width=device-width,initial-scale=1" />
     <title>Cycling Without Age - Profile</title>
     <link href="https://fonts.googleapis.com/css2?family=Open+Sans:wght@400;600;700&display=swap" rel="stylesheet" />
-    <link rel="stylesheet" href="\css\profile.css" />
+    <link rel="stylesheet" href="css/main.css" />
+    <link rel="stylesheet" href="css/profile.css" />
     <link rel="icon" type="image/png" href="/images/favicon.png">
 </head>
 <body>
+    <header>
+        <div class="logo-container">
+            <img src="images/cropped-logox2.png" alt="Cycling Without Age Logo" data-lang="logoAlt" class="logo">
+            <div class="logo-text">
+                <p data-lang="logoText">Cycling Without Age</p>
+            </div>
+        </div>
+
+        <div class="header-buttons">
+            <div class="menu-container">
+                <button class="language-btn" id="languageBtn">
+                    <span>🌐</span> <span data-lang="language">Language</span>
+                </button>
+                <div class="dropdown-menu" id="languageDropdown">
+                    <a href="#" value="en">English</a>
+                    <a href="#" value="zh">中文 (Chinese)</a>
+                    <a href="#" value="ms">Bahasa Melayu (Malay)</a>
+                    <a href="#" value="ta">தமிழ் (Tamil)</a>
+                </div>
+            </div>
+
+            <div class="menu-container font-size-container">
+                <button class="font-size-btn" id="fontSizeBtn">
+                    <span>🔤</span>
+                    <span class="font-size-indicator" id="fontSizeIndicator">Medium</span>
+                    <span>▼</span>
+                </button>
+                <div class="dropdown-menu font-size-dropdown" id="fontSizeDropdown">
+                    <a href="#" class="font-size-option" data-size="small">Small</a>
+                    <a href="#" class="font-size-option active" data-size="medium">Medium</a>
+                    <a href="#" class="font-size-option" data-size="large">Large</a>
+                    <a href="#" class="font-size-option" data-size="xlarge">Extra Large</a>
+                </div>
+            </div>
+
+            <div class="menu-container">
+                <button class="menu-btn" id="menuBtn">
+                    <span>☰</span> <span data-lang="menu">Menu</span>
+                </button>
+                <div class="dropdown-menu" id="dropdownMenu">
+                    <a href="eventIntroduction.html" id="eventsLink" data-lang="events">Events</a>
+                    <a href="training.html" id="trainingLink" data-lang="training" style="display: none;">Training</a>
+                    <a href="attendance.html" data-lang="checkin">Check-in</a>
+                    <a href="donationPage.html" data-lang="donate">Donate</a>
+                    <a href="feedback.html" data-lang="feedback">Feedback</a>
+                    <a href="profile.html" data-lang="profile">Profile</a>
+                    <a href="history.html" data-lang="history">History</a>
+                    <a href="event_booking.html" data-lang="registeredEvents">Registered events</a>
+                </div>
+            </div>
+
+            <button class="register-btn" onclick="window.location.href='register.html'" data-lang="register">Register</button>
+            <button class="logout-btn" id="logoutBtn" style="display: none;" data-lang="logout">Log Out</button>
+        </div>
+    </header>
   <main class="page">
     <a class="back-link" href="main.html" aria-label="Back">&#8592;</a>
     <section class="profile">
@@ -57,6 +113,8 @@
     </div>
   </div>
 
-<script type="module" src="/script/profile.js"></script>
+    <script src="script/translations.js?v=2"></script>
+    <script src="script/main.js?v=2"></script>
+    <script type="module" src="/script/profile.js?v=2"></script>
 </body>
 </html>

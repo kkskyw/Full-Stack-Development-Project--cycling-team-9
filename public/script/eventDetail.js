@@ -81,7 +81,7 @@ document.addEventListener('DOMContentLoaded', function() {
 
     // 2️ Check with backend if already booked / same day conflict
     try {
-        const res = await fetch(`/events/${eventId}/signup`, {
+        const res = await fetch(`/api/events/${eventId}/signup`, {
             method: "POST",
             headers: {
                 "Authorization": `Bearer ${localStorage.getItem("token")}`,
@@ -127,7 +127,7 @@ document.addEventListener('DOMContentLoaded', function() {
         try {
             console.log('Loading event details for ID:', eventId);
             
-            const response = await fetch(`/events/${eventId}`);
+            const response = await fetch(`/api/events/${eventId}`);
             console.log('Response status:', response.status);
             
             if (!response.ok) {
