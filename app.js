@@ -57,6 +57,25 @@ app.get("/events/:id", eventController.getEventById);
 app.post("/api/sendReminder", verifyJWT, reminderController.sendReminder);
 app.post("/api/training/apply",verifyJWT,trainingController.applyForTraining);
 
+//admin training
+app.get("/api/admin/training-applications", verifyJWT, adminTrainingController.getPendingApplications);
+app.post("/api/admin/approve-training", verifyJWT, adminTrainingController.approveTraining);
+app.post("/api/admin/reject-training", verifyJWT, adminTrainingController.rejectTraining);
+app.get("/api/training/status", verifyJWT, trainingController.getMyTrainingStatus);
+
+// ========== ADMIN EVENT MANAGEMENT ROUTES ==========
+app.post("/admin/events", verifyJWT, verifyAdmin, adminEventsController.createEvent);
+app.get("/admin/events", verifyJWT, verifyAdmin, adminEventsController.getAllEvents);
+app.get("/admin/events/:id", verifyJWT, verifyAdmin, adminEventsController.getEventById);
+app.put("/admin/events/:id", verifyJWT, verifyAdmin, adminEventsController.updateEvent);
+app.delete("/admin/events/:id", verifyJWT, verifyAdmin, adminEventsController.deleteEvent);
+
+// Company booking routes
+app.get('/company/events', companyEventsController.getEventsForCompanies);
+app.post('/company/bookings', companyEventsController.createCompanyBooking);
+app.get('/company/bookings', companyEventsController.getCompanyBookings);
+app.put('/company/bookings/:bookingId/status', verifyJWT, verifyAdmin, companyEventsController.updateBookingStatus);
+
 //booking list
 app.get("/users/:userId/bookings", verifyJWT, bookingController.getUserBookings);
 app.get("/users/eligible-events", verifyJWT, eventSignupController.getEligibleEvents);
@@ -95,3 +114,5 @@ process.on("SIGINT", () => {
   console.log("Server shutting down");
   process.exit(0);
 });
+
+

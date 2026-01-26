@@ -49,7 +49,8 @@ async function createUser(req, res) {
       dob,
       password: hashedPassword,
       preferredLanguage: preferredLanguage || 'en',
-      role: role || 'Volunteer'
+      role: role || 'Volunteer',
+      trainingRoles: []
     });
 
     res.status(201).json(newUser);
@@ -88,6 +89,7 @@ async function loginUser(req, res) {
       token,
       userId: user.userId,
       role: user.role,
+      trainingRoles: user.trainingRoles || [],
       name: user.name
     });
 
