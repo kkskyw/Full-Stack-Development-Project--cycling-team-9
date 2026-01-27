@@ -81,21 +81,26 @@ function stopReading() {
   window.speechSynthesis.cancel();
 }
 
-function injectVoiceUI() {
+function injectTTSUI() {
   if (document.getElementById("voiceAssist")) return;
 
   const container = document.createElement("div");
   container.id = "voiceAssist";
   container.innerHTML = `
     <button id="ttsRead">🔊 Read Page</button>
-    <button id="ttsStop">⏹ Stop</button>
+    <button id="ttsStop">⏹ Stop Reading</button>
+    <button id="voiceStart">🎤 Voice</button>
+    <button id="voiceStop">⛔ Stop Voice</button>
   `;
 
   document.body.appendChild(container);
 
-  document.getElementById("ttsRead").addEventListener("click", readPage);
-  document.getElementById("ttsStop").addEventListener("click", stopReading);
+  document.getElementById("ttsRead").onclick = readPage;
+  document.getElementById("ttsStop").onclick = stopReading;
+  document.getElementById("voiceStart").onclick = startListening;
+  document.getElementById("voiceStop").onclick = stopListening;
 }
+
 
 function injectVoiceStyles() {
   const style = document.createElement("style");
@@ -129,5 +134,5 @@ function injectVoiceStyles() {
 
 document.addEventListener("DOMContentLoaded", () => {
   injectVoiceStyles();
-  injectVoiceUI();
+  injectTTSUI();
 });

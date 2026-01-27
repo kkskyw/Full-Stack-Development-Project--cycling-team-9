@@ -19,6 +19,9 @@ const resetPwController = require("./functions/controllers/resetPwController");
 const telegramController = require("./functions/controllers/telegramController");
 const trainingController = require("./functions/controllers/trainingController");
 const adminVolunteerController = require("./functions/controllers/adminVolunteerController");
+const adminTrainingController = require("./functions/controllers/adminTrainingController");
+const adminEventsController = require("./functions/controllers/adminEventsController");
+const companyEventsController = require("./functions/controllers/companyEventsController");
 
 
 // Validation & Auth Middleware
