@@ -17,7 +17,7 @@ if (!userId) {
 // Main function to load volunteer data
 async function loadVolunteer() {
     try {
-        const response = await fetch(`/admin/volunteers/${userId}`, {
+        const response = await fetch(`/api/admin/volunteers/${userId}`, {
             method: 'GET',
             headers: {
                 "Authorization": "Bearer " + token,

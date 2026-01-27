@@ -74,7 +74,7 @@ document.addEventListener('DOMContentLoaded', function() {
     async function loadMRTStations(letter = '') {
         try {
             console.log('Loading MRT stations for letter:', letter);
-            const response = await fetch(`/mrt-stations?letter=${letter}`);
+            const response = await fetch(`/api/mrt-stations?letter=${letter}`);
             
             if (!response.ok) {
                 throw new Error(`HTTP error! status: ${response.status}`);
@@ -129,7 +129,7 @@ document.addEventListener('DOMContentLoaded', function() {
             if (currentFilters.mrt) params.append('mrt', currentFilters.mrt);
             if (currentFilters.mrtLetter) params.append('mrtLetter', currentFilters.mrtLetter);
             
-            const url = `/events?${params}`;
+            const url = `/api/events?${params}`;
             console.log('Fetching from URL:', url);
             
             const response = await fetch(url);

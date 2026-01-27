@@ -216,6 +216,10 @@ function setupFontSizeSelector() {
     const fontSizeBtn = document.getElementById('fontSizeBtn');
     const fontSizeDropdown = document.getElementById('fontSizeDropdown');
     const fontSizeIndicator = document.getElementById('fontSizeIndicator');
+    
+    // Exit if elements don't exist on this page
+    if (!fontSizeBtn || !fontSizeDropdown) return;
+    
     const fontSizeOptions = fontSizeDropdown.querySelectorAll('.font-size-option');
     
     // Load saved font size preference

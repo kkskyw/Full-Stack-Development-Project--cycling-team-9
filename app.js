@@ -2,39 +2,37 @@ const express = require("express");
 const path = require("path");
 require("dotenv").config();
 
-const { admin, db } = require("./firebaseAdmin");
+const { admin, db } = require("./functions/firebaseAdmin");
 
 const app = express();
 const PORT = process.env.PORT || 3000;
 
 // Controllers
-const userController = require("./controllers/userController");
-const eventController = require("./controllers/eventController");
-const eventSignupController = require("./controllers/eventSignupController");
-const attendanceController = require("./controllers/attendanceController");
-const reminderController = require("./controllers/reminderController");
-const bookingController = require("./controllers/bookingController");
-const historyController = require("./controllers/historyController");
-const resetPwController = require("./controllers/resetPwController");
-const telegramController = require("./controllers/telegramController");
-const trainingController = require("./controllers/trainingController");
-const adminVolunteerController = require("./controllers/adminVolunteerController");
-const adminTrainingController = require("./controllers/adminTrainingController");
-const adminEventsController = require("./controllers/adminEventsController");
-const companyEventsController = require('./controllers/companyEventsController');
+const userController = require("./functions/controllers/userController");
+const eventController = require("./functions/controllers/eventController");
+const eventSignupController = require("./functions/controllers/eventSignupController");
+const attendanceController = require("./functions/controllers/attendanceController");
+const reminderController = require("./functions/controllers/reminderController");
+const bookingController = require("./functions/controllers/bookingController");
+const historyController = require("./functions/controllers/historyController");
+const resetPwController = require("./functions/controllers/resetPwController");
+const telegramController = require("./functions/controllers/telegramController");
+const trainingController = require("./functions/controllers/trainingController");
+const adminVolunteerController = require("./functions/controllers/adminVolunteerController");
+
 
 // Validation & Auth Middleware
-const userValidation = require("./middlewares/userValidation");
-const eventValidation = require("./middlewares/eventValidation");
-const attendanceValidation = require("./middlewares/attendanceValidation");
-const verifyJWT = require("./middlewares/verifyJWT");
-const verifyAdmin = require("./middlewares/verifyAdmin");
+const userValidation = require("./functions/middlewares/userValidation");
+const eventValidation = require("./functions/middlewares/eventValidation");
+const attendanceValidation = require("./functions/middlewares/attendanceValidation");
+const verifyJWT = require("./functions/middlewares/verifyJWT");
+const verifyAdmin = require("./functions/middlewares/verifyAdmin");
 
 // Middleware
 app.use(express.json());
 app.use(express.urlencoded({ extended: true }));
 app.use(express.static(path.join(__dirname, "public")));
-const feedbackController = require("./controllers/feedbackController");
+const feedbackController = require("./functions/controllers/feedbackController");
 
 // User routes
 app.post("/users/register", userValidation.validateUser, userController.createUser);

@@ -62,7 +62,7 @@ document.getElementById("registerForm").addEventListener("submit", async functio
   const user = { name, email, phone, dob, password, role: "Volunteer" };
 
   try {
-    const res = await fetch("/users/register", {
+    const res = await fetch("/api/users/register", {
       method: "POST",
       headers: { "Content-Type": "application/json" },
       body: JSON.stringify(user)

@@ -135,7 +135,7 @@ document.addEventListener('DOMContentLoaded', () => {
 
     const q = status ? `?status=${encodeURIComponent(status)}` : '';
     try {
-      const res = await fetch(`/volunteers/${encodeURIComponent(vid)}/events${q}`, {
+      const res = await fetch(`/api/volunteers/${encodeURIComponent(vid)}/events${q}`, {
         headers: {
           'Authorization': `Bearer ${token}`,
           'Content-Type': 'application/json'
