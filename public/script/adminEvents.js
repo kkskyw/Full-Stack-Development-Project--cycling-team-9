@@ -102,6 +102,7 @@ document.addEventListener('DOMContentLoaded', function() {
         document.getElementById('latitude').value = '';
         document.getElementById('longitude').value = '';
         document.getElementById('radius_m').value = '100';
+        document.getElementById('maxPilots').value = '10';
         
         // Set default times (next hour for start, 2 hours later for end)
         const now = new Date();
@@ -134,17 +135,67 @@ document.addEventListener('DOMContentLoaded', function() {
             longIntro: document.getElementById('longIntro').value,
             nearestMRT: document.getElementById('nearestMRT').value,
             radius_m: parseInt(document.getElementById('radius_m').value),
-            start_time: document.getElementById('start_time').value,
-            end_time: document.getElementById('end_time').value,
-            longIntro: document.getElementById('longIntro').value
+            maxPilots: parseInt(document.getElementById('maxPilots').value),
+            start_time: startTime.toISOString(),
+            end_time: endTime.toISOString(),
+            time: startTime.toISOString(), // Duplicate of start_time for backward compatibility
+            geolocation: {
+                type: 'Point',
+                coordinates: [
+                    parseFloat(document.getElementById('longitude').value),
+                    parseFloat(document.getElementById('latitude').value)
+                ]
+            }
         };
+    }
 
-        const url = eventId ? `/api/events/${eventId}` : '/api/events';
-        const method = eventId ? 'PUT' : 'POST';
+    function validateForm() {
+        const requiredFields = [
+            'header', 'location', 'nearestMRT', 'radius_m', 'maxPilots',
+            'latitude', 'longitude', 'start_time', 'end_time',
+            'intro', 'longIntro'
+        ];
+        
+        for (const fieldId of requiredFields) {
+            const field = document.getElementById(fieldId);
+            if (!field.value.trim()) {
+                alert(`Please fill in the ${field.previousElementSibling.textContent} field.`);
+                field.focus();
+                return false;
+            }
+        }
+        
+        // Validate start time is before end time
+        const startTime = new Date(document.getElementById('start_time').value);
+        const endTime = new Date(document.getElementById('end_time').value);
+        
+        if (startTime >= endTime) {
+            alert('End time must be after start time.');
+            return false;
+        }
+        
+        // Validate radius
+        const radius = parseInt(document.getElementById('radius_m').value);
+        if (radius < 50 || radius > 1000) {
+            alert('Radius must be between 50 and 1000 meters.');
+            return false;
+        }
 
+        // Validate maxPilots
+        const maxPilots = parseInt(document.getElementById('maxPilots').value);
+        if (maxPilots < 1 || maxPilots > 100) {
+            alert('Maximum number of pilots must be between 1 and 100.');
+            return false;
+        }
+        
+        return true;
+    }
+
+    async function loadEvents() {
         try {
-            const res = await fetch(url, {
-                method: method,
+            eventTableBody.innerHTML = '<tr><td colspan="5" style="text-align: center; padding: 30px;">Loading events...</td></tr>';
+            
+            const response = await fetch(`${API_BASE_URL}/admin/events`, {
                 headers: {
                     'Accept': 'application/json',
                     'Authorization': `Bearer ${localStorage.getItem('token')}`
@@ -162,21 +213,25 @@ document.addEventListener('DOMContentLoaded', function() {
             } else if (Array.isArray(result)) {
                 events = result;
             }
-        } catch (err) {
-            console.error(err);
-            alert('Failed to save event.');
+            
+            if (events.length === 0) {
+                eventTableBody.innerHTML = '<tr><td colspan="5" style="text-align: center; padding: 30px;">No events found. Create your first event!</td></tr>';
+                return;
+            }
+            
+            displayEvents(events);
+        } catch (error) {
+            console.error('Error loading events:', error);
+            eventTableBody.innerHTML = `<tr><td colspan="5" style="text-align: center; padding: 30px; color: #dc3545;">Error loading events: ${error.message}</td></tr>`;
         }
-    });
+    }
 
-    async function loadEvents() {
-        try {
-            const res = await fetch('/api/events');
-            const result = await res.json();
+    function displayEvents(events) {
+        eventTableBody.innerHTML = events.map(event => {
+            const startTime = event.time || event.start_time;
+            const date = startTime ? new Date(startTime) : new Date();
             
-            // Note: Adjust result.data based on your specific API structure
-            const events = result.data || result; 
-            
-            eventTableBody.innerHTML = events.map(event => `
+            return `
                 <tr>
                     <td>${event.eventId || event._id || 'N/A'}</td>
                     <td><strong>${event.header}</strong></td>
@@ -229,15 +284,27 @@ document.addEventListener('DOMContentLoaded', function() {
     // Global functions for edit and delete
     window.editEvent = async function(eventId) {
         try {
-            const res = await fetch(`/api/events/${id}`);
-            const result = await res.json();
-            const event = result.data;
-
-            document.getElementById('eventId').value = event.eventId;
+            const response = await fetch(`${API_BASE_URL}/admin/events/${eventId}`, {
+                headers: {
+                    'Accept': 'application/json',
+                    'Authorization': `Bearer ${localStorage.getItem('token')}`
+                }
+            });
+            
+            if (!response.ok) {
+                throw new Error(`HTTP error! status: ${response.status}`);
+            }
+            
+            const result = await response.json();
+            const event = result.data || result;
+            
+            // Populate form with event data
+            document.getElementById('eventId').value = eventId;
             document.getElementById('header').value = event.header;
             document.getElementById('location').value = event.location;
             document.getElementById('nearestMRT').value = event.nearestMRT;
             document.getElementById('radius_m').value = event.radius_m || 100;
+            document.getElementById('maxPilots').value = event.maxPilots || 10;
             document.getElementById('intro').value = event.intro;
             document.getElementById('longIntro').value = event.longIntro;
             
@@ -275,7 +342,7 @@ document.addEventListener('DOMContentLoaded', function() {
         }
         
         try {
-            const res = await fetch(`/api/events/${id}`, {
+            const response = await fetch(`${API_BASE_URL}/admin/events/${eventId}`, {
                 method: 'DELETE',
                 headers: {
                     'Authorization': `Bearer ${localStorage.getItem('token')}`

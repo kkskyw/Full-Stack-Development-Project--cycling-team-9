@@ -90,8 +90,47 @@ const getEventById = async (req, res) => {
     }
 };
 
+const getAllBookedEvents = async (req, res) => {
+    try {
+        console.log('Getting events with query:', req.query);
+        
+        const page = parseInt(req.query.page) || 1;
+        const pageSize = parseInt(req.query.pageSize) || 5;
+        const timeFilter = req.query.time || '';
+        const mrtFilter = req.query.mrt || '';
+        const mrtLetter = req.query.mrtLetter || '';
+        
+        const filters = {};
+        if (timeFilter && timeFilter !== '') filters.time = parseInt(timeFilter);
+        if (mrtFilter && mrtFilter !== '') filters.mrt = mrtFilter;
+        if (mrtLetter && mrtLetter !== '') filters.mrtLetter = mrtLetter;
+        
+        const result = await eventModel.getAllBookedEvents(page, pageSize, filters);
+        
+        console.log('Events found:', result.events.length);
+        
+        res.json({
+            success: true,
+            data: result.events,
+            pagination: {
+                currentPage: result.currentPage,
+                totalPages: result.totalPages,
+                totalCount: result.totalCount
+            }
+        });
+    } catch (error) {
+        console.error('Error in eventController.getAllBookedEvents:', error);
+        res.status(500).json({
+            success: false,
+            message: 'Failed to fetch events',
+            error: error.message
+        });
+    }
+};
+
 module.exports = {
     getAllEvents,
     getMRTStations,
-    getEventById
+    getEventById,
+    getAllBookedEvents
 };

@@ -129,7 +129,7 @@ document.addEventListener('DOMContentLoaded', function() {
             if (currentFilters.mrt) params.append('mrt', currentFilters.mrt);
             if (currentFilters.mrtLetter) params.append('mrtLetter', currentFilters.mrtLetter);
             
-            const url = `/api/events?${params}`;
+            const url = `/events/booked?${params}`;
             console.log('Fetching from URL:', url);
             
             const response = await fetch(url);

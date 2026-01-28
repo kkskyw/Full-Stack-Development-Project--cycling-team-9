@@ -77,7 +77,7 @@ document.addEventListener('DOMContentLoaded', function() {
                 fetch(`${API_BASE_URL}/events?pageSize=50`),
                 companyIdentifier ? fetch(`${API_BASE_URL}/company/bookings?companyName=${encodeURIComponent(companyIdentifier)}`) : Promise.resolve(null)
             ]);
-            
+
             const eventsResult = await eventsResponse.json();
             let events = [];
             
@@ -148,10 +148,13 @@ document.addEventListener('DOMContentLoaded', function() {
             const eventTime = new Date(event.time || event.start_time);
             const now = new Date();
             const isUpcoming = eventTime > now;
-            const isBooked = event.isBookedByCompany || false;
+            const isBooked = !!event["companyBookings"];
             
             // Get the event ID - ensure we have a consistent ID
             const eventId = event.eventId || event._id || event.id || `event-${Date.now()}`;
+            
+            // Get max pilots (default to 10 if not specified)
+            const maxPilots = event.maxPilots || 10;
             
             // Format date and time
             const formattedDate = eventTime.toLocaleDateString('en-US', {
@@ -167,7 +170,7 @@ document.addEventListener('DOMContentLoaded', function() {
             });
             
             return `
-                <div class="event-card" data-event-id="${eventId}">
+                <div class="event-card" data-event-id="${eventId}" data-max-pilots="${maxPilots}">
                     <div class="event-card-header">
                         <h3>${event.header || 'Untitled Event'}</h3>
                         <div class="header-status">
@@ -175,10 +178,15 @@ document.addEventListener('DOMContentLoaded', function() {
                                 ${isUpcoming ? 'Upcoming' : 'Available Now'}
                             </span>
                             ${isBooked ? '<span class="event-status status-booked">Booked ✓</span>' : ''}
+                            <span class="max-pilots-info">Max: ${maxPilots} pilots</span>
                         </div>
                     </div>
                     <div class="event-card-body">
                         <div class="event-meta">
+                            <div class="event-capacity">
+                                <i>👥</i>
+                                <span>Maximum Capacity: <strong>${maxPilots} pilots</strong></span>
+                            </div>
                             <div class="meta-item">
                                 <i>📅</i>
                                 <span>${formattedDate}</span>
@@ -256,11 +264,15 @@ document.addEventListener('DOMContentLoaded', function() {
         }
         
         const eventTime = new Date(event.time || event.start_time);
+        const maxPilots = event.maxPilots || 10;
         
         // Populate modal with event info
         document.getElementById('bookingEventId').value = eventId;
         document.getElementById('bookingTitle').textContent = `Book: ${event.header}`;
         document.getElementById('modalEventTitle').textContent = event.header;
+        
+        // Set max pilots info
+        document.getElementById('maxPilotsLimit').textContent = maxPilots;
         
         document.getElementById('modalEventDate').textContent = 
             eventTime.toLocaleDateString('en-US', {
@@ -279,6 +291,11 @@ document.addEventListener('DOMContentLoaded', function() {
         document.getElementById('modalEventLocation').textContent = event.location;
         document.getElementById('modalEventMRT').textContent = event.nearestMRT;
         
+        // Set max attribute and initial value for pilotsCount input
+        const pilotsCountInput = document.getElementById('pilotsCount');
+        pilotsCountInput.max = maxPilots;
+        pilotsCountInput.value = Math.min(1, maxPilots); // Set to 1 or maxPilots if less than 1
+        
         // Pre-fill company info if available
         const storedCompanyName = localStorage.getItem('companyName');
         const storedContactPerson = localStorage.getItem('contactPerson');
@@ -293,12 +310,47 @@ document.addEventListener('DOMContentLoaded', function() {
         if (storedContactEmail) document.getElementById('contactEmail').value = storedContactEmail;
         if (storedContactPhone) document.getElementById('contactPhone').value = storedContactPhone;
         
+        // Add validation for pilots count
+        pilotsCountInput.addEventListener('input', validatePilotsCount);
+        
         bookingModal.style.display = 'block';
+        
+        // Initial validation
+        validatePilotsCount();
     };
+
+    function validatePilotsCount() {
+        const pilotsCountInput = document.getElementById('pilotsCount');
+        const maxPilotsMessage = document.getElementById('maxPilotsMessage');
+        const maxPilots = parseInt(pilotsCountInput.max);
+        const currentValue = parseInt(pilotsCountInput.value) || 0;
+        
+        if (currentValue > maxPilots) {
+            maxPilotsMessage.style.display = 'block';
+            pilotsCountInput.style.borderColor = '#dc3545';
+            return false;
+        } else {
+            maxPilotsMessage.style.display = 'none';
+            pilotsCountInput.style.borderColor = '#ddd';
+            return true;
+        }
+    }
 
     function closeBookingModal() {
         bookingModal.style.display = 'none';
         bookingForm.reset();
+        
+        // Reset validation message
+        const maxPilotsMessage = document.getElementById('maxPilotsMessage');
+        const pilotsCountInput = document.getElementById('pilotsCount');
+        
+        if (maxPilotsMessage) {
+            maxPilotsMessage.style.display = 'none';
+        }
+        if (pilotsCountInput) {
+            pilotsCountInput.style.borderColor = '#ddd';
+            pilotsCountInput.max = 20; // Reset to default
+        }
     }
 
     function closeConfirmationModal() {
@@ -320,6 +372,11 @@ document.addEventListener('DOMContentLoaded', function() {
             submitBtn.disabled = true;
             submitBtn.textContent = 'Processing...';
             
+            // Validate pilots count before proceeding
+            if (!validatePilotsCount()) {
+                throw new Error(`Number of pilots cannot exceed the maximum allowed (${document.getElementById('pilotsCount').max})`);
+            }
+            
             const bookingData = {
                 eventId: document.getElementById('bookingEventId').value,
                 companyName: document.getElementById('companyName').value,
@@ -338,6 +395,11 @@ document.addEventListener('DOMContentLoaded', function() {
             // Validate company name is provided
             if (!bookingData.companyName.trim()) {
                 throw new Error('Company name is required');
+            }
+            
+            // Validate pilots count is positive
+            if (bookingData.pilotsCount <= 0) {
+                throw new Error('Number of pilots must be at least 1');
             }
             
             // Save company info to localStorage for future use
@@ -454,6 +516,7 @@ document.addEventListener('DOMContentLoaded', function() {
         }
         
         const eventTime = new Date(event.time || event.start_time);
+        const maxPilots = event.maxPilots || 10;
         
         document.getElementById('confirmationMessage').textContent = 
             `Your booking for "${event.header}" has been submitted successfully!`;
@@ -464,7 +527,52 @@ document.addEventListener('DOMContentLoaded', function() {
                 <span class="label">Event:</span>
                 <span>${event.header}</span>
             </div>
-            <!-- ... rest of the summary HTML ... -->
+            <div class="summary-item">
+                <span class="label">Date:</span>
+                <span>${eventTime.toLocaleDateString('en-US', { 
+                    weekday: 'long', 
+                    year: 'numeric', 
+                    month: 'long', 
+                    day: 'numeric' 
+                })}</span>
+            </div>
+            <div class="summary-item">
+                <span class="label">Time:</span>
+                <span>${eventTime.toLocaleTimeString('en-US', { 
+                    hour: '2-digit', 
+                    minute: '2-digit' 
+                })}</span>
+            </div>
+            <div class="summary-item">
+                <span class="label">Location:</span>
+                <span>${event.location}</span>
+            </div>
+            <div class="summary-item">
+                <span class="label">Maximum Pilots Allowed:</span>
+                <span>${maxPilots}</span>
+            </div>
+            <div class="summary-item">
+                <span class="label">Pilots Booked:</span>
+                <span>${bookingData.pilotsCount}</span>
+            </div>
+            <div class="summary-item">
+                <span class="label">Support Crew:</span>
+                <span>${bookingData.crewCount}</span>
+            </div>
+            <div class="summary-item">
+                <span class="label">Contact Person:</span>
+                <span>${bookingData.contactPerson}</span>
+            </div>
+            <div class="summary-item">
+                <span class="label">Company:</span>
+                <span>${bookingData.companyName}</span>
+            </div>
+            ${bookingData.specialNotes ? `
+                <div class="summary-item">
+                    <span class="label">Special Notes:</span>
+                    <span>${bookingData.specialNotes}</span>
+                </div>
+            ` : ''}
         `;
         
         document.getElementById('bookingSummary').innerHTML = summaryHTML;

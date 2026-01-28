@@ -49,11 +49,14 @@ app.post("/auth/verify-otp", userValidation.validateOtpVerification, resetPwCont
 app.post("/auth/reset-password", userValidation.validatePasswordReset, resetPwController.resetPassword);
 
 // Event routes - Yiru (MUST be before parameterized routes**)
-app.get("/api/mrt-stations", eventController.getMRTStations);
-app.get("/api/events/eligible", verifyJWT, eventSignupController.getEligibleEvents);
-app.get("/api/events", eventController.getAllEvents);
-app.post("/api/events/:eventId/signup", verifyJWT, eventSignupController.joinEvent);
-app.get("/api/events/:id", eventController.getEventById);
+app.get("/mrt-stations", eventController.getMRTStations);
+app.get("/events/eligible", verifyJWT, eventSignupController.getEligibleEvents);
+app.get("/events", eventController.getAllEvents);
+app.post("/events/:eventId/signup", verifyJWT, eventSignupController.joinEvent);
+// app.post("/events/:eventId/email-signup", verifyJWT, eventSignupController.emailSignup);
+app.get("/events/booked", eventController.getAllBookedEvents);
+app.get("/events/:id", eventController.getEventById);
+
 
 //reminder
 app.post("/api/sendReminder", verifyJWT, reminderController.sendReminder);
