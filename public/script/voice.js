@@ -46,57 +46,46 @@ function initVoiceControl() {
 // ===============================
 
 function handleVoiceCommand(command) {
-  command = command.toLowerCase();
+    command = command.toLowerCase().trim();
 
-  if (command.includes("read")) {
-    if (window.readPage) readPage();
-    return;
-  }
+    console.log("Voice command:", command);
 
-  if (command.includes("stop")) {
-    if (window.stopReading) stopReading();
-    return;
-  }
-
-  if (command.startsWith("click")) {
-    const target = command.replace("click", "").trim();
-    clickElementByText(target);
-    return;
-  }
-
-  if (command.includes("scroll down")) {
-    window.scrollBy({ top: 400, behavior: "smooth" });
-    return;
-  }
-
-  if (command.includes("scroll up")) {
-    window.scrollBy({ top: -400, behavior: "smooth" });
-    return;
-  }
-
-  if (command.includes("go back")) {
-    history.back();
-    return;
-  }
-
-  if (command.includes("go home")) {
-    location.href = "/main.html";
-    return;
-  }
-
-  // Optional advanced commands
-  if (window.VoiceSystem?.commands) {
-    for (const key in VoiceSystem.commands) {
-      if (command.includes(key)) {
-        VoiceSystem.execute(key);
-        speak(`Executing ${key}`);
+    // NAVIGATION
+    if (command.includes("home")) {
+        window.location.href = "main.html";
         return;
-      }
     }
-  }
 
-  speak("Sorry, I can't do that on this page");
-}   
+    if (command.includes("events")) {
+        window.location.href = "eventIntroduction.html";
+        return;
+    }
+
+    if (command.includes("profile")) {
+        window.location.href = "profile.html";
+        return;
+    }
+
+    if (command.includes("logout") || command.includes("log out")) {
+        localStorage.clear();
+        window.location.href = "login.html";
+        return;
+    }
+
+    // SCROLL
+    if (command.includes("scroll down")) {
+        window.scrollBy({ top: 400, behavior: "smooth" });
+        return;
+    }
+
+    if (command.includes("scroll up")) {
+        window.scrollBy({ top: -400, behavior: "smooth" });
+        return;
+    }
+
+    // FALLBACK
+    console.warn("Unmapped voice command:", command);
+}
 
 // ===============================
 // Smart Click Handler
