@@ -71,6 +71,7 @@ app.get("/api/users/eligible-events", verifyJWT, eventSignupController.getEligib
 
 // History routes
 app.get("/api/volunteers/:id/events", verifyJWT, historyController.getEventsByVolunteer);
+app.get("/api/admin/events/history", verifyJWT, verifyAdmin, historyController.getAllPastEvents);
 
 // Attendance routes
 app.post("/api/attendance/checkin", verifyJWT, attendanceController.checkIn);

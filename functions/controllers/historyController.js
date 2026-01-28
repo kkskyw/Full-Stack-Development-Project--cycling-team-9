@@ -18,4 +18,19 @@ async function getEventsByVolunteer(req, res) {
   }
 }
 
-module.exports = { getEventsByVolunteer };
+// Admin: Get all past events
+async function getAllPastEvents(req, res) {
+  try {
+    const events = await historyModel.getAllPastEvents();
+    res.json({
+      success: true,
+      data: events,
+      total: events.length
+    });
+  } catch (err) {
+    console.error("Error fetching all past events:", err);
+    res.status(500).json({ error: "Failed to load past events" });
+  }
+}
+
+module.exports = { getEventsByVolunteer, getAllPastEvents };

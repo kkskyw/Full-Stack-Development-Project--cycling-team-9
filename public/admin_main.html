@@ -36,6 +36,7 @@
                     <a href="adminEvents.html">Event Scheduling</a>
                     <a href="admin_donations.html">Donation Records</a>
                     <a href="admin_feedback.html">Review Feedback</a>
+                    <a href="history.html">View History</a>
                 </div>
             </div>
             <button class="back-btn" id="logoutBtn" style="padding: 8px 15px;">Log Out</button>
@@ -74,3 +75,67 @@
                     </button>
                     <button class="signup-btn" onclick="window.location.href='volunteer_verify.html'">
                         <span>✅</span> Verify Volunteers
+                    </button>
+                    <button class="signup-btn" onclick="window.location.href='admin_feedback.html'">
+                        <span>📋</span> View Feedback
+                    </button>
+                    <button class="signup-btn" onclick="window.location.href='admin_view_volunteer.html'">
+                        <span>👥</span> View Volunteer
+                    </button>
+                </div>
+            </div>
+        </div>
+    </main>
+
+    <footer>
+        <p>Copyright Cycling Without Age Singapore 2024</p>
+        <p>All Rights Reserved</p>
+    </footer>
+
+    <script>
+        // Dropdown functionality
+        document.addEventListener('DOMContentLoaded', function() {
+            const menuBtn = document.getElementById('menuBtn');
+            const dropdownMenu = document.getElementById('dropdownMenu');
+            const languageBtn = document.getElementById('languageBtn');
+            const languageDropdown = document.getElementById('languageDropdown');
+            const logoutBtn = document.getElementById('logoutBtn');
+
+            // Toggle Management dropdown
+            if (menuBtn && dropdownMenu) {
+                menuBtn.addEventListener('click', function(e) {
+                    e.stopPropagation();
+                    dropdownMenu.classList.toggle('show');
+                    languageDropdown.classList.remove('show');
+                });
+            }
+
+            // Toggle Language dropdown
+            if (languageBtn && languageDropdown) {
+                languageBtn.addEventListener('click', function(e) {
+                    e.stopPropagation();
+                    languageDropdown.classList.toggle('show');
+                    dropdownMenu.classList.remove('show');
+                });
+            }
+
+            // Close dropdowns when clicking outside
+            document.addEventListener('click', function() {
+                dropdownMenu.classList.remove('show');
+                languageDropdown.classList.remove('show');
+            });
+
+            // Logout functionality
+            if (logoutBtn) {
+                logoutBtn.addEventListener('click', function() {
+                    localStorage.removeItem('token');
+                    localStorage.removeItem('userId');
+                    localStorage.removeItem('userRole');
+                    localStorage.removeItem('userName');
+                    window.location.href = 'login.html';
+                });
+            }
+        });
+    </script>
+</body>
+</html>

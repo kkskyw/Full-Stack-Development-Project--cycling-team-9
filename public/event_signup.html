@@ -65,6 +65,22 @@
         </div>
 
         <p id="statusMsg"></p>
+
+        <!-- Google Calendar Option (shown after successful signup) -->
+        <div id="calendarSection" class="calendar-section" style="display: none;">
+            <h3>📅 Add to Your Calendar</h3>
+            <p>Would you like to add this event to your Google Calendar?</p>
+            <p class="calendar-note"><em>Note: Click "Save" in Google Calendar to confirm the event.</em></p>
+            <div class="calendar-buttons">
+                <a id="googleCalendarBtn" class="calendar-btn google" href="javascript:void(0)" target="_blank">
+                    <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="currentColor">
+                        <path d="M19.5 3h-3V1.5h-1.5V3h-6V1.5H7.5V3h-3C3.675 3 3 3.675 3 4.5v15c0 .825.675 1.5 1.5 1.5h15c.825 0 1.5-.675 1.5-1.5v-15c0-.825-.675-1.5-1.5-1.5zm0 16.5h-15V7.5h15v12z"/>
+                    </svg>
+                    Add to Google Calendar
+                </a>
+                <button id="skipCalendarBtn" class="calendar-btn skip">Skip</button>
+            </div>
+        </div>
     </div>
 
     <section class="contact-section">
@@ -91,9 +107,10 @@
         <p>Copyright Cycling Without Age Singapore 2024</p>
         <p>All Rights Reserved</p>
     </footer>
-    <script src="script/main.js"></script>
-    <script src="/script/event_signup.js"></script>
-    <script src="script/tts.js"></script>
+    <script src="script/translations.js?v=3"></script>
+    <script src="script/main.js?v=3"></script>
+    <script src="/script/event_signup.js?v=3"></script>
+    <script src="script/tts.js?v=3"></script>
 </body>
 </html>
 
