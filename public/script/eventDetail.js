@@ -108,9 +108,16 @@ document.addEventListener('DOMContentLoaded', function() {
 
         //  Backend says not allowed (duplicate or same-day)
         if (!res.ok) {
-            alert(data.error || "Unable to sign up for this event.");
+            if (data.error === "You have already booked this event.") {
+                showAlreadyBookedModal();
+            } else {
+                showAlreadyBookedModal(
+                    data.error || "Unable to sign up for this event."
+                );
+            }
             return;
         }
+
 
         // 3️ Allowed → redirect to signup page
         window.location.href = `event_signup.html?eventId=${eventId}`;
@@ -197,4 +204,26 @@ document.addEventListener('DOMContentLoaded', function() {
         eventLocation.textContent = 'N/A';
         eventMRT.textContent = 'N/A';
     }
+    
+    function showAlreadyBookedModal(message) {
+    const modal = document.getElementById("bookingModal");
+    const closeBtn = document.getElementById("closeModal");
+    const goBookingsBtn = document.getElementById("goBookings");
+    const messageEl = modal.querySelector("p");
+
+    if (message) {
+        messageEl.innerHTML = message;
+    }
+
+    modal.classList.remove("hidden");
+
+    closeBtn.onclick = () => {
+        modal.classList.add("hidden");
+    };
+
+    goBookingsBtn.onclick = () => {
+        window.location.href = "event_booking.html";
+    };
+}
+
 });
