@@ -102,6 +102,7 @@ document.addEventListener('DOMContentLoaded', function() {
         document.getElementById('latitude').value = '';
         document.getElementById('longitude').value = '';
         document.getElementById('radius_m').value = '100';
+        document.getElementById('maxPilots').value = '10';
         
         // Set default times (next hour for start, 2 hours later for end)
         const now = new Date();
@@ -134,6 +135,7 @@ document.addEventListener('DOMContentLoaded', function() {
             longIntro: document.getElementById('longIntro').value,
             nearestMRT: document.getElementById('nearestMRT').value,
             radius_m: parseInt(document.getElementById('radius_m').value),
+            maxPilots: parseInt(document.getElementById('maxPilots').value),
             start_time: startTime.toISOString(),
             end_time: endTime.toISOString(),
             time: startTime.toISOString(), // Duplicate of start_time for backward compatibility
@@ -149,7 +151,7 @@ document.addEventListener('DOMContentLoaded', function() {
 
     function validateForm() {
         const requiredFields = [
-            'header', 'location', 'nearestMRT', 'radius_m',
+            'header', 'location', 'nearestMRT', 'radius_m', 'maxPilots',
             'latitude', 'longitude', 'start_time', 'end_time',
             'intro', 'longIntro'
         ];
@@ -176,6 +178,13 @@ document.addEventListener('DOMContentLoaded', function() {
         const radius = parseInt(document.getElementById('radius_m').value);
         if (radius < 50 || radius > 1000) {
             alert('Radius must be between 50 and 1000 meters.');
+            return false;
+        }
+
+        // Validate maxPilots
+        const maxPilots = parseInt(document.getElementById('maxPilots').value);
+        if (maxPilots < 1 || maxPilots > 100) {
+            alert('Maximum number of pilots must be between 1 and 100.');
             return false;
         }
         
@@ -295,6 +304,7 @@ document.addEventListener('DOMContentLoaded', function() {
             document.getElementById('location').value = event.location;
             document.getElementById('nearestMRT').value = event.nearestMRT;
             document.getElementById('radius_m').value = event.radius_m || 100;
+            document.getElementById('maxPilots').value = event.maxPilots || 10;
             document.getElementById('intro').value = event.intro;
             document.getElementById('longIntro').value = event.longIntro;
             

@@ -129,10 +129,12 @@ const addBookingToEvent = async (eventId, bookingInfo) => {
 const getCompanyBookings = async (companyName) => {
     try {
         console.log('Getting bookings for company:', companyName);
-        
+        const now = new Date();
         const snapshot = await db.collection('companyBookings')
-            .where('companyName', '==', companyName)
-            .orderBy('createdAt', 'desc')
+            // .where('companyName', '==', companyName)
+            .where('start_time', '>=', now)
+            .orderBy('start_time', 'asc')
+            // .orderBy('createdAt', 'desc')
             .get();
         
         const bookings = [];

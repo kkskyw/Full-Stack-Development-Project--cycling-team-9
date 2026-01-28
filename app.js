@@ -53,7 +53,9 @@ app.get("/events/eligible", verifyJWT, eventSignupController.getEligibleEvents);
 app.get("/events", eventController.getAllEvents);
 app.post("/events/:eventId/signup", verifyJWT, eventSignupController.joinEvent);
 app.post("/events/:eventId/email-signup", verifyJWT, eventSignupController.emailSignup);
+app.get("/events/booked", eventController.getAllBookedEvents);
 app.get("/events/:id", eventController.getEventById);
+
 
 //reminder
 app.post("/api/sendReminder", verifyJWT, reminderController.sendReminder);
