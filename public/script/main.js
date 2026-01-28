@@ -44,15 +44,22 @@ document.addEventListener('DOMContentLoaded', function () {
         });
     });
 
-    // Smooth scrolling for anchor links
+    // Smooth scrolling for anchor links (only for internal page anchors)
     document.querySelectorAll('a[href^="#"]').forEach(anchor => {
         anchor.addEventListener('click', function (e) {
+            const href = this.getAttribute('href');
+            // Only handle internal anchor links, not external URLs
+            if (!href || href.length <= 1 || href.includes('://')) return;
             e.preventDefault();
-            const target = document.querySelector(this.getAttribute('href'));
-            if (target) {
-                target.scrollIntoView({
-                    behavior: 'smooth'
-                });
+            try {
+                const target = document.querySelector(href);
+                if (target) {
+                    target.scrollIntoView({
+                        behavior: 'smooth'
+                    });
+                }
+            } catch (err) {
+                // Invalid selector, ignore
             }
         });
     });
@@ -94,15 +101,22 @@ document.addEventListener('DOMContentLoaded', function () {
         });
     }
 
-    // Smooth scrolling for anchor links
+    // Smooth scrolling for anchor links (only for internal page anchors)
     document.querySelectorAll('a[href^="#"]').forEach(anchor => {
         anchor.addEventListener('click', function (e) {
+            const href = this.getAttribute('href');
+            // Only handle internal anchor links, not external URLs
+            if (!href || href.length <= 1 || href.includes('://')) return;
             e.preventDefault();
-            const target = document.querySelector(this.getAttribute('href'));
-            if (target) {
-                target.scrollIntoView({
-                    behavior: 'smooth'
-                });
+            try {
+                const target = document.querySelector(href);
+                if (target) {
+                    target.scrollIntoView({
+                        behavior: 'smooth'
+                    });
+                }
+            } catch (err) {
+                // Invalid selector, ignore
             }
         });
     });

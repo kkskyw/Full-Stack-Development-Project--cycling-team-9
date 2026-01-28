@@ -11,10 +11,25 @@ document.addEventListener('DOMContentLoaded', () => {
   const totalAttendeesEl = document.getElementById('totalAttendees');
   const totalAttendeesCard = document.getElementById('totalAttendeesCard');
   const tableBody = document.querySelector('#eventsTable tbody');
+  const pageTitle = document.querySelector('.hero h1');
 
-  // Check user role and hide total attendees for volunteers
+  // Check user role
   const userRole = localStorage.getItem('userRole');
-  if (totalAttendeesCard && userRole !== 'Admin') {
+  const isAdmin = userRole === 'Admin';
+  
+  // Update page title and column header for admin
+  if (isAdmin && pageTitle) {
+    pageTitle.textContent = 'All Past Events';
+  }
+  
+  // Update last column header based on role
+  const lastColHeader = document.getElementById('lastColHeader');
+  if (lastColHeader) {
+    lastColHeader.textContent = isAdmin ? 'Status' : 'Role';
+  }
+  
+  // Show total attendees card for admin
+  if (totalAttendeesCard && !isAdmin) {
     totalAttendeesCard.style.display = 'none';
   }
 
@@ -85,7 +100,7 @@ document.addEventListener('DOMContentLoaded', () => {
   function renderTable(list) {
     tableBody.innerHTML = '';
     if (!list.length) {
-      tableBody.innerHTML = '<tr><td colspan="7">No events found.</td></tr>';
+      tableBody.innerHTML = '<tr><td colspan="6">No events found.</td></tr>';
       return;
     }
 
@@ -93,10 +108,9 @@ document.addEventListener('DOMContentLoaded', () => {
       const id = ev.eventId ?? ev.id ?? ev.ref ?? '';
       const title = ev.header ?? ev.title ?? '';
       const time = ev.time ?? ev.eventTime ?? ev.date ?? '';
-      const type = ev.type ?? ev.eventType ?? '';
       const location = ev.location ?? '';
       const attendees = ev.attendees ?? 0;
-      const role = ev.volunteerStatus ?? ev.role ?? 'Volunteer';
+      const lastCol = isAdmin ? (ev.status ?? 'Completed') : (ev.volunteerStatus ?? ev.role ?? 'Volunteer');
 
       const tr = document.createElement('tr');
       tr.innerHTML = `
@@ -105,7 +119,7 @@ document.addEventListener('DOMContentLoaded', () => {
         <td>${escapeHtml(title)}</td>
         <td>${escapeHtml(location)}</td>
         <td>${escapeHtml(attendees)}</td>
-        <td>${escapeHtml(role)}</td>
+        <td>${escapeHtml(lastCol)}</td>
       `;
       tableBody.appendChild(tr);
     });
@@ -113,6 +127,40 @@ document.addEventListener('DOMContentLoaded', () => {
 
   // --- Data loading & filtering ---
   let allEvents = []; // raw fetched events
+
+  // Admin: Fetch all past events
+  async function fetchAllPastEvents() {
+    const token = localStorage.getItem('token');
+    if (!token) {
+      tableBody.innerHTML = '<tr><td colspan="6">Please log in to view event history.</td></tr>';
+      renderSummary([]);
+      setTimeout(() => { window.location.href = 'login.html'; }, 2000);
+      return [];
+    }
+
+    try {
+      const res = await fetch('/api/admin/events/history', {
+        headers: {
+          'Authorization': `Bearer ${token}`,
+          'Content-Type': 'application/json'
+        }
+      });
+
+      if (res.status === 401 || res.status === 403) {
+        tableBody.innerHTML = '<tr><td colspan="6">Access denied or session expired.</td></tr>';
+        renderSummary([]);
+        return [];
+      }
+
+      if (!res.ok) throw new Error(`Server ${res.status}`);
+      const data = await res.json();
+      return data.data || [];
+    } catch (err) {
+      console.warn('Fetch failed', err);
+      tableBody.innerHTML = '<tr><td colspan="6">Error loading events.</td></tr>';
+      return [];
+    }
+  }
 
   async function fetchVolunteerEvents(status) {
     const vid = getVolunteerIdFromUrl();
@@ -210,7 +258,12 @@ document.addEventListener('DOMContentLoaded', () => {
   function endOfDay(d){ const x=new Date(d); x.setHours(23,59,59,999); return x; }
 
   async function loadAndRender(status) {
-    allEvents = await fetchVolunteerEvents(status);
+    // Admin sees all past events, volunteers see their own events
+    if (isAdmin) {
+      allEvents = await fetchAllPastEvents();
+    } else {
+      allEvents = await fetchVolunteerEvents(status);
+    }
     const filtered = applyDateFilter(allEvents);
     renderSummary(filtered);
     renderTable(filtered);

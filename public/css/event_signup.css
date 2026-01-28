@@ -224,6 +224,86 @@ header {
     font-weight: 600;
 }
 
+/* GOOGLE CALENDAR SECTION */
+.calendar-section {
+    margin-top: 30px;
+    padding-top: 25px;
+    border-top: 1px solid #e0e0e0;
+    animation: fadeIn 0.4s ease-out;
+}
+
+@keyframes fadeIn {
+    from {
+        opacity: 0;
+        transform: translateY(10px);
+    }
+    to {
+        opacity: 1;
+        transform: translateY(0);
+    }
+}
+
+.calendar-section h3 {
+    font-size: 22px;
+    font-weight: 700;
+    color: #222;
+    margin-bottom: 8px;
+}
+
+.calendar-section p {
+    font-size: 15px;
+    color: #666;
+    margin-bottom: 20px;
+}
+
+.calendar-buttons {
+    display: flex;
+    justify-content: center;
+    gap: 15px;
+    flex-wrap: wrap;
+}
+
+.calendar-btn {
+    display: inline-flex;
+    align-items: center;
+    gap: 10px;
+    padding: 14px 28px;
+    font-size: 16px;
+    font-weight: 600;
+    border-radius: 10px;
+    cursor: pointer;
+    text-decoration: none;
+    transition: all 0.25s ease;
+}
+
+.calendar-btn.google {
+    background: #4285f4;
+    color: white;
+    border: none;
+    box-shadow: 0 4px 12px rgba(66, 133, 244, 0.3);
+}
+
+.calendar-btn.google:hover {
+    background: #3367d6;
+    transform: translateY(-2px);
+    box-shadow: 0 6px 16px rgba(66, 133, 244, 0.4);
+}
+
+.calendar-btn.google svg {
+    fill: white;
+}
+
+.calendar-btn.skip {
+    background: #f5f5f5;
+    color: #666;
+    border: 2px solid #ddd;
+}
+
+.calendar-btn.skip:hover {
+    background: #e8e8e8;
+    border-color: #ccc;
+}
+
 /* RESPONSIVE FIXES */
 @media (max-width: 768px) {
     .event-container {
@@ -234,6 +314,10 @@ header {
     }
     .signup-header h1 {
         font-size: 28px;
+    }
+    .calendar-btn {
+        width: 100%;
+        justify-content: center;
     }
 }
 
