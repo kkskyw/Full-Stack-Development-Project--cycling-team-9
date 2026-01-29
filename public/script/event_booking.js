@@ -10,7 +10,7 @@ document.addEventListener("DOMContentLoaded", async () => {
     try {
         const userId = localStorage.getItem("userId");
 
-        const res = await fetch(`/users/${userId}/bookings`, {
+        const res = await fetch(`/api/users/${userId}/bookings`, {
             headers: {
                 "Authorization": `Bearer ${getToken()}`,
                 "Content-Type": "application/json"

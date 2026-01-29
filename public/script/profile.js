@@ -29,7 +29,7 @@ async function fetchProfile(){
   const id = getUserIdFromUrl();
   if (!id) return console.warn('No user id available');
   try {
-    const res = await fetch(`/users/${encodeURIComponent(id)}`);
+    const res = await fetch(`/api/users/${encodeURIComponent(id)}`);
     if (!res.ok) throw new Error(await res.text() || res.status);
     const user = await res.json();
     document.getElementById('username').textContent = user.name || user.email || 'User';
@@ -56,7 +56,7 @@ async function submitUpdate(e){
   if (password && password.trim() !== '') payload.password = password;
 
   try {
-    const res = await fetch(`/users/${encodeURIComponent(id)}`, {
+    const res = await fetch(`/api/users/${encodeURIComponent(id)}`, {
       method: 'PUT',
       headers: { 'Content-Type': 'application/json' },
       body: JSON.stringify(payload)

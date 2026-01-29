@@ -36,7 +36,8 @@ document.addEventListener('DOMContentLoaded', function() {
             console.log('Time filter changed:', this.value);
             currentFilters.time = this.value;
             currentPage = 1;
-            loadEvents();
+            // Reload MRT stations first, then load events
+            loadMRTStations(currentFilters.mrtLetter).then(() => loadEvents());
         });
         
         mrtFilter.addEventListener('change', function() {
@@ -73,8 +74,13 @@ document.addEventListener('DOMContentLoaded', function() {
     
     async function loadMRTStations(letter = '') {
         try {
-            console.log('Loading MRT stations for letter:', letter);
-            const response = await fetch(`/mrt-stations?letter=${letter}`);
+            console.log('Loading MRT stations for letter:', letter, 'with time filter:', currentFilters.time);
+            
+            // Include time filter in the request
+            const url = `/api/mrt-stations?letter=${letter}&time=${currentFilters.time || ''}`;
+            console.log('Fetching MRT stations from:', url);
+            
+            const response = await fetch(url);
             
             if (!response.ok) {
                 throw new Error(`HTTP error! status: ${response.status}`);
@@ -129,7 +135,7 @@ document.addEventListener('DOMContentLoaded', function() {
             if (currentFilters.mrt) params.append('mrt', currentFilters.mrt);
             if (currentFilters.mrtLetter) params.append('mrtLetter', currentFilters.mrtLetter);
             
-            const url = `/events?${params}`;
+            const url = `/api/events/booked?${params}`;
             console.log('Fetching from URL:', url);
             
             const response = await fetch(url);
@@ -166,55 +172,56 @@ document.addEventListener('DOMContentLoaded', function() {
     }
     
     function displayEvents(events) {
-    console.log('Displaying', events.length, 'events');
-    
-    if (!events || events.length === 0) {
-        eventsGrid.innerHTML = '<div class="no-events">No events found matching your criteria.</div>';
-        return;
-    }
-    
-    eventsGrid.innerHTML = '';
-    
-    events.forEach(event => {
-        const eventCard = document.createElement('div');
-        eventCard.className = 'event-card';
+        console.log('Displaying', events.length, 'events');
         
-        const eventDateTime = event.time || event.start_time;
-        const eventDate = eventDateTime ? new Date(eventDateTime) : new Date();
+        if (!events || events.length === 0) {
+            eventsGrid.innerHTML = '<div class="no-events">No events found matching your criteria.</div>';
+            return;
+        }
         
-        const formattedDate = eventDate.toLocaleDateString('en-US', {
-            timeZone: 'UTC', 
-            weekday: 'long',
-            year: 'numeric',
-            month: 'long',
-            day: 'numeric'
+        eventsGrid.innerHTML = '';
+        
+        events.forEach(event => {
+            const eventCard = document.createElement('div');
+            eventCard.className = 'event-card';
+            
+            const eventDateTime = event.time || event.start_time;
+            const eventDate = eventDateTime ? new Date(eventDateTime) : new Date();
+            
+            // Singapore is UTC+8, so we need to format with that timezone
+            const formattedDate = eventDate.toLocaleDateString('en-US', {
+                timeZone: 'Asia/Singapore',  // Change from 'UTC' to 'Asia/Singapore'
+                weekday: 'long',
+                year: 'numeric',
+                month: 'long',
+                day: 'numeric'
+            });
+            
+            const formattedTime = eventDate.toLocaleTimeString('en-US', {
+                timeZone: 'Asia/Singapore',  // Change from 'UTC' to 'Asia/Singapore'
+                hour: '2-digit',
+                minute: '2-digit',
+                hour12: true
+            });
+            
+            const eventIntro = event.intro || event.header || 'No description available';
+            
+            eventCard.innerHTML = `
+                <div class="event-header">${event.header}</div>
+                <div class="event-meta">
+                    <div class="event-date">${formattedDate}</div>
+                    <div class="event-time">${formattedTime}</div>
+                    <div class="event-location">${event.location}</div>
+                    <div class="event-mrt">${event.nearestMRT}</div>
+                </div>
+                <div class="event-intro">${eventIntro}</div>
+            `;
+            eventCard.addEventListener('click', function() {
+                window.location.href = `eventDetail.html?id=${event.eventId}`;
+            });
+            
+            eventsGrid.appendChild(eventCard);
         });
-        
-        const formattedTime = eventDate.toLocaleTimeString('en-US', {
-            timeZone: 'UTC',
-            hour: '2-digit',
-            minute: '2-digit',
-            hour12: true
-        });
-        
-        const eventIntro = event.intro || event.header || 'No description available';
-        
-        eventCard.innerHTML = `
-            <div class="event-header">${event.header}</div>
-            <div class="event-meta">
-                <div class="event-date">${formattedDate}</div>
-                <div class="event-time">${formattedTime}</div>
-                <div class="event-location">${event.location}</div>
-                <div class="event-mrt">${event.nearestMRT}</div>
-            </div>
-            <div class="event-intro">${eventIntro}</div>
-        `;
-        eventCard.addEventListener('click', function() {
-            window.location.href = `eventDetail.html?id=${event.eventId}`;
-        });
-        
-        eventsGrid.appendChild(eventCard);
-    });
     }
     
     function displayPagination(paginationInfo) {
@@ -293,6 +300,7 @@ document.addEventListener('DOMContentLoaded', function() {
         };
         
         currentPage = 1;
+        // Pass empty time filter when clearing
         loadMRTStations().then(() => loadEvents());
     }
 });

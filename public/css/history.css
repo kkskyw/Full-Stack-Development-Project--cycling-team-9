@@ -303,8 +303,8 @@ footer {
 .actions .btn{margin-left:8px}
 
 /* hero / controls */
-.hero{display:flex;align-items:center;justify-content:space-between;padding:18px 0}
-.hero h1{margin:0;font-size:24px}
+.hero{display:flex;align-items:center;justify-content:space-between;padding:18px 0;}
+.hero h1{margin:0;font-size:24px;padding-left: 20px;}
 .controls{display:flex;align-items:center;gap:16px}
 .date-range input{padding:8px;border-radius:8px;border:1px solid #e6e9ef}
 .tabs{display:flex;gap:8px}

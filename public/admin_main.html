@@ -32,10 +32,11 @@
                     <span>☰</span> <span>Management</span>
                 </button>
                 <div class="dropdown-menu" id="dropdownMenu">
-                    <a href="admin_volunteers.html">Manage Volunteers</a>
+                    <a href="volunteer_list.html">Manage Volunteers</a>
                     <a href="adminEvents.html">Event Scheduling</a>
                     <a href="admin_donations.html">Donation Records</a>
                     <a href="admin_feedback.html">Review Feedback</a>
+                    <a href="history.html">View History</a>
                 </div>
             </div>
             <button class="back-btn" id="logoutBtn" style="padding: 8px 15px;">Log Out</button>
@@ -50,21 +51,6 @@
             </div>
         </div>
 
-        <div class="stats-grid">
-            <div class="event-detail-card stat-card">
-                <h3>Total Volunteers</h3>
-                <p class="stat-number">1,248</p>
-            </div>
-            <div class="event-detail-card stat-card">
-                <h3>Upcoming Events</h3>
-                <p class="stat-number">12</p>
-            </div>
-            <div class="event-detail-card stat-card">
-                <h3>New Feedback</h3>
-                <p class="stat-number">5</p>
-            </div>
-        </div>
-
         <div class="event-detail-card">
             <div class="event-content-section">
                 <h2 style="color: #333; margin-bottom: 25px; border-bottom: 2px solid #8dd4c3; padding-bottom: 10px;">Quick Actions</h2>
@@ -72,5 +58,69 @@
                     <button class="signup-btn" onclick="window.location.href='adminEvents.html'">
                         <span>➕</span> Create New Event
                     </button>
-                    <button class="signup-btn" onclick="window.location.href='volunteer_verify.html'">
+                    <button class="signup-btn" onclick="window.location.href='adminApproval.html'">
                         <span>✅</span> Verify Volunteers
+                    </button>
+                    <button class="signup-btn" onclick="window.location.href='admin_feedback.html'">
+                        <span>📋</span> View Feedback
+                    </button>
+                    <button class="signup-btn" onclick="window.location.href='volunteer_list.html'">
+                        <span>👥</span> View Volunteer
+                    </button>
+                </div>
+            </div>
+        </div>
+    </main>
+
+    <footer>
+        <p>Copyright Cycling Without Age Singapore 2024</p>
+        <p>All Rights Reserved</p>
+    </footer>
+
+    <script>
+        // Dropdown functionality
+        document.addEventListener('DOMContentLoaded', function() {
+            const menuBtn = document.getElementById('menuBtn');
+            const dropdownMenu = document.getElementById('dropdownMenu');
+            const languageBtn = document.getElementById('languageBtn');
+            const languageDropdown = document.getElementById('languageDropdown');
+            const logoutBtn = document.getElementById('logoutBtn');
+
+            // Toggle Management dropdown
+            if (menuBtn && dropdownMenu) {
+                menuBtn.addEventListener('click', function(e) {
+                    e.stopPropagation();
+                    dropdownMenu.classList.toggle('show');
+                    languageDropdown.classList.remove('show');
+                });
+            }
+
+            // Toggle Language dropdown
+            if (languageBtn && languageDropdown) {
+                languageBtn.addEventListener('click', function(e) {
+                    e.stopPropagation();
+                    languageDropdown.classList.toggle('show');
+                    dropdownMenu.classList.remove('show');
+                });
+            }
+
+            // Close dropdowns when clicking outside
+            document.addEventListener('click', function() {
+                dropdownMenu.classList.remove('show');
+                languageDropdown.classList.remove('show');
+            });
+
+            // Logout functionality
+            if (logoutBtn) {
+                logoutBtn.addEventListener('click', function() {
+                    localStorage.removeItem('token');
+                    localStorage.removeItem('userId');
+                    localStorage.removeItem('userRole');
+                    localStorage.removeItem('userName');
+                    window.location.href = 'login.html';
+                });
+            }
+        });
+    </script>
+</body>
+</html>

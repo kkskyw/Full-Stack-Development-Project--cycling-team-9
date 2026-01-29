@@ -9,7 +9,29 @@ document.addEventListener('DOMContentLoaded', () => {
   const tabs = Array.from(document.querySelectorAll('.tab'));
   const totalEventsEl = document.getElementById('totalEvents');
   const totalAttendeesEl = document.getElementById('totalAttendees');
+  const totalAttendeesCard = document.getElementById('totalAttendeesCard');
   const tableBody = document.querySelector('#eventsTable tbody');
+  const pageTitle = document.querySelector('.hero h1');
+
+  // Check user role
+  const userRole = localStorage.getItem('userRole');
+  const isAdmin = userRole === 'Admin';
+  
+  // Update page title and column header for admin
+  if (isAdmin && pageTitle) {
+    pageTitle.textContent = 'All Past Events';
+  }
+  
+  // Update last column header based on role
+  const lastColHeader = document.getElementById('lastColHeader');
+  if (lastColHeader) {
+    lastColHeader.textContent = isAdmin ? 'Status' : 'Role';
+  }
+  
+  // Show total attendees card for admin
+  if (totalAttendeesCard && !isAdmin) {
+    totalAttendeesCard.style.display = 'none';
+  }
 
   // --- Dropdown menu behavior ---
   if (menuBtn && dropdownMenu) {
@@ -39,6 +61,27 @@ document.addEventListener('DOMContentLoaded', () => {
 
   function formatDate(val) {
     if (!val) return '—';
+    
+    // Handle Firestore Timestamp objects
+    if (val && typeof val === 'object') {
+      // Firestore Timestamp has _seconds and _nanoseconds
+      if (val._seconds !== undefined) {
+        const d = new Date(val._seconds * 1000);
+        if (!isNaN(d)) return d.toLocaleString();
+      }
+      // Try toDate() method if available
+      if (typeof val.toDate === 'function') {
+        const d = val.toDate();
+        if (!isNaN(d)) return d.toLocaleString();
+      }
+      // Try seconds property (alternative format)
+      if (val.seconds !== undefined) {
+        const d = new Date(val.seconds * 1000);
+        if (!isNaN(d)) return d.toLocaleString();
+      }
+    }
+    
+    // Handle ISO string or timestamp
     const d = new Date(val);
     if (isNaN(d)) return String(val);
     return d.toLocaleString();
@@ -57,7 +100,7 @@ document.addEventListener('DOMContentLoaded', () => {
   function renderTable(list) {
     tableBody.innerHTML = '';
     if (!list.length) {
-      tableBody.innerHTML = '<tr><td colspan="7">No events found.</td></tr>';
+      tableBody.innerHTML = '<tr><td colspan="6">No events found.</td></tr>';
       return;
     }
 
@@ -65,20 +108,18 @@ document.addEventListener('DOMContentLoaded', () => {
       const id = ev.eventId ?? ev.id ?? ev.ref ?? '';
       const title = ev.header ?? ev.title ?? '';
       const time = ev.time ?? ev.eventTime ?? ev.date ?? '';
-      const type = ev.type ?? ev.eventType ?? '';
       const location = ev.location ?? '';
       const attendees = ev.attendees ?? 0;
-      const role = ev.volunteerStatus ?? ev.role ?? 'Volunteer';
+      const lastCol = isAdmin ? (ev.status ?? 'Completed') : (ev.volunteerStatus ?? ev.role ?? 'Volunteer');
 
       const tr = document.createElement('tr');
       tr.innerHTML = `
         <td>${escapeHtml(id)}</td>
         <td>${escapeHtml(formatDate(time))}</td>
         <td>${escapeHtml(title)}</td>
-        <td>${escapeHtml(type)}</td>
         <td>${escapeHtml(location)}</td>
         <td>${escapeHtml(attendees)}</td>
-        <td>${escapeHtml(role)}</td>
+        <td>${escapeHtml(lastCol)}</td>
       `;
       tableBody.appendChild(tr);
     });
@@ -86,6 +127,40 @@ document.addEventListener('DOMContentLoaded', () => {
 
   // --- Data loading & filtering ---
   let allEvents = []; // raw fetched events
+
+  // Admin: Fetch all past events
+  async function fetchAllPastEvents() {
+    const token = localStorage.getItem('token');
+    if (!token) {
+      tableBody.innerHTML = '<tr><td colspan="6">Please log in to view event history.</td></tr>';
+      renderSummary([]);
+      setTimeout(() => { window.location.href = 'login.html'; }, 2000);
+      return [];
+    }
+
+    try {
+      const res = await fetch('/api/admin/events/history', {
+        headers: {
+          'Authorization': `Bearer ${token}`,
+          'Content-Type': 'application/json'
+        }
+      });
+
+      if (res.status === 401 || res.status === 403) {
+        tableBody.innerHTML = '<tr><td colspan="6">Access denied or session expired.</td></tr>';
+        renderSummary([]);
+        return [];
+      }
+
+      if (!res.ok) throw new Error(`Server ${res.status}`);
+      const data = await res.json();
+      return data.data || [];
+    } catch (err) {
+      console.warn('Fetch failed', err);
+      tableBody.innerHTML = '<tr><td colspan="6">Error loading events.</td></tr>';
+      return [];
+    }
+  }
 
   async function fetchVolunteerEvents(status) {
     const vid = getVolunteerIdFromUrl();
@@ -95,9 +170,37 @@ document.addEventListener('DOMContentLoaded', () => {
       return;
     }
 
+    const token = localStorage.getItem('token');
+    if (!token) {
+      tableBody.innerHTML = '<tr><td colspan="7">Please log in to view your event history.</td></tr>';
+      renderSummary([]);
+      // Redirect to login after 2 seconds
+      setTimeout(() => {
+        window.location.href = 'login.html';
+      }, 2000);
+      return;
+    }
+
     const q = status ? `?status=${encodeURIComponent(status)}` : '';
     try {
-      const res = await fetch(`/volunteers/${encodeURIComponent(vid)}/events${q}`);
+      const res = await fetch(`/api/volunteers/${encodeURIComponent(vid)}/events${q}`, {
+        headers: {
+          'Authorization': `Bearer ${token}`,
+          'Content-Type': 'application/json'
+        }
+      });
+      
+      // Handle authentication errors
+      if (res.status === 401 || res.status === 403) {
+        tableBody.innerHTML = '<tr><td colspan="7">Your session has expired. Redirecting to login...</td></tr>';
+        renderSummary([]);
+        localStorage.removeItem('token');
+        setTimeout(() => {
+          window.location.href = 'login.html';
+        }, 2000);
+        return [];
+      }
+      
       if (!res.ok) throw new Error(`Server ${res.status}`);
       const data = await res.json();
       return Array.isArray(data) ? data : [];
@@ -108,28 +211,81 @@ document.addEventListener('DOMContentLoaded', () => {
   }
 
   function applyDateFilter(list) {
-    const from = fromDateEl?.value ? new Date(fromDateEl.value) : null;
-    const to = toDateEl?.value ? new Date(toDateEl.value) : null;
+    const from = fromDateEl?.value ? parseMMDDYYYY(fromDateEl.value) : null;
+    const to = toDateEl?.value ? parseMMDDYYYY(toDateEl.value) : null;
     if (!from && !to) return list;
     return list.filter(ev => {
-      const t = new Date(ev.time ?? ev.eventTime ?? ev.date ?? null);
+      const timeValue = ev.time ?? ev.eventTime ?? ev.date ?? null;
+      if (!timeValue) return false;
+      
+      // Handle Firestore Timestamp objects
+      let t;
+      if (timeValue && typeof timeValue === 'object') {
+        if (timeValue._seconds !== undefined) {
+          t = new Date(timeValue._seconds * 1000);
+        } else if (typeof timeValue.toDate === 'function') {
+          t = timeValue.toDate();
+        } else if (timeValue.seconds !== undefined) {
+          t = new Date(timeValue.seconds * 1000);
+        } else {
+          t = new Date(timeValue);
+        }
+      } else {
+        t = new Date(timeValue);
+      }
+      
       if (isNaN(t)) return false;
       if (from && t < startOfDay(from)) return false;
       if (to && t > endOfDay(to)) return false;
       return true;
     });
   }
+  
+  function parseMMDDYYYY(dateStr) {
+    // Parse mm/dd/yyyy format
+    const parts = dateStr.split('/');
+    if (parts.length !== 3) return null;
+    const month = parseInt(parts[0], 10);
+    const day = parseInt(parts[1], 10);
+    const year = parseInt(parts[2], 10);
+    if (isNaN(month) || isNaN(day) || isNaN(year)) return null;
+    if (month < 1 || month > 12 || day < 1 || day > 31) return null;
+    const date = new Date(year, month - 1, day);
+    return isNaN(date) ? null : date;
+  }
+  
   function startOfDay(d){ const x=new Date(d); x.setHours(0,0,0,0); return x; }
   function endOfDay(d){ const x=new Date(d); x.setHours(23,59,59,999); return x; }
 
   async function loadAndRender(status) {
-    allEvents = await fetchVolunteerEvents(status);
+    // Admin sees all past events, volunteers see their own events
+    if (isAdmin) {
+      allEvents = await fetchAllPastEvents();
+    } else {
+      allEvents = await fetchVolunteerEvents(status);
+    }
     const filtered = applyDateFilter(allEvents);
     renderSummary(filtered);
     renderTable(filtered);
   }
 
   // --- Event listeners ---
+  
+  // Add date input formatting
+  [fromDateEl, toDateEl].forEach(input => {
+    if (!input) return;
+    input.addEventListener('input', (e) => {
+      let value = e.target.value.replace(/\D/g, ''); // Remove non-digits
+      if (value.length >= 2) {
+        value = value.slice(0, 2) + '/' + value.slice(2);
+      }
+      if (value.length >= 5) {
+        value = value.slice(0, 5) + '/' + value.slice(5, 9);
+      }
+      e.target.value = value;
+    });
+  });
+  
   tabs.forEach(t => {
     t.addEventListener('click', async () => {
       tabs.forEach(x => x.classList.remove('active'));
@@ -157,8 +313,10 @@ document.addEventListener('DOMContentLoaded', () => {
     const firstCell = tr.querySelector('td');
     if (!firstCell) return;
     const eventId = firstCell.textContent.trim();
-    // navigate to event detail / signup page
-    window.location.href = `/viewEvent.html?id=${encodeURIComponent(eventId)}`;
+    // navigate to event detail page
+    window.location.href = `eventDetail.html?id=${encodeURIComponent(eventId)}`;
   });
-  loadAndRender('past');
+  
+  // Load events on page load
+  loadAndRender();
 });

@@ -5,7 +5,8 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Manage Events - Admin | CWAS</title>
     <link rel="stylesheet" href="css/main.css">
-    <link rel="stylesheet" href="css/eventDetail.css"> <link rel="stylesheet" href="css/adminEvents.css">
+    <link rel="stylesheet" href="css/eventDetail.css">
+    <link rel="stylesheet" href="css/adminEvents.css">
 </head>
 <body>
     <header>
@@ -37,7 +38,8 @@
                         </tr>
                     </thead>
                     <tbody id="eventTableBody">
-                        </tbody>
+                        <!-- Event rows will be populated here -->
+                    </tbody>
                 </table>
             </div>
         </div>
@@ -52,58 +54,68 @@
                     
                     <div class="form-grid">
                         <div class="form-group">
-                            <label>Event Header (Title)</label>
+                            <label>Event Header (Title) *</label>
                             <input type="text" id="header" required placeholder="e.g. East Coast Park Ride">
                         </div>
                         <div class="form-group">
-                            <label>Location Name</label>
-                            <input type="text" id="location" required placeholder="e.g. East Coast Park">
+                            <label>Location Name *</label>
+                            <select id="location" required>
+                                <option value="">Select a location</option>
+                                <option value="Jurong Lake Gardens">Jurong Lake Gardens</option>
+                                <option value="Passion Wave Marina Bay">Passion Wave Marina Bay</option>
+                                <option value="Gardens by the Bay">Gardens by the Bay</option>
+                            </select>
                         </div>
                         <div class="form-group">
-                            <label>Nearest MRT</label>
-                            <input type="text" id="nearestMRT" required placeholder="e.g. Marine Terrace MRT">
+                            <label>Nearest MRT *</label>
+                            <input type="text" id="nearestMRT" required placeholder="e.g. Lakeside MRT">
                         </div>
                         <div class="form-group">
-                            <label>Radius (meters)</label>
-                            <input type="number" id="radius_m" value="100" required>
+                            <label>Radius (meters) *</label>
+                            <input type="number" id="radius_m" value="100" min="50" max="1000" required>
                         </div>
                         <div class="form-group">
-                            <label>Latitude</label>
-                            <input type="number" step="any" id="latitude" required placeholder="1.3069">
+                            <label>Maximum No. of Pilots *</label>
+                            <input type="number" id="maxPilots" min="1" max="100" value="10" required>
+                            <small style="color: #666; font-size: 12px;">Maximum number of pilots allowed to join this event</small>
                         </div>
                         <div class="form-group">
-                            <label>Longitude</label>
-                            <input type="number" step="any" id="longitude" required placeholder="103.9125">
+                            <label>Latitude *</label>
+                            <input type="number" step="any" id="latitude" required placeholder="e.g. 1.341498" readonly>
                         </div>
                         <div class="form-group">
-                            <label>Start Time</label>
+                            <label>Longitude *</label>
+                            <input type="number" step="any" id="longitude" required placeholder="e.g. 103.72242" readonly>
+                        </div>
+                        <div class="form-group">
+                            <label>Start Time *</label>
                             <input type="datetime-local" id="start_time" required>
                         </div>
                         <div class="form-group">
-                            <label>End Time</label>
+                            <label>End Time *</label>
                             <input type="datetime-local" id="end_time" required>
                         </div>
                     </div>
 
                     <div class="form-group">
-                        <label>Short Intro</label>
-                        <input type="text" id="intro" required placeholder="Brief summary for list view">
+                        <label>Short Intro (for list view) *</label>
+                        <input type="text" id="intro" required placeholder="Brief summary that appears in event listings">
                     </div>
 
                     <div class="form-group">
-                        <label>Long Description</label>
-                        <textarea id="longIntro" rows="6" required placeholder="Detailed information for the detail page"></textarea>
+                        <label>Long Description *</label>
+                        <textarea id="longIntro" rows="6" required placeholder="Detailed information for the event detail page"></textarea>
                     </div>
 
                     <div class="form-actions">
                         <button type="button" class="back-btn" id="cancelBtn">Cancel</button>
-                        <button type="submit" class="signup-btn">Save Event</button>
+                        <button type="submit" class="signup-btn" id="saveBtn">Save Event</button>
                     </div>
                 </form>
             </div>
         </div>
     </main>
 
-    <script src="script/adminEvents.js"></script>
+    <script src="script/adminEvents.js?v=2"></script>
 </body>
 </html>

@@ -1,0 +1,195 @@
+const userModel = require("../models/userModel");
+const bcrypt = require("bcryptjs");
+const jwt = require("jsonwebtoken");
+const { db } = require("../firebaseAdmin");
+
+// Get user by ID
+async function getUserById(req, res) {
+  const id = req.params.id;
+  if (!id) return res.status(400).json({ error: "Invalid user id" });
+
+  try {
+    const user = await userModel.getUserById(id);
+    if (!user) return res.status(404).json({ error: "User not found" });
+
+    if (user.password) delete user.password;
+    res.json(user);
+  } catch (error) {
+    console.error("Error retrieving user:", error);
+    res.status(500).json({ error: "Error retrieving user" });
+  }
+}
+
+// Register new user
+async function createUser(req, res) {
+  try {
+    const { name, email, phone, dob, password, preferredLanguage, role } = req.body;
+
+    if (!name || !email || !password || !dob || !phone) {
+      return res.status(400).json({ error: "All fields are required" });
+    }
+
+    const existingPhone = await userModel.findUserByPhone(phone);
+    if (existingPhone) {
+      return res.status(400).json({ error: "This phone number is already registered. Try logging in." });
+    }
+
+    const existingEmail = await userModel.findUserByEmail(email);
+    if (existingEmail) {
+      return res.status(400).json({ error: "This email is already registered. Try logging in." });
+    }
+
+    const salt = await bcrypt.genSalt(10);
+    const hashedPassword = await bcrypt.hash(password, salt);
+
+    // Create user in Firestore
+    const newUser = await userModel.createUser({
+      name,
+      email,
+      phone,
+      dob,
+      password: hashedPassword,
+      preferredLanguage: preferredLanguage || 'en',
+      role: role || 'Volunteer',
+      trainingRoles: []
+    });
+
+    res.status(201).json(newUser);
+  } catch (error) {
+    if (error.statusCode) {
+      return res.status(error.statusCode).json({ error: error.message });
+    }
+    console.error("Controller error:", error);
+    res.status(500).json({ error: "Unexpected error creating user" });
+  }
+}
+
+// Login user
+async function loginUser(req, res) {
+  const { email, password } = req.body;
+  
+  try {
+    const user = await userModel.findUserByEmail(email);
+    if (!user) {
+      return res.status(401).json({ error: "Email not found." });
+    }
+
+    const passwordMatch = await bcrypt.compare(password, user.password);
+    if (!passwordMatch) {
+      return res.status(401).json({ error: "Incorrect password." });
+    }
+
+    const token = jwt.sign(
+      { userId: user.userId, role: user.role },
+      process.env.JWT_SECRET || 'your-secret-key',
+      { expiresIn: process.env.JWT_EXPIRES_IN || '24h' }
+    );
+
+    res.status(200).json({
+      message: "Login successful",
+      token,
+      userId: user.userId,
+      role: user.role,
+      trainingRoles: user.trainingRoles || [],
+      name: user.name
+    });
+
+  } catch (err) {
+    console.error("Login error:", err);
+    res.status(500).json({ error: "Internal server error" });
+  }
+}
+
+// Update User
+async function updateUser(req, res) {
+  const id = req.params.id;
+  if (!id) return res.status(400).json({ error: 'Invalid user id' });
+
+  const updateData = { ...req.body };
+
+  try {
+    if ('password' in updateData) {
+      if (!updateData.password || updateData.password.trim() === '') {
+        delete updateData.password;
+      } else {
+        const salt = await bcrypt.genSalt(10);
+        updateData.password = await bcrypt.hash(updateData.password, salt);
+      }
+    }
+
+    const updatedUser = await userModel.updateUserInfo(id, updateData);
+    if (!updatedUser) return res.status(404).json({ error: 'User not found' });
+
+    if (updatedUser.password) delete updatedUser.password;
+
+    res.json({ message: 'User updated', user: updatedUser });
+  } catch (error) {
+    console.error('Error updating user:', error);
+    res.status(500).json({ error: 'Error updating user', details: error.message });
+  }
+}
+async function getMe(req, res) {
+    try {
+        const userId = req.user.userId;
+
+        const userDoc = await db.collection('users').doc(userId).get();
+
+        if (!userDoc.exists) {
+            return res.status(404).json({ error: 'User not found' });
+        }
+
+        const user = userDoc.data();
+
+        return res.json({
+            userId,
+            role: user.role,
+            trained: user.trainingRoles && user.trainingRoles.length > 0
+        });
+
+    } catch (err) {
+        console.error('GET /users/me error:', err);
+        res.status(500).json({ error: 'Server error' });
+    }
+}
+async function getMe(req, res) {
+    try {
+        const userId = req.user.userId;
+
+        const userDoc = await db.collection('users').doc(userId).get();
+
+        if (!userDoc.exists) {
+            return res.status(404).json({ error: 'User not found' });
+        }
+
+        const user = userDoc.data();
+
+        return res.json({
+            userId,
+            role: user.role,
+            trained: user.trainingRoles && user.trainingRoles.length > 0
+        });
+
+    } catch (err) {
+        console.error('GET /users/me error:', err);
+        res.status(500).json({ error: 'Server error' });
+    }
+}
+
+async function listVolunteers(req, res) {
+  try {
+    const volunteers = await userModel.getVolunteers();
+    res.json({ volunteers });
+  } catch (error) {
+    console.error("Error listing volunteers:", error);
+    res.status(500).json({ error: "Failed to fetch volunteers" });
+  }
+}
+
+module.exports = {
+  getUserById,
+  createUser,
+  loginUser,
+  updateUser,
+  getMe,
+  listVolunteers
+};

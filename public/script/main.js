@@ -44,15 +44,22 @@ document.addEventListener('DOMContentLoaded', function () {
         });
     });
 
-    // Smooth scrolling for anchor links
+    // Smooth scrolling for anchor links (only for internal page anchors)
     document.querySelectorAll('a[href^="#"]').forEach(anchor => {
         anchor.addEventListener('click', function (e) {
+            const href = this.getAttribute('href');
+            // Only handle internal anchor links, not external URLs
+            if (!href || href.length <= 1 || href.includes('://')) return;
             e.preventDefault();
-            const target = document.querySelector(this.getAttribute('href'));
-            if (target) {
-                target.scrollIntoView({
-                    behavior: 'smooth'
-                });
+            try {
+                const target = document.querySelector(href);
+                if (target) {
+                    target.scrollIntoView({
+                        behavior: 'smooth'
+                    });
+                }
+            } catch (err) {
+                // Invalid selector, ignore
             }
         });
     });
@@ -94,15 +101,22 @@ document.addEventListener('DOMContentLoaded', function () {
         });
     }
 
-    // Smooth scrolling for anchor links
+    // Smooth scrolling for anchor links (only for internal page anchors)
     document.querySelectorAll('a[href^="#"]').forEach(anchor => {
         anchor.addEventListener('click', function (e) {
+            const href = this.getAttribute('href');
+            // Only handle internal anchor links, not external URLs
+            if (!href || href.length <= 1 || href.includes('://')) return;
             e.preventDefault();
-            const target = document.querySelector(this.getAttribute('href'));
-            if (target) {
-                target.scrollIntoView({
-                    behavior: 'smooth'
-                });
+            try {
+                const target = document.querySelector(href);
+                if (target) {
+                    target.scrollIntoView({
+                        behavior: 'smooth'
+                    });
+                }
+            } catch (err) {
+                // Invalid selector, ignore
             }
         });
     });
@@ -131,7 +145,8 @@ document.addEventListener('DOMContentLoaded', function() {
     const logo = document.querySelector('.logo');
     if (logo) {
         logo.addEventListener('click', function() {
-            window.location.href = 'main.html';
+                const token = localStorage.getItem("token");
+                window.location.href = token ? "volunteer_main.html" : "guest_main.html";
         });
         
         logo.style.cursor = 'pointer';
@@ -208,7 +223,7 @@ function handleLogout() {
     localStorage.removeItem('userName');
     
     // Redirect to main page
-    window.location.href = 'main.html';
+    window.location.href = 'guest_main.html';
 }
 
 // Add this function to handle font size changes
@@ -216,6 +231,10 @@ function setupFontSizeSelector() {
     const fontSizeBtn = document.getElementById('fontSizeBtn');
     const fontSizeDropdown = document.getElementById('fontSizeDropdown');
     const fontSizeIndicator = document.getElementById('fontSizeIndicator');
+    
+    // Exit if elements don't exist on this page
+    if (!fontSizeBtn || !fontSizeDropdown) return;
+    
     const fontSizeOptions = fontSizeDropdown.querySelectorAll('.font-size-option');
     
     // Load saved font size preference

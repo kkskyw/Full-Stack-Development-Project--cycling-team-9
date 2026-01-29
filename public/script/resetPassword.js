@@ -180,15 +180,15 @@ async function apiRequest(endpoint, method, data) {
 }
 
 async function requestOtp(email) {
-    return apiRequest('/auth/request-otp', 'POST', { email });
+    return apiRequest('/api/auth/request-otp', 'POST', { email });
 }
 
 async function verifyOtp(email, otp) {
-    return apiRequest('/auth/verify-otp', 'POST', { email, otp });
+    return apiRequest('/api/auth/verify-otp', 'POST', { email, otp });
 }
 
 async function resetPassword(email, otp, newPassword) {
-    return apiRequest('/auth/reset-password', 'POST', { email, otp, newPassword });
+    return apiRequest('/api/auth/reset-password', 'POST', { email, otp, newPassword });
 }
 
 // UI Helpers

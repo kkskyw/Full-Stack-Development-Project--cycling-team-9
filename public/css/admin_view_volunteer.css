@@ -1,0 +1,365 @@
+* {
+  margin: 0;
+  padding: 0;
+  box-sizing: border-box;
+  font-family: "Open Sans", sans-serif;
+}
+
+:root{
+  --bg: #f6f8fb;
+  --card: #ffffff;
+  --text: #1f2937;
+  --muted: #6b7280;
+  --border: #e5e7eb;
+
+  --primary: #2bb3a6;
+  --primary-dark: #1b8f85;
+  --primary-soft: #e7f7f5;
+
+  --shadow: 0 10px 30px rgba(0,0,0,0.10);
+  --shadow-soft: 0 2px 12px rgba(0,0,0,0.06);
+
+  --ok-bg: #e7f6ec;
+  --ok-text: #166534;
+
+  --warn-bg: #fff7ed;
+  --warn-text: #9a3412;
+
+  --bad-bg: #fef2f2;
+  --bad-text: #991b1b;
+
+  --info-bg: #eff6ff;
+  --info-text: #1e40af;
+}
+
+body {
+  background: var(--bg);
+  min-height: 100vh;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  padding: 22px;
+  color: var(--text);
+}
+
+.modal {
+  background: var(--card);
+  border-radius: 16px;
+  box-shadow: var(--shadow);
+  padding: 30px;
+  width: 92%;
+  max-width: 1200px;
+  position: relative;
+  border: 1px solid var(--border);
+  animation: slideUp 0.25s ease-out;
+}
+
+@keyframes slideUp {
+  from { opacity: 0; transform: translateY(14px); }
+  to { opacity: 1; transform: translateY(0); }
+}
+
+.back-btn {
+  position: absolute;
+  top: 18px;
+  left: 18px;
+  background: #f3f4f6;
+  border: 1px solid var(--border);
+  border-radius: 12px;
+  width: 42px;
+  height: 42px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  text-decoration: none;
+  color: var(--text);
+  font-size: 18px;
+  transition: transform 0.15s ease, background 0.2s ease, border-color 0.2s ease;
+  cursor: pointer;
+}
+
+.back-btn:hover {
+  background: var(--primary-soft);
+  border-color: rgba(43,179,166,0.35);
+  transform: translateX(-3px);
+  color: var(--primary-dark);
+}
+
+h2 {
+  text-align: center;
+  color: var(--text);
+  margin-bottom: 22px;
+  font-size: 28px;
+  font-weight: 800;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  gap: 14px;
+}
+
+.refresh-btn {
+  background: var(--primary);
+  color: white;
+  border: none;
+  border-radius: 10px;
+  padding: 9px 14px;
+  cursor: pointer;
+  font-size: 14px;
+  font-weight: 700;
+  transition: transform 0.15s ease, filter 0.2s ease;
+}
+
+.refresh-btn:hover {
+  transform: translateY(-1px);
+  filter: brightness(0.98);
+}
+
+/* Profile Info Styles */
+.info-box {
+  background: var(--primary-soft);
+  border-radius: 12px;
+  padding: 22px;
+  margin-bottom: 26px;
+  border: 1px solid rgba(43,179,166,0.25);
+}
+
+.profile-header {
+  display: flex;
+  align-items: center;
+  gap: 18px;
+  margin-bottom: 18px;
+}
+
+.profile-avatar {
+  width: 74px;
+  height: 74px;
+  background: var(--primary);
+  border-radius: 50%;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  color: white;
+  font-size: 30px;
+  font-weight: 800;
+  box-shadow: 0 6px 14px rgba(43,179,166,0.25);
+}
+
+.profile-details h3 {
+  color: var(--text);
+  font-size: 22px;
+  margin-bottom: 4px;
+  font-weight: 800;
+}
+
+.profile-role {
+  color: var(--primary-dark);
+  font-weight: 700;
+  font-size: 14px;
+  background: rgba(255,255,255,0.8);
+  border: 1px solid rgba(43,179,166,0.25);
+  display: inline-flex;
+  padding: 4px 10px;
+  border-radius: 999px;
+}
+
+/* Grid of info rows */
+.profile-info {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(260px, 1fr));
+  gap: 12px;
+  background: #fff;
+  padding: 16px;
+  border-radius: 12px;
+  border: 1px solid var(--border);
+  box-shadow: var(--shadow-soft);
+}
+
+.info-row {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  padding: 10px 10px;
+  border-bottom: 1px solid #f1f5f9;
+}
+
+.info-row:last-child {
+  border-bottom: none;
+}
+
+.info-label {
+  color: var(--muted);
+  font-weight: 700;
+}
+
+.info-value {
+  color: var(--text);
+  font-weight: 700;
+}
+
+/* Attendance Table Styles */
+h3 {
+  color: var(--text);
+  margin: 26px 0 12px 0;
+  font-size: 20px;
+  font-weight: 800;
+}
+
+.table-wrapper {
+  overflow-x: auto;
+  background: white;
+  border-radius: 12px;
+  border: 1px solid var(--border);
+  box-shadow: var(--shadow-soft);
+  margin-top: 10px;
+}
+
+table {
+  width: 100%;
+  border-collapse: collapse;
+  min-width: 680px;
+}
+
+thead {
+  background: #f1fbfa;
+}
+
+th {
+  padding: 14px;
+  text-align: left;
+  color: var(--text);
+  font-weight: 800;
+  font-size: 13px;
+  text-transform: uppercase;
+  letter-spacing: 0.5px;
+  border-bottom: 1px solid var(--border);
+}
+
+td {
+  padding: 14px;
+  border-bottom: 1px solid #f1f5f9;
+  color: #374151;
+}
+
+tbody tr {
+  transition: background 0.15s ease;
+}
+
+tbody tr:hover {
+  background: #fafafa;
+}
+
+.event-date {
+  color: var(--muted);
+  font-size: 12px;
+  margin-top: 4px;
+  display: block;
+}
+
+/* Status Badges */
+.status-badge {
+  display: inline-block;
+  padding: 4px 10px;
+  border-radius: 999px;
+  font-size: 12px;
+  font-weight: 800;
+  text-transform: uppercase;
+  letter-spacing: 0.4px;
+  border: 1px solid transparent;
+}
+
+.status-completed {
+  background: var(--ok-bg);
+  color: var(--ok-text);
+  border-color: rgba(22,101,52,0.15);
+}
+
+.status-pending {
+  background: var(--warn-bg);
+  color: var(--warn-text);
+  border-color: rgba(154,52,18,0.15);
+}
+
+.status-absent {
+  background: var(--bad-bg);
+  color: var(--bad-text);
+  border-color: rgba(153,27,27,0.15);
+}
+
+.status-inprogress {
+  background: var(--info-bg);
+  color: var(--info-text);
+  border-color: rgba(30,64,175,0.15);
+}
+
+/* If your status can be "Late" */
+.status-late {
+  background: #fff7ed;
+  color: #9a3412;
+  border-color: rgba(154,52,18,0.15);
+}
+
+/* No Data / Error */
+.no-data {
+  text-align: center;
+  color: var(--muted);
+  font-style: italic;
+  padding: 36px !important;
+}
+
+.error {
+  color: var(--bad-text);
+  text-align: center;
+  padding: 18px;
+  font-weight: 800;
+}
+
+/* Responsive */
+@media (max-width: 768px) {
+  .modal {
+    padding: 20px;
+    width: 96%;
+  }
+
+  h2 {
+    font-size: 22px;
+    flex-direction: column;
+    gap: 10px;
+  }
+
+  .profile-header {
+    flex-direction: column;
+    text-align: center;
+  }
+
+  .profile-info {
+    grid-template-columns: 1fr;
+  }
+
+  th, td {
+    padding: 10px;
+  }
+}
+
+@media (max-width: 480px) {
+  body {
+    padding: 12px;
+  }
+
+  .modal {
+    padding: 16px;
+  }
+
+  .back-btn {
+    top: 12px;
+    left: 12px;
+    width: 38px;
+    height: 38px;
+    font-size: 16px;
+  }
+
+  .profile-avatar {
+    width: 62px;
+    height: 62px;
+    font-size: 24px;
+  }
+}

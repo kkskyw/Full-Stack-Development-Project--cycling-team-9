@@ -1,0 +1,42 @@
+type Volunteer @table {
+  displayName: String!
+  email: String!
+  createdAt: Timestamp!
+  phoneNumber: String
+  skills: [String]
+}
+
+type Organization @table {
+  name: String!
+  email: String!
+  createdAt: Timestamp!
+  phoneNumber: String
+  description: String
+}
+
+type Event @table {
+  organization: Organization!
+  title: String!
+  date: Date!
+  time: String!
+  location: String!
+  description: String!
+  requiredVolunteers: Int!
+  createdAt: Timestamp!
+  notes: String
+}
+
+type Task @table {
+  event: Event!
+  description: String!
+  createdAt: Timestamp!
+  requiredSkills: [String]
+}
+
+type EventSignup @table(key: ["volunteer", "event"]) {
+  volunteer: Volunteer!
+  event: Event!
+  signupDate: Timestamp!
+  status: String!
+  notes: String
+}

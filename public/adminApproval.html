@@ -1,0 +1,71 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Admin Training Approval</title>
+    <link rel="stylesheet" href="css/main.css" />
+    <link rel="stylesheet" href="css/adminApproval.css" />
+</head>
+
+<body>
+
+<header>
+    <div class="logo-container">
+        <img src="images/cropped-logox2.png" alt="Cycling Without Age Logo" class="logo">
+        <div class="logo-text">
+            <p>Cycling Without Age</p>
+        </div>
+    </div>
+
+    <div class="header-buttons">
+        <div class="menu-container">
+            <button class="language-btn" id="languageBtn">
+                <span>🌐</span> Language
+            </button>
+            <div class="dropdown-menu" id="languageDropdown">
+                <a href="#" value="en">English</a>
+                <a href="#" value="zh">中文</a>
+                <a href="#" value="ms">Bahasa Melayu</a>
+                <a href="#" value="ta">தமிழ்</a>
+            </div>
+        </div>
+
+        <div class="menu-container">
+            <button class="menu-btn" id="menuBtn">
+                <span>☰</span> Menu
+            </button>
+            <div class="dropdown-menu" id="dropdownMenu">
+                <a href="eventIntroduction.html">Events</a>
+                <a href="training.html">Training</a>
+                <a href="attendance.html">Check-in</a>
+                <a href="donationPage.html">Donate</a>
+                <a href="feedback.html">Feedback</a>
+                <a href="profile.html">Profile</a>
+                <a href="event_booking.html">Registered events</a>
+            </div>
+        </div>
+
+        <button class="register-btn" onclick="window.location.href='register.html'">Register</button>
+        <button class="logout-btn" id="logoutBtn" style="display: none;">Log Out</button>
+    </div>
+</header>
+
+<section class="admin-training">
+  <section class="admin-training-section">
+    <h1>Training Approval Dashboard</h1>
+    <p class="subtitle">Approve completed in-person training applications</p>
+
+    <section id="applications" class="applications-container">
+      <p>Loading applications...</p>
+    </section>
+  </section>
+</section>
+
+
+<script src="script/translations.js?v=2"></script>
+<script src="script/main.js?v=2"></script>
+<script src="script/adminApproval.js"></script>
+</body>
+</html>
+

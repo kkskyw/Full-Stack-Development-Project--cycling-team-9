@@ -1,0 +1,159 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Book Events for Your Company | CWAS</title>
+    <link rel="stylesheet" href="css/main.css">
+    <link rel="stylesheet" href="css/companyEvents.css">
+</head>
+<body>
+    <header>
+        <div class="logo-container">
+            <img src="images/cropped-logox2.png" alt="Cycling Without Age Logo" class="logo">
+            <div class="logo-text"><p>Company Event Booking</p></div>
+        </div>
+        <div class="header-buttons">
+            <button class="register-btn" onclick="window.location.href='viewEvent.html'">View Public Site</button>
+            <button class="register-btn" onclick="window.location.href='companyDashboard.html'">Dashboard</button>
+        </div>
+    </header>
+
+    <main class="company-events-container">
+        <div class="page-header">
+            <h1>Book Events for Your Company</h1>
+            <p class="subtitle">Browse available events and book slots for your employees to participate as volunteers.</p>
+        </div>
+
+        <!-- Filters Section -->
+        <div class="filters-section">
+            <div class="filter-group">
+                <label for="dateFilter">Filter by Date:</label>
+                <input type="date" id="dateFilter" class="filter-input">
+            </div>
+            
+            <div class="filter-group">
+                <label for="locationFilter">Filter by Location:</label>
+                <select id="locationFilter" class="filter-select">
+                    <option value="">All Locations</option>
+                    <option value="Jurong Lake Gardens">Jurong Lake Gardens</option>
+                    <option value="Passion Wave Marina Bay">Passion Wave Marina Bay</option>
+                    <option value="Gardens by the Bay">Gardens by the Bay</option>
+                </select>
+            </div>
+            
+            <button class="clear-filters-btn" id="clearFilters">Clear Filters</button>
+        </div>
+
+        <!-- Events Grid -->
+        <div class="events-grid" id="eventsGrid">
+            <div class="loading">Loading available events...</div>
+        </div>
+
+        <!-- Booking Modal -->
+        <div id="bookingModal" class="modal">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <h2 id="bookingTitle">Book Event</h2>
+                    <span class="close-modal">&times;</span>
+                </div>
+                <form id="bookingForm" class="booking-form">
+                    <input type="hidden" id="bookingEventId">
+                    
+                    <div class="event-info-card">
+                        <h3 id="modalEventTitle"></h3>
+                        <div class="event-details">
+                            <div class="detail-item">
+                                <span class="label">Date:</span>
+                                <span id="modalEventDate"></span>
+                            </div>
+                            <div class="detail-item">
+                                <span class="label">Time:</span>
+                                <span id="modalEventTime"></span>
+                            </div>
+                            <div class="detail-item">
+                                <span class="label">Location:</span>
+                                <span id="modalEventLocation"></span>
+                            </div>
+                            <div class="detail-item">
+                                <span class="label">Nearest MRT:</span>
+                                <span id="modalEventMRT"></span>
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="form-section">
+                        <h3>Volunteer Details</h3>
+                        
+                        <div class="form-row">
+                            <div class="form-group">
+                                <label for="pilotsCount">Number of Pilots (Cycling Volunteers) *</label>
+                                <input type="number" id="pilotsCount" min="1" max="20" value="1" required>
+                                <div id="maxPilotsMessage" class="validation-message" style="display: none;">
+                                    <small style="color: #dc3545;">Maximum allowed: <span id="maxPilotsLimit">0</span> pilots</small>
+                                </div>
+                                <small>Pilots ride the trishaws with elderly passengers</small>
+                            </div>
+                            
+                            <div class="form-group">
+                                <label for="crewCount">Number of Support Crew *</label>
+                                <input type="number" id="crewCount" min="0" max="10" value="0" required>
+                                <small>Support crew assist with logistics and safety</small>
+                            </div>
+                        </div>
+
+                        <div class="form-group">
+                            <label for="companyName">Company Name *</label>
+                            <input type="text" id="companyName" required>
+                        </div>
+                        
+                        <div class="form-group">
+                            <label for="contactPerson">Contact Person *</label>
+                            <input type="text" id="contactPerson" required>
+                        </div>
+                        
+                        <div class="form-group">
+                            <label for="contactEmail">Contact Email *</label>
+                            <input type="email" id="contactEmail" required>
+                        </div>
+                        
+                        <div class="form-group">
+                            <label for="contactPhone">Contact Phone *</label>
+                            <input type="tel" id="contactPhone" required>
+                        </div>
+                        
+                        <div class="form-group">
+                            <label for="specialNotes">Special Notes or Requirements</label>
+                            <textarea id="specialNotes" rows="3" placeholder="Any special requirements, dietary restrictions, or additional information..."></textarea>
+                        </div>
+                    </div>
+
+                    <div class="form-actions">
+                        <button type="button" class="cancel-btn" id="cancelBooking">Cancel</button>
+                        <button type="submit" class="submit-btn" id="submitBooking">Submit Booking</button>
+                    </div>
+                </form>
+            </div>
+        </div>
+
+        <!-- Confirmation Modal -->
+        <div id="confirmationModal" class="modal">
+            <div class="modal-content small-modal">
+                <div class="modal-header">
+                    <h2>Booking Confirmed!</h2>
+                </div>
+                <div class="modal-body">
+                    <div class="success-icon">✓</div>
+                    <p id="confirmationMessage"></p>
+                    <div class="booking-summary" id="bookingSummary"></div>
+                </div>
+                <div class="modal-footer">
+                    <button class="submit-btn" id="closeConfirmation">OK</button>
+                </div>
+            </div>
+        </div>
+    </main>
+
+    <script src="script/companyEvents.js"></script>
+</body>
+</html>
