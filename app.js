@@ -42,6 +42,8 @@ app.post("/users/register", userValidation.validateUser, userController.createUs
 app.post("/api/login", userValidation.validateLogin, userController.loginUser);
 app.get("/users/:id", userController.getUserById);
 app.put("/users/:id", userController.updateUser);
+//Admin view volunteer info
+app.get("/admin/volunteers", verifyJWT, verifyAdmin, userController.listVolunteers);
 
 // ========== PASSWORD RESET ROUTES ==========
 app.post("/auth/request-otp", userValidation.validateResetRequest, resetPwController.requestPasswordReset);

@@ -213,12 +213,33 @@ async function updateUserInfo(userId, updatedData) {
   return { userId: doc.id, ...doc.data() };
 }
 
+// Get all volunteers (from users collection)
+async function getVolunteers() {
+  const snap = await usersCol
+    .where('role', '==', 'Volunteer')
+    .orderBy('createdAt', 'desc')
+    .get();
+
+  return snap.docs.map(d => {
+    const data = d.data();
+    // return minimal fields needed for list
+    return {
+      userId: d.id,
+      name: data.name || "",
+      email: data.email || "",
+      role: data.role || "",
+      createdAt: data.createdAt || ""
+    };
+  });
+}
+
 module.exports = {
   getUserById,
   createUser,
   findUserByEmail,
   findUserByPhone,
   updateUserInfo,
+  getVolunteers,
   
   // Password reset methods
   generateOtp,

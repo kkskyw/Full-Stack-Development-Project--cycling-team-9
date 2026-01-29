@@ -128,9 +128,20 @@ async function updateUser(req, res) {
   }
 }
 
+async function listVolunteers(req, res) {
+  try {
+    const volunteers = await userModel.getVolunteers();
+    res.json({ volunteers });
+  } catch (error) {
+    console.error("Error listing volunteers:", error);
+    res.status(500).json({ error: "Failed to fetch volunteers" });
+  }
+}
+
 module.exports = {
   getUserById,
   createUser,
   loginUser,
-  updateUser
+  updateUser,
+  listVolunteers
 };
