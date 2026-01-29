@@ -129,5 +129,18 @@
     <script src="script/translations.js"></script>
     <script src="script/main.js"></script>
     <script src="script/eventDetail.js"></script>
+    <script>
+    window.watsonAssistantChatOptions = {
+        integrationID: "c0f55dca-d11a-45a2-8321-f712cff760e6", // The ID of this integration.
+        region: "us-south", // The region your integration is hosted in.
+        serviceInstanceID: "a87884a3-0fe1-4e3d-9718-0445dc99839c", // The ID of your service instance.
+        onLoad: async (instance) => { await instance.render(); }
+    };
+    setTimeout(function(){
+        const t=document.createElement('script');
+        t.src="https://web-chat.global.assistant.watson.appdomain.cloud/versions/" + (window.watsonAssistantChatOptions.clientVersion || 'latest') + "/WatsonAssistantChatEntry.js";
+        document.head.appendChild(t);
+    });
+    </script>
 </body>
 </html>
