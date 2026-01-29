@@ -56,6 +56,7 @@ app.get("/api/mrt-stations", eventController.getMRTStations);
 app.get("/api/events/eligible", verifyJWT, eventSignupController.getEligibleEvents);
 app.get("/api/events", eventController.getAllEvents);
 app.post("/api/events/:eventId/signup", verifyJWT, eventSignupController.joinEvent);
+app.get("/api/events/booked", eventController.getAllBookedEvents);
 app.get("/api/events/:id", eventController.getEventById);
 
 //reminder
@@ -119,5 +120,3 @@ process.on("SIGINT", () => {
   console.log("Server shutting down");
   process.exit(0);
 });
-
-

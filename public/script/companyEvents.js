@@ -74,7 +74,7 @@ document.addEventListener('DOMContentLoaded', function() {
             
             // Load events and bookings in parallel
             const [eventsResponse, bookingsResponse] = await Promise.all([
-                fetch(`${API_BASE_URL}/events?pageSize=50`),
+                fetch(`${API_BASE_URL}/company/events?pageSize=50`),
                 companyIdentifier ? fetch(`${API_BASE_URL}/company/bookings?companyName=${encodeURIComponent(companyIdentifier)}`) : Promise.resolve(null)
             ]);
 
