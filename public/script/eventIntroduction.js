@@ -1,67 +1,78 @@
 // Yiru
-document.addEventListener('DOMContentLoaded', function() {
+document.addEventListener('DOMContentLoaded', function () {
     const backBtn = document.getElementById('backBtn');
+    const actionButtons = document.getElementById('actionButtons');
+
     if (backBtn) {
-        backBtn.addEventListener('click', function() {
+        backBtn.addEventListener('click', function () {
             window.location.href = 'main.html';
         });
     }
 
-    const actionButtons = document.getElementById('actionButtons');
-    
-    // Initialize the page
     init();
-    
-    function init() {
-        checkUserStatus();
-        setupEventListeners();
+
+    async function init() {
+        await checkUserStatus();
     }
-    
-    function setupEventListeners() {
-        // Add any additional event listeners here if needed
+
+    async function checkUserStatus() {
+    const token = localStorage.getItem('token');
+
+    // Not logged in
+    if (!token) {
+        displayActionButtons(false, false);
+        return;
     }
-    
-    function checkUserStatus() {
-        // Check if user is logged in (you'll need to implement this based on your auth system)
-        const isLoggedIn = checkIfUserLoggedIn();
-        const isTrained = checkIfUserTrained();
-        
+
+    try {
+        const res = await fetch('/api/users/me', {
+            headers: {
+                Authorization: `Bearer ${token}`
+            }
+        });
+
+        if (!res.ok) {
+            displayActionButtons(false, false);
+            return;
+        }
+
+        const data = await res.json();
+
+        const isLoggedIn = true;
+        const isTrained = data.trained === true;
+
+        if (isTrained) {
+            window.location.href = 'viewEvent.html';
+            return;
+        }
+
         displayActionButtons(isLoggedIn, isTrained);
+
+    } catch (err) {
+        console.error('Failed to fetch user status:', err);
+        displayActionButtons(false, false);
     }
-    
-    function checkIfUserLoggedIn() {
-        // Implement your login check logic here
-        // This could check localStorage, session, or make an API call
-        // For now, return false to simulate not logged in
-        return localStorage.getItem('userLoggedIn') === 'true' || localStorage.getItem('token') !== null;
-    }
-    
-    function checkIfUserTrained() {
-        // Implement your training status check logic here
-        // This could check localStorage or make an API call
-        // For now, return false to simulate not trained
-        return localStorage.getItem('userTrained') === 'true';
-    }
-    
+}
+
+
     function displayActionButtons(isLoggedIn, isTrained) {
         actionButtons.innerHTML = '';
-        
+
         if (!isLoggedIn) {
-            // User not logged in - show Register/Login button
             actionButtons.innerHTML = `
                 <button class="action-btn btn-primary" onclick="handleRegisterClick()">
                     Register / Login First
                 </button>
             `;
-        } else if (!isTrained) {
-            // User logged in but not trained - show Training button
+        } 
+        else if (!isTrained) {
             actionButtons.innerHTML = `
                 <button class="action-btn btn-primary" onclick="handleTrainingClick()">
                     Train to be a Volunteer
                 </button>
             `;
-        } else {
-            // User logged in and trained - show View Events button
+        } 
+        else {
             actionButtons.innerHTML = `
                 <button class="action-btn btn-primary" onclick="handleViewEventsClick()">
                     View Available Events
@@ -72,38 +83,17 @@ document.addEventListener('DOMContentLoaded', function() {
             `;
         }
     }
-    
-    // Global functions for button clicks
-    window.handleRegisterClick = function() {
+
+    // Navigation handlers
+    window.handleRegisterClick = function () {
         window.location.href = 'register.html';
     };
-    
-    window.handleTrainingClick = function() {
+
+    window.handleTrainingClick = function () {
         window.location.href = 'training.html';
     };
-    
-    window.handleViewEventsClick = function() {
+
+    window.handleViewEventsClick = function () {
         window.location.href = 'viewEvent.html';
-    };
-    
-    // For testing purposes - you can remove these in production
-    window.debugLogin = function() {
-        localStorage.setItem('userLoggedIn', 'true');
-        alert('Debug: User logged in (for testing)');
-        location.reload();
-    };
-    
-    window.debugTraining = function() {
-        localStorage.setItem('userTrained', 'true');
-        alert('Debug: User trained (for testing)');
-        location.reload();
-    };
-    
-    window.debugReset = function() {
-        localStorage.removeItem('userLoggedIn');
-        localStorage.removeItem('userTrained');
-        localStorage.removeItem('token');
-        alert('Debug: Reset user status (for testing)');
-        location.reload();
     };
 });

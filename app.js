@@ -38,8 +38,9 @@ app.use(express.static(path.join(__dirname, "public")));
 const feedbackController = require("./functions/controllers/feedbackController");
 
 // User routes
-app.post("/users/register", userValidation.validateUser, userController.createUser);
+app.post("/api/users/register", userValidation.validateUser, userController.createUser);
 app.post("/api/login", userValidation.validateLogin, userController.loginUser);
+app.get("/api/users/me", verifyJWT, userController.getMe);
 app.get("/users/:id", userController.getUserById);
 app.put("/users/:id", userController.updateUser);
 //Admin view volunteer info

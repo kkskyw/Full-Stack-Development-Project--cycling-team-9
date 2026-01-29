@@ -206,20 +206,18 @@ document.addEventListener('DOMContentLoaded', function() {
         
         let slotsHTML = "";
 
-        if (typeof event.maxPilots === "number") {
-            const booked = typeof event.pilotsCount === "number" ? event.pilotsCount : 0;
-            const remaining = event.maxPilots - booked;
+        if (typeof event.remainingSlots === "number") {
+        if (event.remainingSlots <= 0) {
+            slotsHTML = `<div class="event-slots slots-full">Fully booked</div>`;
+        } else {
+            slotsHTML = `
+                <div class="event-slots slots-available">
+                    ${event.remainingSlots} slots remaining
+                </div>
+            `;
+        }
+    }
 
-            if (remaining <= 0) {
-                slotsHTML = `<div class="event-slots slots-full">Fully booked</div>`;
-            } else {
-                slotsHTML = `
-                    <div class="event-slots slots-available">
-                        ${remaining} slots remaining
-                    </div>
-                `;
-            }
-}
 
 
         eventCard.innerHTML = `
