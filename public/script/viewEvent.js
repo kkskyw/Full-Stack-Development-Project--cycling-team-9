@@ -9,7 +9,7 @@ document.addEventListener('DOMContentLoaded', function() {
     const backBtn = document.getElementById('backBtn');
     if (backBtn) {
         backBtn.addEventListener('click', function() {
-            window.location.href = 'volunteer_main.html';
+            window.location.href = 'main.html';
         });
     }
     
@@ -57,11 +57,11 @@ document.addEventListener('DOMContentLoaded', function() {
                 });
                 e.target.classList.add('active');
                 
-                currentFilters.mrtLetter = letter.toLowerCase();
+                currentFilters.mrtLetter = letter;
                 currentPage = 1;
                 
                 // Load MRT stations for this letter and then load events
-                loadMRTStations(letter.toLowerCase()).then(() => loadEvents());
+                loadMRTStations(letter).then(() => loadEvents());
             }
         });
         
@@ -126,15 +126,10 @@ document.addEventListener('DOMContentLoaded', function() {
             });
             
             if (currentFilters.time) params.append('time', currentFilters.time);
-            if (currentFilters.mrt) {
-                params.append(
-                    'mrt',
-                    currentFilters.mrt.trim().toLowerCase()
-                );
-            }
+            if (currentFilters.mrt) params.append('mrt', currentFilters.mrt);
             if (currentFilters.mrtLetter) params.append('mrtLetter', currentFilters.mrtLetter);
             
-            const url = `/api/events?${params}`;
+            const url = `/api/events/booked?${params}`;
             console.log('Fetching from URL:', url);
             
             const response = await fetch(url);
@@ -204,38 +199,16 @@ document.addEventListener('DOMContentLoaded', function() {
         
         const eventIntro = event.intro || event.header || 'No description available';
         
-        let slotsHTML = "";
-
-        if (typeof event.remainingSlots === "number") {
-        if (event.remainingSlots <= 0) {
-            slotsHTML = `<div class="event-slots slots-full">Fully booked</div>`;
-        } else {
-            slotsHTML = `
-                <div class="event-slots slots-available">
-                    ${event.remainingSlots} slots remaining
-                </div>
-            `;
-        }
-    }
-
-
-
         eventCard.innerHTML = `
             <div class="event-header">${event.header}</div>
-
             <div class="event-meta">
                 <div class="event-date">${formattedDate}</div>
                 <div class="event-time">${formattedTime}</div>
                 <div class="event-location">${event.location}</div>
                 <div class="event-mrt">${event.nearestMRT}</div>
             </div>
-
             <div class="event-intro">${eventIntro}</div>
-
-            ${slotsHTML}
-
         `;
-
         eventCard.addEventListener('click', function() {
             window.location.href = `eventDetail.html?id=${event.eventId}`;
         });
