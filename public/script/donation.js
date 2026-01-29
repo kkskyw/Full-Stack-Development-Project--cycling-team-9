@@ -128,7 +128,7 @@ document.addEventListener('DOMContentLoaded', function() {
     const logo = document.querySelector('.logo');
     if (logo) {
         logo.addEventListener('click', function() {
-            window.location.href = 'main.html';
+            window.location.href = 'volunteer_main.html';
         });
         
         logo.style.cursor = 'pointer';
@@ -205,7 +205,7 @@ function handleLogout() {
     localStorage.removeItem('userName');
     
     // Redirect to main page
-    window.location.href = 'main.html';
+    window.location.href = 'volunteer_main.html';
 }
 
 

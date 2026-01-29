@@ -52,7 +52,8 @@ function handleVoiceCommand(command) {
 
     // NAVIGATION
     if (command.includes("home")) {
-        window.location.href = "main.html";
+        const token = localStorage.getItem("token");
+        window.location.href = token ? "volunteer_main.html" : "guest_main.html";
         return;
     }
 

@@ -28,7 +28,7 @@ document.getElementById("loginForm").addEventListener("submit", async function (
     localStorage.setItem("userName", data.name);
 
     // Decide redirect based on role
-    let redirectUrl = "main.html";
+    let redirectUrl = "volunteer_main.html";
 
     if (data.role === "Admin") {
       redirectUrl = "admin_main.html";

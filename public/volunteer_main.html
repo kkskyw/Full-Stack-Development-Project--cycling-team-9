@@ -1,0 +1,170 @@
+<!-- Yiru -->
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title data-lang="title">Cycling Without Age Singapore</title>
+    <link rel="stylesheet" href="css/main.css" />
+</head>
+<body>
+    <header>
+        <div class="logo-container">
+            <img src="images/cropped-logox2.png" alt="Cycling Without Age Logo" data-lang="logoAlt" class="logo">
+            <div class="logo-text">
+                <p data-lang="logoText">Cycling Without Age</p>
+            </div>
+        </div>
+
+        <div class="header-buttons">
+            <div class="menu-container">
+                <button class="language-btn" id="languageBtn">
+                    <span>🌐</span> <span data-lang="language">Language</span>
+                </button>
+                <div class="dropdown-menu" id="languageDropdown">
+                    <a href="#" value="en">English</a>
+                    <a href="#" value="zh">中文 (Chinese)</a>
+                    <a href="#" value="ms">Bahasa Melayu (Malay)</a>
+                    <a href="#" value="ta">தமிழ் (Tamil)</a>
+                </div>
+            </div>
+
+            <div class="menu-container font-size-container">
+                <button class="font-size-btn" id="fontSizeBtn">
+                    <span>🔤</span> <!-- Changed from "A" to a text symbol -->
+                    <span class="font-size-indicator" id="fontSizeIndicator">Medium</span>
+                    <span>▼</span>
+                </button>
+                <div class="dropdown-menu font-size-dropdown" id="fontSizeDropdown">
+                    <a href="#" class="font-size-option" data-size="small">Small</a>
+                    <a href="#" class="font-size-option active" data-size="medium">Medium</a>
+                    <a href="#" class="font-size-option" data-size="large">Large</a>
+                    <a href="#" class="font-size-option" data-size="xlarge">Extra Large</a>
+                </div>
+            </div>
+
+            <div class="menu-container">
+                <button class="menu-btn" id="menuBtn">
+                    <span>☰</span> <span data-lang="menu">Menu</span>
+                </button>
+                <div class="dropdown-menu" id="dropdownMenu">
+                    <a href="eventIntroduction.html" id="eventsLink" data-lang="events">Events</a>
+                    <a href="training.html" id="trainingLink" data-lang="training" style="display: none;">Training</a>
+                    <a href="attendance.html" data-lang="checkin">Check-in</a>
+                    <a href="donationPage.html" data-lang="donate">Donate</a>
+                    <a href="feedback.html" data-lang="feedback">Feedback</a>
+                    <a href="profile.html" data-lang="profile">Profile</a>
+                    <a href="history.html" data-lang="history">History</a>
+                    <a href="event_booking.html" data-lang="registeredEvents">Registered events</a>
+                </div>
+            </div>
+
+            <button class="register-btn" onclick="window.location.href='register.html'" data-lang="register">Register</button>
+            <button class="logout-btn" id="logoutBtn" style="display: none;" data-lang="logout">Log Out</button>
+        </div>
+    </header>
+
+    <img src="/images/Untitled-design-1-1600x432.png" 
+         alt="Community cycling event" 
+         data-lang="heroAlt"
+         class="hero-image">
+
+    <section class="welcome-section">
+        <h1 data-lang="welcomeHeader">Welcome to Cycling Without Age Singapore</h1>
+
+        <p class="mission" data-lang="missionText">
+            Our mission is to bring joy to seniors and engage them in happy hours of community activities to reduce loneliness.
+        </p>
+        
+        <p data-lang="lonelinessStats">
+            Today, 270,000 seniors aged 82 and above in Singapore experience loneliness. Loneliness not only increases the risk of developing depression & anxiety, but also increases the risk of death by 7%, while managing other health issues.
+        </p>
+        
+        <p data-lang="transformationText">
+            We transform loneliness into social connection. With your support, seniors can experience trishaw rides, communal dining, art reminiscence workshops, bicycle repair training, and trishaw docent programmes, bringing joy, purpose, and a sense of belonging.
+        </p>
+        
+        <div class="button-container">
+            <button class="btn btn-join" onclick="window.location.href='register.html'" data-lang="joinUs">Join Us</button>
+            <button class="btn btn-donate" onclick="window.location.href='donationPage.html'" data-lang="donateBtn">Donate</button>
+        </div>
+    </section>
+
+    <section class="video-section">
+        <div class="video-container">
+            <!-- No translation needed for video -->
+            <iframe width="560" height="315" src="https://www.youtube.com/embed/7a7vlkCngK8?si=8xwv7QGaNGLE6CBp" allowfullscreen></iframe>
+        </div>
+    </section>
+
+    <section class="award-section">
+        <h2 data-lang="ctaHeader">Charity Transparency Award 2024</h2>
+
+        <p data-lang="ctaDesc1">
+            Cycling Without Age Singapore (CWAS) is honoured to be accorded The Charity Transparency and Governance (CTA) Award for 2024, organized by the Ministry of Culture, Community & Youth (MCCY). This award is a recognition of our commitment to promoting good governance and transparency in the charity sector, and it is aimed at highlighting the outstanding work of charities, motivating others to follow their lead.
+        </p>
+        
+        <p data-lang="ctaDesc2">
+            CWAS wishes to share this achievement with our supporters, volunteers, and community partners. This award serves as proof of our continued efforts to maintain and enhance our standards of corporate governance and transparency. As a trusted charity, we remain dedicated to serving and empowering seniors by reintegrating them into the community through volunteerism.
+        </p>
+        
+        <img src="/images/CTA-Logo-2024-768x503.png" class="award-logo" alt="CTA Logo" data-lang="ctaLogoAlt">
+        <img src="/images/CWAS-Transparency-Awasrd-2024-768x577.jpeg" class="certificate-image" alt="Award Ceremony" data-lang="awardCeremonyAlt">
+    </section>
+
+    <section class="contact-section">
+        <h2 data-lang="contactUs">Contact Us</h2>
+        <a href="mailto:info@cyclingwithoutage.sg" data-lang="email">info@cyclingwithoutage.sg</a>
+        
+        <div class="social-section">
+            <h3 data-lang="followUs">Follow Us</h3>
+            <div class="social-icons">
+                <div class="social-icon" onclick="window.open('https://www.facebook.com/CyclingWithoutAgeSingapore/', '_blank')">
+                    <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M24 12.073c0-6.627-5.373-12-12-12s-12 5.373-12 12c0 5.99 4.388 10.954 10.125 11.854v-8.385H7.078v-3.47h3.047V9.43c0-3.007 1.792-4.669 4.533-4.669 1.312 0 2.686.235 2.686.235v2.953H15.83c-1.491 0-1.956.925-1.956 1.874v2.25h3.328l-.532 3.47h-2.796v8.385C19.612 23.027 24 18.062 24 12.073z"/></svg>
+                </div>
+                <div class="social-icon" onclick="window.open('https://www.instagram.com/cyclingwithoutagesingapore/?hl=en', '_blank')">
+                    <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M12 2.163c3.204 0 3.584.012 4.85.07 3.252.148 4.771 1.691 4.919 4.919.058 1.265.069 1.645.069 4.849 0 3.205-.012 3.584-.069 4.849-.149 3.225-1.664 4.771-4.919 4.919-1.266.058-1.644.07-4.85.07-3.204 0-3.584-.012-4.849-.07-3.26-.149-4.771-1.699-4.919-4.92-.058-1.265-.07-1.644-.07-4.849 0-3.204.013-3.583.07-4.849.149-3.227 1.664-4.771 4.919-4.919 1.266-.057 1.645-.069 4.849-.069zm0-2.163c-3.259 0-3.667.014-4.947.072-4.358.2-6.78 2.618-6.98 6.98-.059 1.281-.073 1.689-.073 4.948 0 3.259.014 3.668.072 4.948.2 4.358 2.618 6.78 6.98 6.98 1.281.058 1.689.072 4.948.072 3.259 0 3.668-.014 4.948-.072 4.354-.2 6.782-2.618 6.979-6.98.059-1.28.073-1.689.073-4.948 0-3.259-.014-3.667-.072-4.947-.196-4.354-2.617-6.78-6.979-6.98-1.281-.059-1.69-.073-4.949-.073zm0 5.838c-3.403 0-6.162 2.759-6.162 6.162s2.759 6.163 6.162 6.163 6.162-2.759 6.162-6.163c0-3.403-2.759-6.162-6.162-6.162zm0 10.162c-2.209 0-4-1.79-4-4 0-2.209 1.791-4 4-4s4 1.791 4 4c0 2.21-1.791 4-4 4zm6.406-11.845c-.796 0-1.441.645-1.441 1.44s.645 1.44 1.441 1.44c.795 0 1.439-.645 1.439-1.44s-.644-1.44-1.439-1.44z"/></svg>
+                </div>
+                <div class="social-icon" onclick="window.open('https://www.linkedin.com/company/cwasingapore/?originalSubdomain=sg', '_blank')">
+                    <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M20.447 20.452h-3.554v-5.569c0-1.328-.027-3.037-1.852-3.037-1.853 0-2.136 1.445-2.136 2.939v5.667H9.351V9h3.414v1.561h.046c.477-.9 1.637-1.85 3.37-1.85 3.601 0 4.267 2.37 4.267 5.455v6.286zM5.337 7.433c-1.144 0-2.063-.926-2.063-2.065 0-1.138.92-2.063 2.063-2.063 1.14 0 2.064.925 2.064 2.063 0 1.139-.925 2.065-2.064 2.065zm1.782 13.019H3.555V9h3.564v11.452zM22.225 0H1.771C.792 0 0 .774 0 1.729v20.542C0 23.227.792 24 1.771 24h20.451C23.2 24 24 23.227 24 22.271V1.729C24 .774 23.2 0 22.222 0h.003z"/></svg>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <footer>
+        <p>Copyright Cycling Without Age Singapore 2024</p>
+        <p>All Rights Reserved</p>
+    </footer>
+
+        <script type="module">
+    // Import the functions you need from the SDKs you need
+    import { initializeApp } from "https://www.gstatic.com/firebasejs/12.6.0/firebase-app.js?v=2";
+    import { getFirestore } from "https://www.gstatic.com/firebasejs/12.6.0/firebase-firestore.js?v=2";
+    // TODO: Add SDKs for Firebase products that you want to use
+    // https://firebase.google.com/docs/web/setup#available-libraries
+
+    // Your web app's Firebase configuration
+    // For Firebase JS SDK v7.20.0 and later, measurementId is optional
+    const firebaseConfig = {
+        apiKey: "AIzaSyBlN7borlIKXxly09JsFMC9nDKUcvA9bCM",
+        authDomain: "cycling-without-age-grp9-cdb.firebaseapp.com",
+        projectId: "cycling-without-age-grp9-cdb",
+        storageBucket: "cycling-without-age-grp9-cdb.firebasestorage.app",
+        messagingSenderId: "559083600036",
+        appId: "1:559083600036:web:c0438122b8a56e59f7ce31",
+        measurementId: "G-E2KF2YVL7R"
+    };
+
+    // Initialize Firebase
+    const app = initializeApp(firebaseConfig);
+    const db = getFirestore(app);
+    db.settings({timestampsInSnapshots:true});
+    </script>
+    <script src="script/voiceSystem.js"></script>
+    <script src="script/tts.js"></script>
+    <script src="script/voice.js"></script>
+    <script src="script/translations.js"></script>
+    <script src="script/main.js"></script>
+</body>
+</html>

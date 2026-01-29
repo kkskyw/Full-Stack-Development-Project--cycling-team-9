@@ -5,7 +5,7 @@ document.addEventListener('DOMContentLoaded', function () {
 
     if (backBtn) {
         backBtn.addEventListener('click', function () {
-            window.location.href = 'main.html';
+            window.location.href = 'volunteer_main.html';
         });
     }
 

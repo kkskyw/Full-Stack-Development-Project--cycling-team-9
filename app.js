@@ -103,7 +103,7 @@ app.get("/feedback", verifyJWT, feedbackController.getFeedback);
 
 // serve main.html at root
 app.get("/", (req, res) => {
-  res.sendFile(path.join(__dirname, "public", "main.html"));
+  res.sendFile(path.join(__dirname, "public", "volunteer_main.html"));
 });
 
 app.get(["/profile.html/:id", "/profile/:id"], (req, res) => {
