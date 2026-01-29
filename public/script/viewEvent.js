@@ -36,7 +36,8 @@ document.addEventListener('DOMContentLoaded', function() {
             console.log('Time filter changed:', this.value);
             currentFilters.time = this.value;
             currentPage = 1;
-            loadEvents();
+            // Reload MRT stations first, then load events
+            loadMRTStations(currentFilters.mrtLetter).then(() => loadEvents());
         });
         
         mrtFilter.addEventListener('change', function() {
@@ -73,8 +74,13 @@ document.addEventListener('DOMContentLoaded', function() {
     
     async function loadMRTStations(letter = '') {
         try {
-            console.log('Loading MRT stations for letter:', letter);
-            const response = await fetch(`/api/mrt-stations?letter=${letter}`);
+            console.log('Loading MRT stations for letter:', letter, 'with time filter:', currentFilters.time);
+            
+            // Include time filter in the request
+            const url = `/api/mrt-stations?letter=${letter}&time=${currentFilters.time || ''}`;
+            console.log('Fetching MRT stations from:', url);
+            
+            const response = await fetch(url);
             
             if (!response.ok) {
                 throw new Error(`HTTP error! status: ${response.status}`);
@@ -294,6 +300,7 @@ document.addEventListener('DOMContentLoaded', function() {
         };
         
         currentPage = 1;
+        // Pass empty time filter when clearing
         loadMRTStations().then(() => loadEvents());
     }
 });

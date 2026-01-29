@@ -79,9 +79,12 @@ const getAllEvents = async (page = 1, pageSize = 5, filters = {}) => {
     }
 };
 
-const getMRTStations = async (letter = '') => {
+const getMRTStations = async (letter = '', timeFilter = '') => {
     try {
         let query = db.collection('events');
+        
+        // Only include events with companyBookings
+        query = query.where('companyBookings', '!=', null);
         
         if (letter && letter !== '') {
             const upperLetter = letter.toUpperCase();
@@ -91,11 +94,43 @@ const getMRTStations = async (letter = '') => {
         
         const snapshot = await query.get();
         
-        const mrtSet = new Set();
+        let events = [];
         snapshot.forEach(doc => {
             const data = doc.data();
-            if (data.nearestMRT) {
-                mrtSet.add(data.nearestMRT);
+            // Convert Firestore Timestamps to ISO strings
+            if (data.time && data.time.toDate) {
+                data.time = data.time.toDate().toISOString();
+            }
+            if (data.start_time && data.start_time.toDate) {
+                data.start_time = data.start_time.toDate().toISOString();
+            }
+            events.push({
+                eventId: doc.id,
+                ...data
+            });
+        });
+        
+        // Apply time filter if provided (same logic as in getAllBookedEvents)
+        if (timeFilter) {
+            const hourFilter = parseInt(timeFilter);
+            events = events.filter(event => {
+                const eventDateTime = event.start_time || event.time;
+                if (!eventDateTime) return false;
+                
+                const eventDate = new Date(eventDateTime);
+                // Get hour in Singapore timezone (UTC+8)
+                const eventHourSingapore = eventDate.getUTCHours() + 8;
+                // Adjust for 24-hour format
+                const adjustedHour = eventHourSingapore >= 24 ? eventHourSingapore - 24 : eventHourSingapore;
+                
+                return adjustedHour === hourFilter;
+            });
+        }
+        
+        const mrtSet = new Set();
+        events.forEach(event => {
+            if (event.nearestMRT) {
+                mrtSet.add(event.nearestMRT);
             }
         });
         

@@ -42,9 +42,11 @@ const getAllEvents = async (req, res) => {
 const getMRTStations = async (req, res) => {
     try {
         const letter = req.query.letter || '';
-        console.log('Getting MRT stations for letter:', letter);
+        const timeFilter = req.query.time || '';
         
-        const stations = await eventModel.getMRTStations(letter);
+        console.log('Getting MRT stations for letter:', letter, 'time filter:', timeFilter);
+        
+        const stations = await eventModel.getMRTStations(letter, timeFilter);
         
         console.log('MRT stations found:', stations);
         
