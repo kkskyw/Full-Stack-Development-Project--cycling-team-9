@@ -160,10 +160,10 @@ document.addEventListener('DOMContentLoaded', function() {
         console.log('Displaying event details:', event);
         
         // Format date and time
-        const eventDateTime = new Date(event.start_time);
+        const eventDateTime = new Date(event.start_time || event.time);
         
         const formattedDate = eventDateTime.toLocaleDateString('en-US', {
-            timeZone: 'UTC',
+            timeZone: 'Asia/Singapore',  // Change from 'UTC' to 'Asia/Singapore'
             weekday: 'long',
             year: 'numeric',
             month: 'long',
@@ -171,7 +171,7 @@ document.addEventListener('DOMContentLoaded', function() {
         });
         
         const formattedTime = eventDateTime.toLocaleTimeString('en-US', {
-            timeZone: 'UTC',
+            timeZone: 'Asia/Singapore',  // Change from 'UTC' to 'Asia/Singapore'
             hour: '2-digit',
             minute: '2-digit',
             hour12: true
