@@ -45,6 +45,7 @@ app.use(express.urlencoded({ extended: true }));
 // User routes
 app.post("/api/users/register", userValidation.validateUser, userController.createUser);
 app.post("/api/login", userValidation.validateLogin, userController.loginUser);
+app.get("/api/users/me", verifyJWT, userController.getMe);
 app.get("/api/users/:id", userController.getUserById);
 app.put("/api/users/:id", userController.updateUser);
 
@@ -56,6 +57,7 @@ app.post("/api/auth/reset-password", userValidation.validatePasswordReset, reset
 // Event routes
 app.get("/api/mrt-stations", eventController.getMRTStations);
 app.get("/api/events/eligible", verifyJWT, eventSignupController.getEligibleEvents);
+app.get("/api/events/booked", eventController.getAllBookedEvents);
 app.get("/api/events", eventController.getAllEvents);
 app.post("/api/events/:eventId/signup", verifyJWT, eventSignupController.joinEvent);
 app.post("/api/events/:eventId/email-signup", verifyJWT, eventSignupController.emailSignup);
@@ -72,6 +74,7 @@ app.get("/api/users/eligible-events", verifyJWT, eventSignupController.getEligib
 // History routes
 app.get("/api/volunteers/:id/events", verifyJWT, historyController.getEventsByVolunteer);
 app.get("/api/admin/events/history", verifyJWT, verifyAdmin, historyController.getAllPastEvents);
+app.get("/api/admin/events", verifyJWT, verifyAdmin, eventController.getAllEvents);
 
 // Attendance routes
 app.post("/api/attendance/checkin", verifyJWT, attendanceController.checkIn);
