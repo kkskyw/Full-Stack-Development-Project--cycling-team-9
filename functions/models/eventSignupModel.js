@@ -20,6 +20,27 @@ async function signupForEvent(userId, eventId) {
     }
 
     const eventData = eventDoc.data();
+    const maxPilots = Number(eventData.maxPilots || 0);
+
+// Get approved company booking for this event
+    const companySnap = await db
+        .collection("companyBookings")
+        .where("eventId", "==", String(eventId))
+        .where("status", "==", "approved")
+        .limit(1)
+        .get();
+
+    let pilotsCount = 0;
+
+    if (!companySnap.empty) {
+        pilotsCount = Number(companySnap.docs[0].data().pilotsCount || 0);
+    }
+
+    const remainingSlots = maxPilots - pilotsCount;
+
+    if (remainingSlots <= 0) {
+        throw new Error("This event is fully booked. No volunteer slots remaining.");
+    }
     let eventTime = eventData.time || eventData.start_time;
     
     // Convert Firestore Timestamp to Date
@@ -104,29 +125,51 @@ async function getUserBookings(userId) {
 }
 
 async function getEligibleEvents(userId) {
-    // Get all events
     const eventsSnap = await db.collection('events').get();
-    
-    // Get user's bookings
-    const bookingsSnap = await db.collection('bookedEvents')
+
+    const bookingsSnap = await db
+        .collection('bookedEvents')
         .where('userId', '==', String(userId))
         .get();
-    
-    const bookedEventIds = new Set(bookingsSnap.docs.map(doc => doc.data().eventId));
-    
-    // Filter out already booked events
+
+    const bookedEventIds = new Set(
+        bookingsSnap.docs.map(doc => doc.data().eventId)
+    );
+
     const eligibleEvents = [];
-    eventsSnap.forEach(doc => {
-        if (!bookedEventIds.has(doc.id)) {
-            eligibleEvents.push({
-                eventId: doc.id,
-                ...doc.data()
-            });
+
+    for (const doc of eventsSnap.docs) {
+        if (bookedEventIds.has(doc.id)) continue;
+
+        const eventData = doc.data();
+        const maxPilots = Number(eventData.maxPilots || 0);
+
+        // get approved company booking
+        const companySnap = await db
+            .collection("companyBookings")
+            .where("eventId", "==", doc.id)
+            .where("status", "==", "approved")
+            .limit(1)
+            .get();
+
+        let pilotsCount = 0;
+
+        if (!companySnap.empty) {
+            pilotsCount = Number(companySnap.docs[0].data().pilotsCount || 0);
         }
-    });
-    
+
+        const remainingSlots = maxPilots - pilotsCount;
+
+        eligibleEvents.push({
+            eventId: doc.id,
+            ...eventData,
+            remainingSlots
+        });
+    }
+
     return eligibleEvents;
 }
+
 
 module.exports = {
     signupForEvent,

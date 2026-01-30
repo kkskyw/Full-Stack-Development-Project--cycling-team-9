@@ -39,16 +39,27 @@ const getAllEvents = async (page = 1, pageSize = 5, filters = {}) => {
             });
         });
         
-        // Filter by time hour if provided (client-side filter)
+        // Filter by time hour if provided
         if (filters.time) {
+            const hourFilter = parseInt(filters.time);
             events = events.filter(event => {
-                const eventTime = new Date(event.time);
-                return eventTime.getHours() === parseInt(filters.time);
+                const eventDateTime = event.start_time || event.time;
+                if (!eventDateTime) return false;
+                
+                const eventDate = new Date(eventDateTime);
+                // Get hour in Singapore timezone (UTC+8)
+                const eventHourSingapore = eventDate.getUTCHours() + 8;
+                // Adjust for 24-hour format (if hour >= 24, subtract 24)
+                const adjustedHour = eventHourSingapore >= 24 ? eventHourSingapore - 24 : eventHourSingapore;
+                
+                console.log(`Filter check - Event time: ${eventDateTime}, UTC Hour: ${eventDate.getUTCHours()}, Singapore Hour: ${adjustedHour}, Filter: ${hourFilter}`);
+                
+                return adjustedHour === hourFilter;
             });
         }
         
         // Sort by time
-        events.sort((a, b) => new Date(a.time) - new Date(b.time));
+        events.sort((a, b) => new Date(a.start_time || a.time) - new Date(b.start_time || b.time));
         
         // Calculate pagination
         const totalCount = events.length;
@@ -68,9 +79,12 @@ const getAllEvents = async (page = 1, pageSize = 5, filters = {}) => {
     }
 };
 
-const getMRTStations = async (letter = '') => {
+const getMRTStations = async (letter = '', timeFilter = '') => {
     try {
         let query = db.collection('events');
+        
+        // Only include events with companyBookings
+        query = query.where('companyBookings', '!=', null);
         
         if (letter && letter !== '') {
             const upperLetter = letter.toUpperCase();
@@ -80,11 +94,43 @@ const getMRTStations = async (letter = '') => {
         
         const snapshot = await query.get();
         
-        const mrtSet = new Set();
+        let events = [];
         snapshot.forEach(doc => {
             const data = doc.data();
-            if (data.nearestMRT) {
-                mrtSet.add(data.nearestMRT);
+            // Convert Firestore Timestamps to ISO strings
+            if (data.time && data.time.toDate) {
+                data.time = data.time.toDate().toISOString();
+            }
+            if (data.start_time && data.start_time.toDate) {
+                data.start_time = data.start_time.toDate().toISOString();
+            }
+            events.push({
+                eventId: doc.id,
+                ...data
+            });
+        });
+        
+        // Apply time filter if provided (same logic as in getAllBookedEvents)
+        if (timeFilter) {
+            const hourFilter = parseInt(timeFilter);
+            events = events.filter(event => {
+                const eventDateTime = event.start_time || event.time;
+                if (!eventDateTime) return false;
+                
+                const eventDate = new Date(eventDateTime);
+                // Get hour in Singapore timezone (UTC+8)
+                const eventHourSingapore = eventDate.getUTCHours() + 8;
+                // Adjust for 24-hour format
+                const adjustedHour = eventHourSingapore >= 24 ? eventHourSingapore - 24 : eventHourSingapore;
+                
+                return adjustedHour === hourFilter;
+            });
+        }
+        
+        const mrtSet = new Set();
+        events.forEach(event => {
+            if (event.nearestMRT) {
+                mrtSet.add(event.nearestMRT);
             }
         });
         
@@ -135,21 +181,18 @@ const getAllBookedEvents = async (page = 1, pageSize = 5, filters = {}) => {
         }
         
         if (filters.mrtLetter && filters.mrtLetter !== '') {
-            // For Firestore, we can use >= and < for prefix matching
             const letter = filters.mrtLetter.toUpperCase();
             query = query.where('nearestMRT', '>=', letter)
                         .where('nearestMRT', '<', letter + '\uf8ff');
         }
         
         let events = [];
-        // Get all matching documents
         let snapshot = await query.get();
 
         snapshot = snapshot.docs.filter(doc => !!doc.data()["companyBookings"]);
 
         snapshot.forEach(doc => {
             const data = doc.data();
-            // Convert Firestore Timestamps to ISO strings
             if (data.time && data.time.toDate) {
                 data.time = data.time.toDate().toISOString();
             }
@@ -165,16 +208,25 @@ const getAllBookedEvents = async (page = 1, pageSize = 5, filters = {}) => {
             });
         });
         
-        // Filter by time hour if provided (client-side filter)
+        // Filter by time hour if provided - SAME LOGIC AS ABOVE
         if (filters.time) {
+            const hourFilter = parseInt(filters.time);
             events = events.filter(event => {
-                const eventTime = new Date(event.time);
-                return eventTime.getHours() === parseInt(filters.time);
+                const eventDateTime = event.start_time || event.time;
+                if (!eventDateTime) return false;
+                
+                const eventDate = new Date(eventDateTime);
+                // Get hour in Singapore timezone (UTC+8)
+                const eventHourSingapore = eventDate.getUTCHours() + 8;
+                // Adjust for 24-hour format
+                const adjustedHour = eventHourSingapore >= 24 ? eventHourSingapore - 24 : eventHourSingapore;
+                
+                return adjustedHour === hourFilter;
             });
         }
         
         // Sort by time
-        events.sort((a, b) => new Date(a.time) - new Date(b.time));
+        events.sort((a, b) => new Date(a.start_time || a.time) - new Date(b.start_time || b.time));
         
         // Calculate pagination
         const totalCount = events.length;

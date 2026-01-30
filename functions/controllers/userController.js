@@ -1,6 +1,7 @@
 const userModel = require("../models/userModel");
 const bcrypt = require("bcryptjs");
 const jwt = require("jsonwebtoken");
+const { db } = require("../firebaseAdmin");
 
 // Get user by ID
 async function getUserById(req, res) {
@@ -127,10 +128,68 @@ async function updateUser(req, res) {
     res.status(500).json({ error: 'Error updating user', details: error.message });
   }
 }
+async function getMe(req, res) {
+    try {
+        const userId = req.user.userId;
+
+        const userDoc = await db.collection('users').doc(userId).get();
+
+        if (!userDoc.exists) {
+            return res.status(404).json({ error: 'User not found' });
+        }
+
+        const user = userDoc.data();
+
+        return res.json({
+            userId,
+            role: user.role,
+            trained: user.trainingRoles && user.trainingRoles.length > 0
+        });
+
+    } catch (err) {
+        console.error('GET /users/me error:', err);
+        res.status(500).json({ error: 'Server error' });
+    }
+}
+async function getMe(req, res) {
+    try {
+        const userId = req.user.userId;
+
+        const userDoc = await db.collection('users').doc(userId).get();
+
+        if (!userDoc.exists) {
+            return res.status(404).json({ error: 'User not found' });
+        }
+
+        const user = userDoc.data();
+
+        return res.json({
+            userId,
+            role: user.role,
+            trained: user.trainingRoles && user.trainingRoles.length > 0
+        });
+
+    } catch (err) {
+        console.error('GET /users/me error:', err);
+        res.status(500).json({ error: 'Server error' });
+    }
+}
+
+async function listVolunteers(req, res) {
+  try {
+    const volunteers = await userModel.getVolunteers();
+    res.json({ volunteers });
+  } catch (error) {
+    console.error("Error listing volunteers:", error);
+    res.status(500).json({ error: "Failed to fetch volunteers" });
+  }
+}
 
 module.exports = {
   getUserById,
   createUser,
   loginUser,
-  updateUser
+  updateUser,
+  getMe,
+  listVolunteers
 };

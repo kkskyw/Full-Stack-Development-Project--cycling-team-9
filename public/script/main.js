@@ -145,7 +145,8 @@ document.addEventListener('DOMContentLoaded', function() {
     const logo = document.querySelector('.logo');
     if (logo) {
         logo.addEventListener('click', function() {
-            window.location.href = 'main.html';
+                const token = localStorage.getItem("token");
+                window.location.href = token ? "volunteer_main.html" : "guest_main.html";
         });
         
         logo.style.cursor = 'pointer';
@@ -222,7 +223,7 @@ function handleLogout() {
     localStorage.removeItem('userName');
     
     // Redirect to main page
-    window.location.href = 'main.html';
+    window.location.href = 'guest_main.html';
 }
 
 // Add this function to handle font size changes

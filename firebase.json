@@ -23,7 +23,7 @@
     "rewrites": [
       {
         "source": "/",
-        "destination": "/main.html"
+        "destination": "/guest_main.html"
       },
       {
         "source": "/api/**",

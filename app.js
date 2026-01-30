@@ -38,10 +38,13 @@ app.use(express.static(path.join(__dirname, "public")));
 const feedbackController = require("./functions/controllers/feedbackController");
 
 // User routes
-app.post("/users/register", userValidation.validateUser, userController.createUser);
+app.post("/api/users/register", userValidation.validateUser, userController.createUser);
 app.post("/api/login", userValidation.validateLogin, userController.loginUser);
+app.get("/api/users/me", verifyJWT, userController.getMe);
 app.get("/users/:id", userController.getUserById);
 app.put("/users/:id", userController.updateUser);
+//Admin view volunteer info
+app.get("/admin/volunteers", verifyJWT, verifyAdmin, userController.listVolunteers);
 
 // ========== PASSWORD RESET ROUTES ==========
 app.post("/auth/request-otp", userValidation.validateResetRequest, resetPwController.requestPasswordReset);
@@ -49,14 +52,12 @@ app.post("/auth/verify-otp", userValidation.validateOtpVerification, resetPwCont
 app.post("/auth/reset-password", userValidation.validatePasswordReset, resetPwController.resetPassword);
 
 // Event routes - Yiru (MUST be before parameterized routes**)
-app.get("/mrt-stations", eventController.getMRTStations);
-app.get("/events/eligible", verifyJWT, eventSignupController.getEligibleEvents);
-app.get("/events", eventController.getAllEvents);
-app.post("/events/:eventId/signup", verifyJWT, eventSignupController.joinEvent);
-// app.post("/events/:eventId/email-signup", verifyJWT, eventSignupController.emailSignup);
-app.get("/events/booked", eventController.getAllBookedEvents);
-app.get("/events/:id", eventController.getEventById);
-
+app.get("/api/mrt-stations", eventController.getMRTStations);
+app.get("/api/events/eligible", verifyJWT, eventSignupController.getEligibleEvents);
+app.get("/api/events", eventController.getAllEvents);
+app.post("/api/events/:eventId/signup", verifyJWT, eventSignupController.joinEvent);
+app.get("/api/events/booked", eventController.getAllBookedEvents);
+app.get("/api/events/:id", eventController.getEventById);
 
 //reminder
 app.post("/api/sendReminder", verifyJWT, reminderController.sendReminder);
@@ -103,7 +104,7 @@ app.get("/feedback", verifyJWT, feedbackController.getFeedback);
 
 // serve main.html at root
 app.get("/", (req, res) => {
-  res.sendFile(path.join(__dirname, "public", "main.html"));
+  res.sendFile(path.join(__dirname, "public", "volunteer_main.html"));
 });
 
 app.get(["/profile.html/:id", "/profile/:id"], (req, res) => {
@@ -119,5 +120,3 @@ process.on("SIGINT", () => {
   console.log("Server shutting down");
   process.exit(0);
 });
-
-

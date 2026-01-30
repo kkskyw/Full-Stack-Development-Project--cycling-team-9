@@ -1,15 +1,11 @@
+<!-- Yiru -->
 <!DOCTYPE html>
 <html lang="en">
 <head>
-    <meta charset="UTF-8" />
-    <title>Cycling Without Age - Singapore</title>
-    <link href="https://fonts.googleapis.com/css2?family=Open+Sans&display=swap" rel="stylesheet" />
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title data-lang="title">Cycling Without Age Singapore</title>
     <link rel="stylesheet" href="css/main.css" />
-    <link rel="stylesheet" href="css/attendance.css" />
-    <link rel="icon" type="image/png" href="images/favicon.png">
-    <!-- Leaflet CSS -->
-    <link rel="stylesheet" href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css" />
-    <script src="https://unpkg.com/@dotlottie/player-component@2.7.12/dist/dotlottie-player.mjs" type="module"></script>
 </head>
 <body>
     <header>
@@ -35,7 +31,7 @@
 
             <div class="menu-container font-size-container">
                 <button class="font-size-btn" id="fontSizeBtn">
-                    <span>🔤</span>
+                    <span>🔤</span> <!-- Changed from "A" to a text symbol -->
                     <span class="font-size-indicator" id="fontSizeIndicator">Medium</span>
                     <span>▼</span>
                 </button>
@@ -68,35 +64,60 @@
         </div>
     </header>
 
-    <div class="attendance-container">
-        <h2>Volunteer Event Attendance</h2>
+    <img src="/images/Untitled-design-1-1600x432.png" 
+         alt="Community cycling event" 
+         data-lang="heroAlt"
+         class="hero-image">
 
-        <!-- Map Container -->
-        <div id="mapContainer" class="map-container">
-            <div id="locationMap"></div>
-            <div class="map-overlay">
-                <button id="refreshLocationBtn" class="refresh-btn">Refresh Location</button>
-            </div>
+    <section class="welcome-section">
+        <h1 data-lang="welcomeHeader">Welcome to Cycling Without Age Singapore</h1>
+
+        <p class="mission" data-lang="missionText">
+            Our mission is to bring joy to seniors and engage them in happy hours of community activities to reduce loneliness.
+        </p>
+        
+        <p data-lang="lonelinessStats">
+            Today, 270,000 seniors aged 82 and above in Singapore experience loneliness. Loneliness not only increases the risk of developing depression & anxiety, but also increases the risk of death by 7%, while managing other health issues.
+        </p>
+        
+        <p data-lang="transformationText">
+            We transform loneliness into social connection. With your support, seniors can experience trishaw rides, communal dining, art reminiscence workshops, bicycle repair training, and trishaw docent programmes, bringing joy, purpose, and a sense of belonging.
+        </p>
+        
+        <div class="button-container">
+            <button class="btn btn-join" onclick="window.location.href='register.html'" data-lang="joinUs">Join Us</button>
+            <button class="btn btn-donate" onclick="window.location.href='donationPage.html'" data-lang="donateBtn">Donate</button>
         </div>
+    </section>
 
-        <div class="coordinates-display">
-            <span>Current Location: </span>
-            <span id="coordinates">—</span>
+    <section class="video-section">
+        <div class="video-container">
+            <!-- No translation needed for video -->
+            <iframe width="560" height="315" src="https://www.youtube.com/embed/7a7vlkCngK8?si=8xwv7QGaNGLE6CBp" allowfullscreen></iframe>
         </div>
+    </section>
 
-        <button id="checkInBtn">Check In</button>
-        <div class="time-display">Checked In: <span id="checkInTime">—</span></div>
+    <section class="award-section">
+        <h2 data-lang="ctaHeader">Charity Transparency Award 2024</h2>
 
-        <button id="checkOutBtn">Check Out</button>
-        <div class="time-display">Checked Out: <span id="checkOutTime">—</span></div>
-    </div>
+        <p data-lang="ctaDesc1">
+            Cycling Without Age Singapore (CWAS) is honoured to be accorded The Charity Transparency and Governance (CTA) Award for 2024, organized by the Ministry of Culture, Community & Youth (MCCY). This award is a recognition of our commitment to promoting good governance and transparency in the charity sector, and it is aimed at highlighting the outstanding work of charities, motivating others to follow their lead.
+        </p>
+        
+        <p data-lang="ctaDesc2">
+            CWAS wishes to share this achievement with our supporters, volunteers, and community partners. This award serves as proof of our continued efforts to maintain and enhance our standards of corporate governance and transparency. As a trusted charity, we remain dedicated to serving and empowering seniors by reintegrating them into the community through volunteerism.
+        </p>
+        
+        <img src="/images/CTA-Logo-2024-768x503.png" class="award-logo" alt="CTA Logo" data-lang="ctaLogoAlt">
+        <img src="/images/CWAS-Transparency-Awasrd-2024-768x577.jpeg" class="certificate-image" alt="Award Ceremony" data-lang="awardCeremonyAlt">
+    </section>
 
     <section class="contact-section">
-        <h2>Contact Us</h2>
-        <a href="mailto:info@cyclingwithoutage.sg">info@cyclingwithoutage.sg</a>
+        <h2 data-lang="contactUs">Contact Us</h2>
+        <a href="mailto:info@cyclingwithoutage.sg" data-lang="email">info@cyclingwithoutage.sg</a>
         
         <div class="social-section">
-            <h3>Follow Us</h3>
+            <h3 data-lang="followUs">Follow Us</h3>
             <div class="social-icons">
                 <div class="social-icon" onclick="window.open('https://www.facebook.com/CyclingWithoutAgeSingapore/', '_blank')">
                     <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M24 12.073c0-6.627-5.373-12-12-12s-12 5.373-12 12c0 5.99 4.388 10.954 10.125 11.854v-8.385H7.078v-3.47h3.047V9.43c0-3.007 1.792-4.669 4.533-4.669 1.312 0 2.686.235 2.686.235v2.953H15.83c-1.491 0-1.956.925-1.956 1.874v2.25h3.328l-.532 3.47h-2.796v8.385C19.612 23.027 24 18.062 24 12.073z"/></svg>
@@ -111,91 +132,40 @@
         </div>
     </section>
 
-    <!-- Check-in Success Modal -->
-    <div id="checkInSuccessModal" class="success-modal" style="display: none;">
-        <div class="success-modal-content">
-            <span class="close-btn" id="closeCheckInSuccessModal">&times;</span>
-            <h2>Checked In Successfully!</h2>
-            
-            <!-- Lottie Animation Container -->
-            <div class="lottie-container">
-                <dotlottie-player 
-                     src="https://lottie.host/07d2015e-12bd-4b20-95b3-add530a01150/GJJ27JsCtB.lottie" 
-                    background="transparent" 
-                    speed="1" 
-                    style="width: 200px; height: 200px;"
-                    loop 
-                    autoplay>
-                </dotlottie-player>
-            </div>
-            
-            <p>You have been checked in for the event.</p>
-        </div>
-    </div>
-
-    <!-- Check-out Success Modal -->
-    <div id="checkOutSuccessModal" class="success-modal" style="display: none;">
-        <div class="success-modal-content">
-            <span class="close-btn" id="closeCheckOutSuccessModal">&times;</span>
-            <h2>Checked Out Successfully!</h2>
-            
-            <!-- Lottie Animation Container -->
-            <div class="lottie-container">
-                <dotlottie-player 
-                    src="https://lottie.host/07d2015e-12bd-4b20-95b3-add530a01150/GJJ27JsCtB.lottie" 
-                    background="transparent" 
-                    speed="1" 
-                    style="width: 200px; height: 200px;"
-                    loop 
-                    autoplay>
-                </dotlottie-player>
-            </div>
-            
-            <p>You have been checked out from the event.</p>
-        </div>
-    </div>
-
-    <!-- Early Checkout Confirmation Modal -->
-    <div id="earlyCheckoutModal" class="success-modal" style="display: none;">
-        <div class="success-modal-content">
-            <h2>Early Checkout</h2>
-            
-            <div class="lottie-container">
-                <dotlottie-player 
-                    src="https://lottie.host/156b3cfe-bd52-48ff-976e-63530bbd101d/9lLW5NJSrr.lottie"
-                    background="transparent" 
-                    speed="1" 
-                    style="width: 150px; height: 150px;"
-                    loop 
-                    autoplay>
-                </dotlottie-player>
-            </div>
-            
-            <p id="earlyCheckoutMessage" style="text-align: center; margin: 20px 0; color: #666;"></p>
-            
-            <div style="display: flex; gap: 10px; justify-content: center; margin-top: 20px;">
-                <button id="confirmEarlyCheckoutBtn" style="background: #dc3545; color: white; padding: 10px 20px; border: none; border-radius: 5px; cursor: pointer;">
-                    Yes, Check Out
-                </button>
-                <button id="cancelEarlyCheckoutBtn" style="background: #6c757d; color: white; padding: 10px 20px; border: none; border-radius: 5px; cursor: pointer;">
-                    Cancel
-                </button>
-            </div>
-        </div>
-    </div>
-
     <footer>
         <p>Copyright Cycling Without Age Singapore 2024</p>
         <p>All Rights Reserved</p>
     </footer>
 
-    <!-- Leaflet JS -->
+        <script type="module">
+    // Import the functions you need from the SDKs you need
+    import { initializeApp } from "https://www.gstatic.com/firebasejs/12.6.0/firebase-app.js?v=2";
+    import { getFirestore } from "https://www.gstatic.com/firebasejs/12.6.0/firebase-firestore.js?v=2";
+    // TODO: Add SDKs for Firebase products that you want to use
+    // https://firebase.google.com/docs/web/setup#available-libraries
+
+    // Your web app's Firebase configuration
+    // For Firebase JS SDK v7.20.0 and later, measurementId is optional
+    const firebaseConfig = {
+        apiKey: "AIzaSyBlN7borlIKXxly09JsFMC9nDKUcvA9bCM",
+        authDomain: "cycling-without-age-grp9-cdb.firebaseapp.com",
+        projectId: "cycling-without-age-grp9-cdb",
+        storageBucket: "cycling-without-age-grp9-cdb.firebasestorage.app",
+        messagingSenderId: "559083600036",
+        appId: "1:559083600036:web:c0438122b8a56e59f7ce31",
+        measurementId: "G-E2KF2YVL7R"
+    };
+
+    // Initialize Firebase
+    const app = initializeApp(firebaseConfig);
+    const db = getFirestore(app);
+    db.settings({timestampsInSnapshots:true});
+    </script>
+    <script src="script/voiceSystem.js"></script>
     <script src="script/tts.js"></script>
     <script src="script/voice.js"></script>
-    <script src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js"></script>
     <script src="script/translations.js"></script>
     <script src="script/main.js"></script>
-    <script src="script/attendance.js"></script>
     <script>
     window.watsonAssistantChatOptions = {
         integrationID: "c0f55dca-d11a-45a2-8321-f712cff760e6", // The ID of this integration.
