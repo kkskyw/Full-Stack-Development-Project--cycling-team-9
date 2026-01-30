@@ -31,12 +31,27 @@
                 </div>
             </div>
 
+            <div class="menu-container font-size-container">
+                <button class="font-size-btn" id="fontSizeBtn">
+                    <span>🔤</span>
+                    <span class="font-size-indicator" id="fontSizeIndicator">Medium</span>
+                    <span>▼</span>
+                </button>
+                <div class="dropdown-menu font-size-dropdown" id="fontSizeDropdown">
+                    <a href="#" class="font-size-option" data-size="small">Small</a>
+                    <a href="#" class="font-size-option active" data-size="medium">Medium</a>
+                    <a href="#" class="font-size-option" data-size="large">Large</a>
+                    <a href="#" class="font-size-option" data-size="xlarge">Extra Large</a>
+                </div>
+            </div>
+
             <div class="menu-container">
                 <button class="menu-btn" id="menuBtn">
                     <span>☰</span> <span data-lang="menu">Menu</span>
                 </button>
                 <div class="dropdown-menu" id="dropdownMenu">
                     <a href="eventIntroduction.html" id="eventsLink" data-lang="events">Events</a>
+                    <a href="training.html" id="trainingLink" data-lang="training" style="display: none;">Training</a>
                     <a href="attendance.html" data-lang="checkin">Check-in</a>
                     <a href="donationPage.html" data-lang="donate">Donate</a>
                     <a href="feedback.html" data-lang="feedback">Feedback</a>
@@ -47,6 +62,7 @@
             </div>
 
             <button class="register-btn" onclick="window.location.href='register.html'" data-lang="register">Register</button>
+            <button class="logout-btn" id="logoutBtn" style="display: none;" data-lang="logout">Log Out</button>
         </div>
     </header>
 

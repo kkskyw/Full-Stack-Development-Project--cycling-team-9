@@ -67,6 +67,72 @@ header {
     background-color: rgba(255, 255, 255, 0.2);
 }
 
+.font-size-container {
+    position: relative;
+}
+
+.font-size-btn {
+    background-color: transparent;
+    border: 2px solid #333;
+    padding: 8px 20px;
+    border-radius: 5px;
+    cursor: pointer;
+    font-size: 16px;
+    display: flex;
+    align-items: center;
+    gap: 5px;
+    transition: background-color 0.3s;
+    min-width: 120px;
+    justify-content: space-between;
+}
+
+.font-size-btn:hover {
+    background-color: rgba(255, 255, 255, 0.2);
+}
+
+.font-size-dropdown {
+    display: none;
+    position: absolute;
+    top: 100%;
+    right: 0;
+    background-color: white;
+    border: 1px solid #ddd;
+    border-radius: 5px;
+    box-shadow: 0 4px 10px rgba(0, 0, 0, 0.15);
+    min-width: 150px;
+    margin-top: 10px;
+    z-index: 1000;
+    overflow: hidden;
+}
+
+.font-size-dropdown.show {
+    display: block;
+    animation: slideDown 0.3s ease-out;
+}
+
+.font-size-option {
+    display: block;
+    padding: 12px 20px;
+    color: #333;
+    text-decoration: none;
+    cursor: pointer;
+    transition: background-color 0.2s;
+    border-bottom: 1px solid #f0f0f0;
+}
+
+.font-size-option:last-child {
+    border-bottom: none;
+}
+
+.font-size-option:hover {
+    background-color: #8dd4c3;
+}
+
+.font-size-option.active {
+    background-color: #e8f5e9;
+    font-weight: bold;
+}
+
 .register-btn {
     background-color: #333;
     color: white;
