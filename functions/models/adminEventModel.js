@@ -87,6 +87,11 @@ const getEventById = async (eventId) => {
             }
         });
         
+        // Ensure maxPassengers field exists (check for both maxPassengers and maxPilots for backward compatibility)
+        if (data.maxPassengers === undefined && data.maxPilots !== undefined) {
+            data.maxPassengers = data.maxPilots;
+        }
+        
         return {
             eventId: eventDoc.id,
             ...data
@@ -131,6 +136,11 @@ const updateEvent = async (eventId, updateData) => {
                 data[field] = data[field].toDate().toISOString();
             }
         });
+        
+        // Ensure maxPassengers field exists
+        if (data.maxPassengers === undefined && data.maxPilots !== undefined) {
+            data.maxPassengers = data.maxPilots;
+        }
         
         return {
             eventId: updatedDoc.id,

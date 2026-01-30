@@ -33,6 +33,8 @@
                             <th>ID</th>
                             <th>Event Header</th>
                             <th>Location</th>
+                            <th>Nearest MRT</th>
+                            <th>Max Passengers</th>
                             <th>Start Time</th>
                             <th>Actions</th>
                         </tr>
@@ -71,19 +73,19 @@
                             <input type="text" id="nearestMRT" required placeholder="e.g. Lakeside MRT">
                         </div>
                         <div class="form-group">
+                            <label>Maximum No. of Passengers *</label>
+                            <input type="number" id="maxPassengers" min="1" max="300" value="10" required>
+                            <small style="color: #666; font-size: 12px;">Maximum number of passengers allowed to join this event</small>
+                        </div>
+                        <div class="form-group" style="display: none;">
                             <label>Radius (meters) *</label>
                             <input type="number" id="radius_m" value="100" min="50" max="1000" required>
                         </div>
-                        <div class="form-group">
-                            <label>Maximum No. of Pilots *</label>
-                            <input type="number" id="maxPilots" min="1" max="100" value="10" required>
-                            <small style="color: #666; font-size: 12px;">Maximum number of pilots allowed to join this event</small>
-                        </div>
-                        <div class="form-group">
+                        <div class="form-group" style="display: none;">
                             <label>Latitude *</label>
                             <input type="number" step="any" id="latitude" required placeholder="e.g. 1.341498" readonly>
                         </div>
-                        <div class="form-group">
+                        <div class="form-group" style="display: none;">
                             <label>Longitude *</label>
                             <input type="number" step="any" id="longitude" required placeholder="e.g. 103.72242" readonly>
                         </div>

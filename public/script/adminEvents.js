@@ -1,4 +1,4 @@
-const API_BASE_URL = '/api';
+const API_BASE_URL = '';
 
 document.addEventListener('DOMContentLoaded', function() {
     const eventTableBody = document.getElementById('eventTableBody');
@@ -9,19 +9,22 @@ document.addEventListener('DOMContentLoaded', function() {
     const formTitle = document.getElementById('formTitle');
     const saveBtn = document.getElementById('saveBtn');
     
-    // Location coordinates mapping
-    const locationCoordinates = {
+    // Location coordinates and MRT mapping
+    const locationData = {
         'Jurong Lake Gardens': {
             latitude: 1.341498,
-            longitude: 103.72242
+            longitude: 103.72242,
+            mrt: 'Lakeside MRT'
         },
         'Passion Wave Marina Bay': {
             latitude: 1.29504,
-            longitude: 103.86695
+            longitude: 103.86695,
+            mrt: 'Stadium MRT'
         },
         'Gardens by the Bay': {
             latitude: 1.282375,
-            longitude: 103.864273
+            longitude: 103.864273,
+            mrt: 'Bayfront MRT'
         }
     };
 
@@ -50,14 +53,37 @@ document.addEventListener('DOMContentLoaded', function() {
     // Location dropdown change handler
     document.getElementById('location').addEventListener('change', function() {
         const selectedLocation = this.value;
-        const coords = locationCoordinates[selectedLocation];
+        const locationInfo = locationData[selectedLocation];
         
-        if (coords) {
-            document.getElementById('latitude').value = coords.latitude;
-            document.getElementById('longitude').value = coords.longitude;
+        if (locationInfo) {
+            document.getElementById('latitude').value = locationInfo.latitude;
+            document.getElementById('longitude').value = locationInfo.longitude;
+            document.getElementById('nearestMRT').value = locationInfo.mrt;
         } else {
             document.getElementById('latitude').value = '';
             document.getElementById('longitude').value = '';
+            document.getElementById('nearestMRT').value = '';
+        }
+    });
+
+    // Start Time change handler to update End Time date
+    document.getElementById('start_time').addEventListener('change', function() {
+        const startTimeInput = this.value;
+        if (startTimeInput) {
+            const startDate = new Date(startTimeInput);
+            const endTimeInput = document.getElementById('end_time');
+            const endTimeValue = endTimeInput.value;
+            
+            if (endTimeValue) {
+                // Update only the date part of end time
+                const endDate = new Date(endTimeValue);
+                endDate.setFullYear(startDate.getFullYear(), startDate.getMonth(), startDate.getDate());
+                endTimeInput.value = formatDateTimeLocal(endDate);
+            } else {
+                // Set default end time (2 hours after start)
+                const defaultEndTime = new Date(startDate.getTime() + 2 * 60 * 60 * 1000);
+                endTimeInput.value = formatDateTimeLocal(defaultEndTime);
+            }
         }
     });
 
@@ -102,7 +128,8 @@ document.addEventListener('DOMContentLoaded', function() {
         document.getElementById('latitude').value = '';
         document.getElementById('longitude').value = '';
         document.getElementById('radius_m').value = '100';
-        document.getElementById('maxPilots').value = '10';
+        document.getElementById('maxPassengers').value = '10';
+        document.getElementById('nearestMRT').value = '';
         
         // Set default times (next hour for start, 2 hours later for end)
         const now = new Date();
@@ -135,7 +162,7 @@ document.addEventListener('DOMContentLoaded', function() {
             longIntro: document.getElementById('longIntro').value,
             nearestMRT: document.getElementById('nearestMRT').value,
             radius_m: parseInt(document.getElementById('radius_m').value),
-            maxPilots: parseInt(document.getElementById('maxPilots').value),
+            maxPassengers: parseInt(document.getElementById('maxPassengers').value),
             start_time: startTime.toISOString(),
             end_time: endTime.toISOString(),
             time: startTime.toISOString(), // Duplicate of start_time for backward compatibility
@@ -151,7 +178,7 @@ document.addEventListener('DOMContentLoaded', function() {
 
     function validateForm() {
         const requiredFields = [
-            'header', 'location', 'nearestMRT', 'radius_m', 'maxPilots',
+            'header', 'location', 'nearestMRT', 'maxPassengers',
             'latitude', 'longitude', 'start_time', 'end_time',
             'intro', 'longIntro'
         ];
@@ -174,17 +201,10 @@ document.addEventListener('DOMContentLoaded', function() {
             return false;
         }
         
-        // Validate radius
-        const radius = parseInt(document.getElementById('radius_m').value);
-        if (radius < 50 || radius > 1000) {
-            alert('Radius must be between 50 and 1000 meters.');
-            return false;
-        }
-
-        // Validate maxPilots
-        const maxPilots = parseInt(document.getElementById('maxPilots').value);
-        if (maxPilots < 1 || maxPilots > 100) {
-            alert('Maximum number of pilots must be between 1 and 100.');
+        // Validate maxPassengers
+        const maxPassengers = parseInt(document.getElementById('maxPassengers').value);
+        if (maxPassengers < 1 || maxPassengers > 300) {
+            alert('Maximum number of passengers must be between 1 and 300.');
             return false;
         }
         
@@ -193,7 +213,7 @@ document.addEventListener('DOMContentLoaded', function() {
 
     async function loadEvents() {
         try {
-            eventTableBody.innerHTML = '<tr><td colspan="5" style="text-align: center; padding: 30px;">Loading events...</td></tr>';
+            eventTableBody.innerHTML = '<tr><td colspan="7" style="text-align: center; padding: 30px;">Loading events...</td></tr>';
             
             const response = await fetch(`${API_BASE_URL}/admin/events`, {
                 headers: {
@@ -215,14 +235,14 @@ document.addEventListener('DOMContentLoaded', function() {
             }
             
             if (events.length === 0) {
-                eventTableBody.innerHTML = '<tr><td colspan="5" style="text-align: center; padding: 30px;">No events found. Create your first event!</td></tr>';
+                eventTableBody.innerHTML = '<tr><td colspan="7" style="text-align: center; padding: 30px;">No events found. Create your first event!</td></tr>';
                 return;
             }
             
             displayEvents(events);
         } catch (error) {
             console.error('Error loading events:', error);
-            eventTableBody.innerHTML = `<tr><td colspan="5" style="text-align: center; padding: 30px; color: #dc3545;">Error loading events: ${error.message}</td></tr>`;
+            eventTableBody.innerHTML = `<tr><td colspan="7" style="text-align: center; padding: 30px; color: #dc3545;">Error loading events: ${error.message}</td></tr>`;
         }
     }
 
@@ -236,6 +256,8 @@ document.addEventListener('DOMContentLoaded', function() {
                     <td>${event.eventId || event._id || 'N/A'}</td>
                     <td><strong>${event.header}</strong></td>
                     <td>${event.location}</td>
+                    <td>${event.nearestMRT || 'N/A'}</td>
+                    <td>${event.maxPassengers || event.maxPilots || 0}</td>
                     <td>${date.toLocaleDateString()} ${date.toLocaleTimeString([], {hour: '2-digit', minute:'2-digit'})}</td>
                     <td>
                         <button class="btn-edit" onclick="editEvent('${event.eventId || event._id}')">Edit</button>
@@ -304,7 +326,7 @@ document.addEventListener('DOMContentLoaded', function() {
             document.getElementById('location').value = event.location;
             document.getElementById('nearestMRT').value = event.nearestMRT;
             document.getElementById('radius_m').value = event.radius_m || 100;
-            document.getElementById('maxPilots').value = event.maxPilots || 10;
+            document.getElementById('maxPassengers').value = event.maxPassengers || event.maxPilots || 10;
             document.getElementById('intro').value = event.intro;
             document.getElementById('longIntro').value = event.longIntro;
             
@@ -314,10 +336,10 @@ document.addEventListener('DOMContentLoaded', function() {
                 document.getElementById('latitude').value = event.geolocation.coordinates[1];
             } else {
                 // Fallback to location mapping
-                const coords = locationCoordinates[event.location];
-                if (coords) {
-                    document.getElementById('latitude').value = coords.latitude;
-                    document.getElementById('longitude').value = coords.longitude;
+                const locationInfo = locationData[event.location];
+                if (locationInfo) {
+                    document.getElementById('latitude').value = locationInfo.latitude;
+                    document.getElementById('longitude').value = locationInfo.longitude;
                 }
             }
             
