@@ -151,29 +151,6 @@ async function getMe(req, res) {
         res.status(500).json({ error: 'Server error' });
     }
 }
-async function getMe(req, res) {
-    try {
-        const userId = req.user.userId;
-
-        const userDoc = await db.collection('users').doc(userId).get();
-
-        if (!userDoc.exists) {
-            return res.status(404).json({ error: 'User not found' });
-        }
-
-        const user = userDoc.data();
-
-        return res.json({
-            userId,
-            role: user.role,
-            trained: user.trainingRoles && user.trainingRoles.length > 0
-        });
-
-    } catch (err) {
-        console.error('GET /users/me error:', err);
-        res.status(500).json({ error: 'Server error' });
-    }
-}
 
 async function listVolunteers(req, res) {
   try {
