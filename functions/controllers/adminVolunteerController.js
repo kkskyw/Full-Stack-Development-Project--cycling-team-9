@@ -22,7 +22,8 @@ async function getVolunteerDetails(req, res) {
       email: userData.email || "",
       phone: userData.phone || "",
       role: userData.role || "Volunteer",
-      createdAt: userData.createdAt || null
+      createdAt: userData.createdAt || null,
+      trainingRoles: Array.isArray(userData.trainingRoles) ? userData.trainingRoles : [],
     };
 
     //Get attendance records

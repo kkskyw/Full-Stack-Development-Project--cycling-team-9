@@ -52,6 +52,17 @@ function formatDate(createdAt) {
   return "-";
 }
 
+function formatTrainingRoles(trainingRoles) {
+  if (!Array.isArray(trainingRoles) || trainingRoles.length === 0) return "Untrained";
+
+  // e.g. ["cyclist"] -> "Cyclist"
+  return trainingRoles
+    .map(r => String(r || "").trim())
+    .filter(Boolean)
+    .map(r => r.charAt(0).toUpperCase() + r.slice(1))
+    .join(", ");
+}
+
 async function fetchVolunteers() {
   hideStatus();
 
@@ -120,7 +131,7 @@ function renderTable(volunteers) {
     const id = v.userId || v.id || v._id;
     const name = safeText(v.name || "Unknown");
     const email = safeText(v.email || "-");
-    const role = safeText(v.role || "Volunteer");
+    const trainingLabel = formatTrainingRoles(v.trainingRoles);
     const since = formatDate(v.createdAt);
 
     const initial = name.trim() ? name.trim().charAt(0).toUpperCase() : "?";
@@ -143,7 +154,7 @@ function renderTable(volunteers) {
           </div>
         </td>
         <td>${email}</td>
-        <td><span class="badge">${role}</span></td>
+        <td><span class="badge">${safeText(trainingLabel)}</span></td>
         <td>${since}</td>
         <td class="action">${viewBtn}</td>
       </tr>

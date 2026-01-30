@@ -20,7 +20,7 @@ if (!userId) {
 // Main function to load volunteer data
 async function loadVolunteer() {
     try {
-        const response = await fetch(`/admin/volunteers/${userId}`, {
+        const response = await fetch(`/api/admin/volunteers/${userId}`, {
             method: 'GET',
             headers: {
                 "Authorization": "Bearer " + token,
@@ -48,6 +48,9 @@ async function loadVolunteer() {
         displayVolunteer(data.volunteer, data.attendance);
         currentVolunteer = data.volunteer;
         displayAttendance(data.attendance);
+
+        console.log("Volunteer details:", data.volunteer);
+        console.log("trainingRoles:", data.volunteer?.trainingRoles);
 
     } catch (err) {
         console.error("Error loading volunteer:", err);
@@ -84,6 +87,10 @@ function displayVolunteer(volunteer, attendance) {
             <div class="info-row">
                 <span class="info-label">Phone:</span>
                 <span class="info-value">${volunteer.phone || 'Not provided'}</span>
+            </div>
+            <div class="info-row">
+                <span class="info-label">Training Role:</span>
+                <span class="info-value">${formatTrainingRoles(volunteer.trainingRoles)}</span>
             </div>
             <div class="info-row">
                 <span class="info-label">Events Attended:</span>
@@ -352,4 +359,13 @@ function csvEscape(value) {
 
 function safeCsv(v) {
   return v === null || v === undefined ? "" : String(v);
+}
+
+function formatTrainingRoles(trainingRoles) {
+  if (!Array.isArray(trainingRoles) || trainingRoles.length === 0) return "Untrained";
+  return trainingRoles
+    .map(r => String(r || "").trim())
+    .filter(Boolean)
+    .map(r => r.charAt(0).toUpperCase() + r.slice(1))
+    .join(", ");
 }

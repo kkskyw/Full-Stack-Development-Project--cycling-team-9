@@ -228,7 +228,8 @@ async function getVolunteers() {
       name: data.name || "",
       email: data.email || "",
       role: data.role || "",
-      createdAt: data.createdAt || ""
+      createdAt: data.createdAt || "",
+      trainingRoles: Array.isArray(data.trainingRoles) ? data.trainingRoles : []
     };
   });
 }
