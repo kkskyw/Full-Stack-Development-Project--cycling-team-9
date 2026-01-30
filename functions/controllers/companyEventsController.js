@@ -35,7 +35,7 @@ const createCompanyBooking = async (req, res) => {
         
         // Validate required fields
         const requiredFields = ['eventId', 'companyName', 'contactPerson', 
-                              'contactEmail', 'contactPhone', 'pilotsCount', 'crewCount'];
+                      'contactEmail', 'contactPhone', 'passengersCount']; // Removed crewCount
         
         for (const field of requiredFields) {
             if (!bookingData[field]) {
@@ -60,19 +60,19 @@ const createCompanyBooking = async (req, res) => {
         }
         
         // Validate counts
-        if (bookingData.pilotsCount < 1) {
+        if (bookingData.passengersCount < 1) {
             return res.status(400).json({
                 success: false,
-                message: 'At least 1 pilot is required'
+                message: 'At least 1 passenger is required'
             });
         }
-        
-        if (bookingData.pilotsCount > 20 || bookingData.crewCount > 10) {
+
+        /*if (bookingData.passengersCount > 20) { // Removed crew count check
             return res.status(400).json({
                 success: false,
-                message: 'Maximum volunteers exceeded (20 pilots, 10 crew)'
+                message: 'Maximum passengers exceeded (20 passengers)'
             });
-        }
+        }*/
         
         // Check if event exists and is available
         const event = await companyEventModel.getEventById(bookingData.eventId);
@@ -99,8 +99,7 @@ const createCompanyBooking = async (req, res) => {
         await companyEventModel.addBookingToEvent(bookingData.eventId, {
             bookingId,
             companyName: bookingData.companyName,
-            pilotsCount: bookingData.pilotsCount,
-            crewCount: bookingData.crewCount,
+            passengersCount: bookingData.passengersCount, // Changed from pilotsCount
             status: 'pending'
         });
         

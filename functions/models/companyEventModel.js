@@ -23,6 +23,11 @@ const getEventsForCompanies = async () => {
                     data[field] = data[field].toDate().toISOString();
                 }
             });
+
+                // Ensure maxPassengers field exists (backward compatibility)
+            if (data.maxPassengers === undefined && data.maxPilots !== undefined) {
+                data.maxPassengers = data.maxPilots;
+            }
             
             events.push({
                 eventId: doc.id,
