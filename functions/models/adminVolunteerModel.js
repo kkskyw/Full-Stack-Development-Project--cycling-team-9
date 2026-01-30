@@ -26,10 +26,12 @@ async function loadVolunteer() {
 function displayVolunteer(volunteer) {
     const container = document.getElementById("volunteerInfo");
 
+    const trainingLabel = formatTrainingRoles(volunteer.trainingRoles);
+
     container.innerHTML = `
         <p><strong>Name:</strong> ${volunteer.name}</p>
         <p><strong>Email:</strong> ${volunteer.email}</p>
-        <p><strong>Role:</strong> ${volunteer.role}</p>
+        <p><strong>Training Role:</strong> ${trainingLabel}</p>
     `;
 }
 

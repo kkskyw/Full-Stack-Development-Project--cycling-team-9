@@ -90,9 +90,9 @@ app.get("/api/users/eligible-events", verifyJWT, eventSignupController.getEligib
 app.get("/volunteers/:id/events", verifyJWT, historyController.getEventsByVolunteer);
 
 // Attendance routes
-app.post("/attendance/checkin", verifyJWT, attendanceController.checkIn);
-app.post("/attendance/checkout", verifyJWT, attendanceController.checkOut);
-app.get("/admin/volunteers/:id", verifyJWT, verifyAdmin, adminVolunteerController.getVolunteerDetails);
+app.post("/api/attendance/checkin", verifyJWT, attendanceController.checkIn);
+app.post("/api/attendance/checkout", verifyJWT, attendanceController.checkOut);
+app.get("/api/admin/volunteers/:id", verifyJWT, verifyAdmin, adminVolunteerController.getVolunteerDetails);
 
 // Telegram routes
 app.post("/api/telegram/set-webhook", telegramController.setWebhook);
