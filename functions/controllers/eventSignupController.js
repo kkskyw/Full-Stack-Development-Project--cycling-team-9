@@ -5,27 +5,24 @@ async function joinEvent(req, res) {
         const userId = req.user.userId;
         const eventId = req.params.eventId;
 
-        console.log("SIGNUP ATTEMPT - userId:", userId, "eventId:", eventId);
-
         await signupForEvent(userId, eventId);
 
         return res.json({ message: "Signup successful!" });
 
     } catch (err) {
-        console.error("SIGNUP ERROR:", err.message, err.stack);
+        console.error("SIGNUP ERROR:", err.message);
 
         // User-related errors
         if (
             err.message.includes("already booked") ||
             err.message.includes("Event not found") ||
-            err.message.includes("already have an event") ||
-            err.message.includes("fully booked")
+            err.message.includes("already have an event")
         ) {
             return res.status(400).json({ error: err.message });
         }
 
         // Real server error
-        return res.status(500).json({ error: "Internal server error", details: err.message });
+        return res.status(500).json({ error: "Internal server error" });
     }
 }
 
