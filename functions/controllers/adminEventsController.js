@@ -8,7 +8,8 @@ const createEvent = async (req, res) => {
         const eventData = {
             ...req.body,
             createdAt: new Date().toISOString(),
-            updatedAt: new Date().toISOString()
+            updatedAt: new Date().toISOString(),
+            volunteersCount: 0 // Initialize to 0
         };
         
         // Validate required fields
@@ -61,6 +62,13 @@ const createEvent = async (req, res) => {
             delete eventData.maxPilots;
         }
         
+        // Make sure volunteersCount is set
+        if (eventData.volunteersCount === undefined) {
+            eventData.volunteersCount = 0;
+        }
+        
+        console.log('Event data to be saved:', eventData);
+
         const eventId = await adminEventModel.createEvent(eventData);
         
         console.log('Event created with ID:', eventId);
@@ -141,11 +149,27 @@ const updateEvent = async (req, res) => {
         const eventId = req.params.id;
         console.log('Updating event ID:', eventId, 'with data:', req.body);
         
+        // First, get the current event to preserve volunteersCount
+        const currentEvent = await adminEventModel.getEventById(eventId);
+        if (!currentEvent) {
+            return res.status(404).json({
+                success: false,
+                message: 'Event not found'
+            });
+        }
+        
         const updateData = {
             ...req.body,
             updatedAt: new Date().toISOString()
         };
         
+        // Preserve volunteersCount from current event
+        if (currentEvent.volunteersCount !== undefined) {
+            updateData.volunteersCount = currentEvent.volunteersCount;
+        } else {
+            updateData.volunteersCount = 0;
+        }
+
         // If location is being updated, update geolocation too
         if (updateData.location) {
             const locationCoords = {

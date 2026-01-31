@@ -189,10 +189,17 @@ const getAllBookedEvents = async (page = 1, pageSize = 5, filters = {}) => {
         let events = [];
         let snapshot = await query.get();
 
-        snapshot = snapshot.docs.filter(doc => !!doc.data()["companyBookings"]);
-
-        snapshot.forEach(doc => {
+        // Filter events with companyBookings
+        const eventsWithCompanyBookings = snapshot.docs.filter(doc => {
             const data = doc.data();
+            return data.companyBookings && data.companyBookings.length > 0;
+        });
+
+        // Process each event
+        for (const doc of eventsWithCompanyBookings) {
+            const data = doc.data();
+            
+            // Convert Firestore Timestamps to ISO strings
             if (data.time && data.time.toDate) {
                 data.time = data.time.toDate().toISOString();
             }
@@ -202,13 +209,46 @@ const getAllBookedEvents = async (page = 1, pageSize = 5, filters = {}) => {
             if (data.end_time && data.end_time.toDate) {
                 data.end_time = data.end_time.toDate().toISOString();
             }
+            
+            // Get volunteersCount (ensure it exists)
+            const volunteersCount = data.volunteersCount || 0;
+            
+            // Get company booking info
+            const companyBookings = data.companyBookings || [];
+            let passengersCount = 0;
+            let companyName = '';
+            let companyBooked = false;
+            
+            if (companyBookings.length > 0) {
+                // Get the first approved or pending company booking
+                const activeBooking = companyBookings.find(booking => 
+                    booking.status === 'approved' || booking.status === 'pending'
+                );
+                
+                if (activeBooking) {
+                    passengersCount = activeBooking.passengersCount || 0;
+                    companyName = activeBooking.companyName || '';
+                    companyBooked = true;
+                }
+            }
+            
+            // Calculate remaining slots
+            const remainingSlots = Math.max(0, passengersCount - volunteersCount);
+            const isFullyBooked = volunteersCount >= passengersCount;
+            
             events.push({
                 eventId: doc.id,
-                ...data
+                ...data,
+                volunteersCount, // Make sure this is included
+                passengersCount,
+                remainingSlots,
+                companyName,
+                companyBooked,
+                isFullyBooked
             });
-        });
+        }
         
-        // Filter by time hour if provided - SAME LOGIC AS ABOVE
+        // Filter by time hour if provided
         if (filters.time) {
             const hourFilter = parseInt(filters.time);
             events = events.filter(event => {
@@ -216,9 +256,7 @@ const getAllBookedEvents = async (page = 1, pageSize = 5, filters = {}) => {
                 if (!eventDateTime) return false;
                 
                 const eventDate = new Date(eventDateTime);
-                // Get hour in Singapore timezone (UTC+8)
                 const eventHourSingapore = eventDate.getUTCHours() + 8;
-                // Adjust for 24-hour format
                 const adjustedHour = eventHourSingapore >= 24 ? eventHourSingapore - 24 : eventHourSingapore;
                 
                 return adjustedHour === hourFilter;
