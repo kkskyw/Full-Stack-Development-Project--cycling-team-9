@@ -6,6 +6,7 @@ document.addEventListener('DOMContentLoaded', function() {
     const eventLocation = document.getElementById('eventLocation');
     const eventMRT = document.getElementById('eventMRT');
     const eventDescription = document.getElementById('eventDescription');
+    const eventCount = document.getElementById('eventCount');
     const backBtn = document.getElementById('backBtn');
     const signupBtn = document.getElementById('signupBtn');
     const startAddress = document.getElementById('startAddress');
@@ -184,6 +185,7 @@ document.addEventListener('DOMContentLoaded', function() {
         eventLocation.textContent = event.location;
         eventMRT.textContent = event.nearestMRT;
         eventDescription.textContent = event.longIntro || event.intro || 'No detailed description available.';
+        eventCount.textContent = `${event.companyBookings[0].passengersCount - event.volunteersCount} slot(s) left`;
         
         // Store location for directions
         currentEventLocation = event.location;
@@ -203,6 +205,7 @@ document.addEventListener('DOMContentLoaded', function() {
         eventTime.textContent = 'N/A';
         eventLocation.textContent = 'N/A';
         eventMRT.textContent = 'N/A';
+        eventCount.textContent = 'N/A';
     }
     
     function showAlreadyBookedModal(message) {

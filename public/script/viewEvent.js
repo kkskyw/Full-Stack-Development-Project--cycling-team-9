@@ -213,6 +213,7 @@ document.addEventListener('DOMContentLoaded', function() {
                     <div class="event-time">${formattedTime}</div>
                     <div class="event-location">${event.location}</div>
                     <div class="event-mrt">${event.nearestMRT}</div>
+                    <div class="event-count">${event.companyBookings[0].passengersCount - event.volunteersCount} slot(s) left</div>
                 </div>
                 <div class="event-intro">${eventIntro}</div>
             `;

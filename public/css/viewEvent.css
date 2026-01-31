@@ -155,7 +155,8 @@
 .event-date,
 .event-time,
 .event-location,
-.event-mrt {
+.event-mrt,
+.event-count {
     display: flex;
     align-items: center;
     gap: 8px;
@@ -177,6 +178,10 @@
 
 .event-mrt::before {
     content: "🚇";
+}
+
+.event-count::before {
+    content: "👥";
 }
 
 .event-intro {
