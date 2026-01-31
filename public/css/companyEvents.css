@@ -1,7 +1,7 @@
 /* companyEvents.css */
 
 .company-events-container {
-    max-width: 1200px;
+    max-width: 1400px;
     margin: 0 auto;
     padding: 40px 20px;
 }
@@ -85,8 +85,8 @@
 /* Events Grid */
 .events-grid {
     display: grid;
-    grid-template-columns: repeat(auto-fill, minmax(350px, 1fr));
-    gap: 25px;
+    grid-template-columns: repeat(auto-fill, minmax(400px, 1fr));
+    gap: 30px;
     margin-bottom: 50px;
 }
 
@@ -218,8 +218,8 @@
     background-color: white;
     margin: 50px auto;
     border-radius: 10px;
-    width: 90%;
-    max-width: 700px;
+    width: 95%;
+    max-width: 800px;
     box-shadow: 0 5px 20px rgba(0, 0, 0, 0.2);
 }
 
@@ -253,13 +253,13 @@
 
 /* Booking Form */
 .booking-form {
-    padding: 25px;
+    padding: 30px;
 }
 
 .event-info-card {
     background-color: #f8f9fa;
     border-radius: 8px;
-    padding: 20px;
+    padding: 25px;
     margin-bottom: 25px;
 }
 
@@ -272,7 +272,7 @@
 .event-details {
     display: grid;
     grid-template-columns: 1fr 1fr;
-    gap: 10px;
+    gap: 15px;
 }
 
 .detail-item {
@@ -284,7 +284,7 @@
 .detail-item .label {
     font-weight: 600;
     margin-right: 10px;
-    min-width: 100px;
+    min-width: 120px;
     color: #555;
 }
 
@@ -302,12 +302,12 @@
 
 .form-row {
     display: grid;
-    grid-template-columns: 1fr 1fr;
-    gap: 20px;
+    grid-template-columns: 1fr;
+    gap: 25px;
 }
 
 .form-group {
-    margin-bottom: 20px;
+    margin-bottom: 25px;
 }
 
 .form-group label {
@@ -321,10 +321,10 @@
 .form-group textarea,
 .form-group select {
     width: 100%;
-    padding: 12px;
+    padding: 14px;
     border: 2px solid #ddd;
     border-radius: 6px;
-    font-size: 16px;
+    font-size: 17px;
     font-family: inherit;
 }
 
@@ -545,6 +545,37 @@
     text-align: center;
 }
 
+.booking-summary {
+    width: 100%;
+    padding: 25px;
+    background-color: #f8f9fa;
+    border-radius: 10px;
+    margin: 25px 0;
+}
+
+.summary-item {
+    display: flex;
+    justify-content: space-between;
+    margin-bottom: 12px;
+    padding-bottom: 12px;
+    border-bottom: 2px solid #eee;
+    font-size: 16px;
+}
+
+.summary-item .label {
+    font-weight: 700;
+    color: #333;
+    min-width: 200px; /* Ensure labels have enough space */
+}
+
+.summary-item span:last-child {
+    text-align: right;
+    flex-grow: 1;
+    color: #666;
+    max-width: 300px; /* Limit value width */
+    word-wrap: break-word;
+}
+
 /* Responsive */
 @media (max-width: 768px) {
     .events-grid {
@@ -552,6 +583,7 @@
     }
     
     .filters-section {
+        padding: 30px;
         flex-direction: column;
         align-items: stretch;
     }

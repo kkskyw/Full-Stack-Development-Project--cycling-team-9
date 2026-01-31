@@ -51,6 +51,16 @@ const createEvent = async (req, res) => {
         eventData.geolocation = locationCoords[selectedLocation];
         eventData.time = eventData.start_time; // Set time field same as start_time for compatibility
         
+        // Handle maxPassengers field (support both maxPassengers and maxPilots for backward compatibility)
+        if (eventData.maxPassengers) {
+            // Ensure maxPassengers is a number
+            eventData.maxPassengers = parseInt(eventData.maxPassengers);
+        } else if (eventData.maxPilots) {
+            // For backward compatibility
+            eventData.maxPassengers = parseInt(eventData.maxPilots);
+            delete eventData.maxPilots;
+        }
+        
         const eventId = await adminEventModel.createEvent(eventData);
         
         console.log('Event created with ID:', eventId);
@@ -166,6 +176,19 @@ const updateEvent = async (req, res) => {
         // If start_time is updated, also update time field
         if (updateData.start_time) {
             updateData.time = updateData.start_time;
+        }
+        
+        // Handle maxPassengers field
+        if (updateData.maxPassengers) {
+            updateData.maxPassengers = parseInt(updateData.maxPassengers);
+            // Remove maxPilots if it exists to avoid conflicts
+            if (updateData.maxPilots) {
+                delete updateData.maxPilots;
+            }
+        } else if (updateData.maxPilots) {
+            // For backward compatibility
+            updateData.maxPassengers = parseInt(updateData.maxPilots);
+            delete updateData.maxPilots;
         }
         
         const updated = await adminEventModel.updateEvent(eventId, updateData);

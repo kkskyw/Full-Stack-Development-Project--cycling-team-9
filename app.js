@@ -47,9 +47,9 @@ app.put("/users/:id", userController.updateUser);
 app.get("/admin/volunteers", verifyJWT, verifyAdmin, userController.listVolunteers);
 
 // ========== PASSWORD RESET ROUTES ==========
-app.post("/auth/request-otp", userValidation.validateResetRequest, resetPwController.requestPasswordReset);
-app.post("/auth/verify-otp", userValidation.validateOtpVerification, resetPwController.verifyOtp);
-app.post("/auth/reset-password", userValidation.validatePasswordReset, resetPwController.resetPassword);
+app.post("/api/auth/request-otp", userValidation.validateResetRequest, resetPwController.requestPasswordReset);
+app.post("/api/auth/verify-otp", userValidation.validateOtpVerification, resetPwController.verifyOtp);
+app.post("/api/auth/reset-password", userValidation.validatePasswordReset, resetPwController.resetPassword);
 
 // Event routes - Yiru (MUST be before parameterized routes**)
 app.get("/api/mrt-stations", eventController.getMRTStations);

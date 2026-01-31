@@ -22,7 +22,7 @@
     <main class="company-events-container">
         <div class="page-header">
             <h1>Book Events for Your Company</h1>
-            <p class="subtitle">Browse available events and book slots for your employees to participate as volunteers.</p>
+            <p class="subtitle">Browse available events and book slots for your company to enjoy the trishaw rides.</p>
         </div>
 
         <!-- Filters Section -->
@@ -54,7 +54,7 @@
         <div id="bookingModal" class="modal">
             <div class="modal-content">
                 <div class="modal-header">
-                    <h2 id="bookingTitle">Book Event</h2>
+                    <h2 id="bookingTitle">Book Event for Passengers</h2>
                     <span class="close-modal">&times;</span>
                 </div>
                 <form id="bookingForm" class="booking-form">
@@ -87,18 +87,12 @@
                         
                         <div class="form-row">
                             <div class="form-group">
-                                <label for="pilotsCount">Number of Pilots (Cycling Volunteers) *</label>
-                                <input type="number" id="pilotsCount" min="1" max="20" value="1" required>
-                                <div id="maxPilotsMessage" class="validation-message" style="display: none;">
-                                    <small style="color: #dc3545;">Maximum allowed: <span id="maxPilotsLimit">0</span> pilots</small>
+                                <label for="passengersCount">Number of Passengers *</label>
+                                <input type="number" id="passengersCount" min="1" max="20" value="1" required>
+                                <div id="maxPassengersMessage" class="validation-message" style="display: none;">
+                                    <small style="color: #dc3545;">Maximum allowed: <span id="maxPassengersLimit">0</span> passengers</small>
                                 </div>
-                                <small>Pilots ride the trishaws with elderly passengers</small>
-                            </div>
-                            
-                            <div class="form-group">
-                                <label for="crewCount">Number of Support Crew *</label>
-                                <input type="number" id="crewCount" min="0" max="10" value="0" required>
-                                <small>Support crew assist with logistics and safety</small>
+                                <small>Elderly passengers who will participate in the trishaw ride</small>
                             </div>
                         </div>
 

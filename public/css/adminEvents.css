@@ -156,4 +156,12 @@
     .form-card {
         padding: 20px;
     }
+    
+    .admin-table {
+        font-size: 12px;
+    }
+    
+    .admin-table th, .admin-table td {
+        padding: 8px;
+    }
 }

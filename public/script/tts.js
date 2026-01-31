@@ -163,7 +163,7 @@ function injectVoiceStyles() {
     }
 
     #voiceAssist button {
-      background: #1bb978;
+      background: #8dd4c3;
       color: white;
       border: none;
       padding: 12px 16px;
