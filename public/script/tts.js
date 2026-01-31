@@ -81,6 +81,54 @@ function stopReading() {
   window.speechSynthesis.cancel();
 }
 
+// Voice Recognition Functions
+let recognition = null;
+
+function startListening() {
+  const SpeechRecognition = window.SpeechRecognition || window.webkitSpeechRecognition;
+  
+  if (!SpeechRecognition) {
+    alert("Voice recognition not supported in this browser");
+    return;
+  }
+
+  recognition = new SpeechRecognition();
+  recognition.lang = "en-SG";
+  recognition.continuous = false;
+  recognition.interimResults = false;
+
+  recognition.onresult = function(event) {
+    const transcript = event.results[0][0].transcript;
+    console.log("Voice input:", transcript);
+    
+    // Find input field to fill or speak the text
+    const activeInput = document.activeElement;
+    if (activeInput && (activeInput.tagName === "INPUT" || activeInput.tagName === "TEXTAREA")) {
+      activeInput.value = transcript;
+    } else {
+      speak("You said: " + transcript);
+    }
+  };
+
+  recognition.onerror = function(event) {
+    console.error("Voice recognition error:", event.error);
+  };
+
+  recognition.onend = function() {
+    console.log("Voice recognition ended");
+  };
+
+  recognition.start();
+  console.log("Voice recognition started");
+}
+
+function stopListening() {
+  if (recognition) {
+    recognition.stop();
+    console.log("Voice recognition stopped");
+  }
+}
+
 function injectTTSUI() {
   if (document.getElementById("voiceAssist")) return;
 

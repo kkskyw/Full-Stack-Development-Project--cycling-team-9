@@ -1,5 +1,6 @@
 /**
  * Firebase Cloud Functions - Express API
+ * Updated: 2026-01-31 - Improved signup error handling
  */
 
 require("dotenv").config();
