@@ -91,18 +91,49 @@ const createEvent = async (req, res) => {
     }
 };
 
-// Get all events (admin version - no pagination for admin)
+// Get all events with pagination
 const getAllEvents = async (req, res) => {
     try {
-        console.log('Getting all events for admin');
+        console.log('Getting events with pagination for admin');
         
-        const events = await adminEventModel.getAllEvents();
+        // Get pagination parameters from query
+        const page = parseInt(req.query.page) || 1;
+        const pageSize = parseInt(req.query.pageSize) || 10;
+        const skip = (page - 1) * pageSize;
         
-        console.log('Events found:', events.length);
+        // Get filter parameters
+        const { date, location, status } = req.query;
+        
+        console.log('Pagination params:', { page, pageSize, skip });
+        console.log('Filter params:', { date, location, status });
+        
+        // Get total count for pagination
+        const totalEvents = await adminEventModel.getEventsCount({ date, location, status });
+        
+        // Get paginated events
+        const events = await adminEventModel.getEventsPaginated({
+            skip,
+            limit: pageSize,
+            date,
+            location,
+            status
+        });
+        
+        console.log('Events found:', events.length, 'Total:', totalEvents);
+        
+        const totalPages = Math.ceil(totalEvents / pageSize);
         
         res.json({
             success: true,
-            data: events
+            data: events,
+            pagination: {
+                total: totalEvents,
+                totalPages: totalPages,
+                currentPage: page,
+                pageSize: pageSize,
+                hasNextPage: page < totalPages,
+                hasPrevPage: page > 1
+            }
         });
     } catch (error) {
         console.error('Error in adminEventsController.getAllEvents:', error);

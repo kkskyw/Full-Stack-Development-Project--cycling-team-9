@@ -2,6 +2,7 @@ const API_BASE_URL = '';
 
 document.addEventListener('DOMContentLoaded', function() {
     const eventsGrid = document.getElementById('eventsGrid');
+    const pagination = document.getElementById('pagination');
     const eventForm = document.getElementById('eventForm');
     const formModal = document.getElementById('formModal');
     const createNewBtn = document.getElementById('createNewBtn');
@@ -47,6 +48,12 @@ document.addEventListener('DOMContentLoaded', function() {
         status: ''
     };
 
+    // Pagination variables
+    let currentPage = 1;
+    const pageSize = 4; // 4 event cards per page
+    let totalEvents = 0;
+    let totalPages = 1;
+
     // Load events on page load
     loadEvents();
 
@@ -57,16 +64,19 @@ document.addEventListener('DOMContentLoaded', function() {
         // Filter listeners
         dateFilter.addEventListener('change', function() {
             currentFilters.date = this.value;
+            currentPage = 1; // Reset to first page when filter changes
             filterEvents();
         });
         
         locationFilter.addEventListener('change', function() {
             currentFilters.location = this.value;
+            currentPage = 1; // Reset to first page when filter changes
             filterEvents();
         });
         
         statusFilter.addEventListener('change', function() {
             currentFilters.status = this.value;
+            currentPage = 1; // Reset to first page when filter changes
             filterEvents();
         });
         
@@ -161,9 +171,30 @@ document.addEventListener('DOMContentLoaded', function() {
     async function loadEvents() {
         try {
             eventsGrid.innerHTML = '<div class="loading">Loading events and booking data...</div>';
+            pagination.innerHTML = '';
+
+            // Build API URL with pagination parameters
+            const params = new URLSearchParams({
+                page: currentPage,
+                pageSize: pageSize
+            });
+            
+            // Add filters to API call if they exist
+            if (currentFilters.date) {
+                params.append('date', currentFilters.date);
+            }
+            if (currentFilters.location) {
+                params.append('location', currentFilters.location);
+            }
+            if (currentFilters.status) {
+                params.append('status', currentFilters.status);
+            }
+            
+            const url = `${API_BASE_URL}/admin/events?${params}`;
+            console.log('Fetching events from:', url);
             
             // Load events
-            const eventsResponse = await fetch(`${API_BASE_URL}/admin/events`, {
+            const eventsResponse = await fetch(url, {
                 headers: {
                     'Accept': 'application/json',
                     'Authorization': `Bearer ${localStorage.getItem('token')}`
@@ -173,16 +204,24 @@ document.addEventListener('DOMContentLoaded', function() {
             // Parse events response
             const eventsResult = await eventsResponse.json();
             let events = [];
+            let paginationInfo = {};
             
             if (eventsResult.success && eventsResult.data) {
                 events = eventsResult.data;
+                paginationInfo = eventsResult.pagination || {};
             } else if (eventsResult.items) {
                 events = eventsResult.items;
+                paginationInfo = eventsResult.metadata || {};
             } else if (Array.isArray(eventsResult)) {
                 events = eventsResult;
             }
             
             console.log('Loaded events:', events.length);
+            console.log('Pagination info:', paginationInfo);
+
+            // Set pagination variables
+            totalEvents = paginationInfo.total || paginationInfo.totalItems || events.length;
+            totalPages = paginationInfo.totalPages || Math.ceil(totalEvents / pageSize) || 1;
             
             // Process events - checking both companyBookings field and separate bookings API
             currentEvents = events.map(event => {
@@ -219,88 +258,26 @@ document.addEventListener('DOMContentLoaded', function() {
                     totalPassengersBooked: totalPassengersBooked,
                     maxPassengers: maxPassengers,
                     status: status,
-                    //remainingCapacity: Math.max(0, maxPassengers - totalPassengersBooked),
+                    remainingCapacity: Math.max(0, maxPassengers - totalPassengersBooked),
                     companyBookings: event.companyBookings || [] // Keep the companyBookings data
                 };
             });
             
-            // Also try to load separate bookings data if needed
-            try {
-                const bookingsResponse = await fetch(`${API_BASE_URL}/admin/bookings`, {
-                    headers: {
-                        'Accept': 'application/json',
-                        'Authorization': `Bearer ${localStorage.getItem('token')}`
-                    }
-                });
-                
-                if (bookingsResponse.ok) {
-                    const bookingsResult = await bookingsResponse.json();
-                    let allBookings = [];
-                    
-                    if (bookingsResult.success && bookingsResult.data) {
-                        allBookings = bookingsResult.data;
-                    } else if (Array.isArray(bookingsResult)) {
-                        allBookings = bookingsResult;
-                    }
-                    
-                    console.log('Loaded separate bookings:', allBookings.length);
-                    
-                    // If we have separate bookings data, update the events
-                    if (allBookings.length > 0) {
-                        // Create a map of bookings by event ID
-                        const bookingsByEvent = {};
-                        allBookings.forEach(booking => {
-                            const eventId = booking.eventId;
-                            if (eventId) {
-                                if (!bookingsByEvent[eventId]) {
-                                    bookingsByEvent[eventId] = [];
-                                }
-                                bookingsByEvent[eventId].push(booking);
-                            }
-                        });
-                        
-                        // Update events with separate bookings data
-                        currentEvents = currentEvents.map(event => {
-                            const separateBookings = bookingsByEvent[event.eventId] || [];
-                            
-                            // If we have separate bookings, use them to supplement or override
-                            if (separateBookings.length > 0) {
-                                const totalSeparateBookings = separateBookings.length;
-                                const totalSeparatePassengers = separateBookings.reduce((sum, booking) => {
-                                    return sum + (booking.passengersCount || 0);
-                                }, 0);
-                                
-                                return {
-                                    ...event,
-                                    hasBookings: event.hasBookings || totalSeparateBookings > 0,
-                                    totalBookings: event.totalBookings + totalSeparateBookings,
-                                    totalPassengersBooked: event.totalPassengersBooked + totalSeparatePassengers,
-                                    //remainingCapacity: Math.max(0, event.maxPassengers - (event.totalPassengersBooked + totalSeparatePassengers)),
-                                    // Combine both booking sources
-                                    allBookings: [...(event.companyBookings || []), ...separateBookings]
-                                };
-                            }
-                            
-                            return event;
-                        });
-                    }
-                }
-            } catch (bookingError) {
-                console.log('Could not load separate bookings, using companyBookings field only:', bookingError.message);
-            }
-            
-            console.log('Processed events with booking status:', currentEvents);
+            // Display events and pagination
             displayEvents(currentEvents);
+            displayPagination();
             
         } catch (error) {
             console.error('Error loading events:', error);
             eventsGrid.innerHTML = `<div class="no-events">Error loading events: ${error.message}</div>`;
+            pagination.innerHTML = '';
         }
     }
 
     function displayEvents(events) {
         if (events.length === 0) {
             eventsGrid.innerHTML = '<div class="no-events">No events found. Create your first event!</div>';
+            displayPagination(); // Still show pagination even if no events
             return;
         }
         
@@ -340,6 +317,9 @@ document.addEventListener('DOMContentLoaded', function() {
                 timeStatusClass = 'status-past';
                 timeStatusText = 'Past';
             }
+            
+            // Calculate remaining capacity
+            const remainingCapacity = Math.max(0, event.maxPassengers - event.totalPassengersBooked);
             
             return `
                 <div class="admin-event-card" data-event-id="${event.eventId}">
@@ -384,8 +364,12 @@ document.addEventListener('DOMContentLoaded', function() {
                                 <span class="stat-value">${event.totalPassengersBooked} passengers</span>
                             </div>
                             <div class="stat-item">
+                                <span class="stat-label">Remaining</span>
+                                <span class="stat-value">${remainingCapacity} passengers</span>
                             </div>
                             <div class="stat-item">
+                                <span class="stat-label">Total Bookings</span>
+                                <span class="stat-value">${event.totalBookings}</span>
                             </div>
                         </div>
                         
@@ -408,15 +392,80 @@ document.addEventListener('DOMContentLoaded', function() {
                         </div>
                         
                         ${event.hasBookings ? `
-                            
+            
                         ` : ''}
                     </div>
                 </div>
             `;
         }).join('');
+        
+        // Display pagination after loading events
+        displayPagination();
+    }
+
+    function displayPagination() {
+        pagination.innerHTML = '';
+        
+        if (totalPages <= 1) {
+            // Don't show pagination if there's only one page
+            return;
+        }
+        
+        // Previous button
+        const prevButton = document.createElement('button');
+        prevButton.className = 'page-btn';
+        prevButton.innerHTML = '&laquo;';
+        prevButton.disabled = currentPage === 1;
+        prevButton.addEventListener('click', () => {
+            if (currentPage > 1) {
+                currentPage--;
+                loadEvents();
+            }
+        });
+        pagination.appendChild(prevButton);
+        
+        // Page numbers
+        const maxVisiblePages = 5;
+        let startPage = Math.max(1, currentPage - Math.floor(maxVisiblePages / 2));
+        let endPage = Math.min(totalPages, startPage + maxVisiblePages - 1);
+        
+        if (endPage - startPage + 1 < maxVisiblePages) {
+            startPage = Math.max(1, endPage - maxVisiblePages + 1);
+        }
+        
+        for (let i = startPage; i <= endPage; i++) {
+            const pageButton = document.createElement('button');
+            pageButton.className = `page-btn ${i === currentPage ? 'active' : ''}`;
+            pageButton.textContent = i;
+            pageButton.addEventListener('click', () => {
+                currentPage = i;
+                loadEvents();
+            });
+            pagination.appendChild(pageButton);
+        }
+        
+        // Next button
+        const nextButton = document.createElement('button');
+        nextButton.className = 'page-btn';
+        nextButton.innerHTML = '&raquo;';
+        nextButton.disabled = currentPage === totalPages;
+        nextButton.addEventListener('click', () => {
+            if (currentPage < totalPages) {
+                currentPage++;
+                loadEvents();
+            }
+        });
+        pagination.appendChild(nextButton);
+        
+        // Page info
+        const pageInfo = document.createElement('div');
+        pageInfo.className = 'page-info';
+        pageInfo.textContent = `Page ${currentPage} of ${totalPages} (${totalEvents} events)`;
+        pagination.appendChild(pageInfo);
     }
 
     function filterEvents() {
+        // Apply filters to all events and calculate pagination
         let filteredEvents = [...currentEvents];
         
         if (currentFilters.date) {
@@ -442,7 +491,6 @@ document.addEventListener('DOMContentLoaded', function() {
                     filteredEvents = filteredEvents.filter(event => event.status === 'past');
                     break;
                 case 'booked':
-                    // Filter by companyBookings field specifically
                     filteredEvents = filteredEvents.filter(event => 
                         (event.companyBookings && event.companyBookings.length > 0) || event.hasBookings
                     );
@@ -455,7 +503,18 @@ document.addEventListener('DOMContentLoaded', function() {
             }
         }
         
-        displayEvents(filteredEvents);
+        // Calculate pagination for filtered results
+        const startIndex = (currentPage - 1) * pageSize;
+        const endIndex = startIndex + pageSize;
+        const paginatedEvents = filteredEvents.slice(startIndex, endIndex);
+        
+        // Update display with paginated results
+        displayEvents(paginatedEvents);
+        
+        // Update pagination info for filtered results
+        totalEvents = filteredEvents.length;
+        totalPages = Math.ceil(totalEvents / pageSize);
+        displayPagination();
     }
 
     function clearFilters() {
@@ -463,7 +522,8 @@ document.addEventListener('DOMContentLoaded', function() {
         locationFilter.value = '';
         statusFilter.value = '';
         currentFilters = { date: '', location: '', status: '' };
-        displayEvents(currentEvents);
+        currentPage = 1; // Reset to first page when clearing filters
+        loadEvents(); // Reload events without filters
     }
 
     function resetForm() {
