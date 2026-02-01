@@ -35,6 +35,7 @@ document.addEventListener('DOMContentLoaded', function() {
     loadCompanyInfo();
     loadEvents();
     setupEventListeners();
+    setupLogoutButton();
 
     function loadCompanyInfo() {
         // Try to get company info from localStorage
@@ -790,6 +791,29 @@ document.addEventListener('DOMContentLoaded', function() {
             displayEvents(currentEvents);
         } else {
             console.log('No events available to test');
+        }
+    }
+
+    function setupLogoutButton() {
+        const logoutBtn = document.getElementById('logoutBtn');
+        
+        if (logoutBtn) {
+            logoutBtn.addEventListener('click', function() {
+                // Clear all company-related data from localStorage
+                localStorage.removeItem('companyName');
+                localStorage.removeItem('contactPerson');
+                localStorage.removeItem('contactEmail');
+                localStorage.removeItem('contactPhone');
+                localStorage.removeItem('companyBookings');
+                
+                // Optional: Clear any authentication tokens if used
+                // localStorage.removeItem('token');
+                // localStorage.removeItem('userId');
+                // localStorage.removeItem('userRole');
+                
+                // Redirect to login page or home page
+                window.location.href = 'login.html'; // or 'index.html' or whatever your login page is
+            });
         }
     }
 });
