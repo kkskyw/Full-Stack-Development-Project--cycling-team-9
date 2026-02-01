@@ -258,7 +258,6 @@ document.addEventListener('DOMContentLoaded', function() {
                     totalPassengersBooked: totalPassengersBooked,
                     maxPassengers: maxPassengers,
                     status: status,
-                    remainingCapacity: Math.max(0, maxPassengers - totalPassengersBooked),
                     companyBookings: event.companyBookings || [] // Keep the companyBookings data
                 };
             });
@@ -319,7 +318,6 @@ document.addEventListener('DOMContentLoaded', function() {
             }
             
             // Calculate remaining capacity
-            const remainingCapacity = Math.max(0, event.maxPassengers - event.totalPassengersBooked);
             
             return `
                 <div class="admin-event-card" data-event-id="${event.eventId}">
@@ -364,8 +362,6 @@ document.addEventListener('DOMContentLoaded', function() {
                                 <span class="stat-value">${event.totalPassengersBooked} passengers</span>
                             </div>
                             <div class="stat-item">
-                                <span class="stat-label">Remaining</span>
-                                <span class="stat-value">${remainingCapacity} passengers</span>
                             </div>
                             <div class="stat-item">
                                 <span class="stat-label">Total Bookings</span>
