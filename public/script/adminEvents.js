@@ -8,6 +8,12 @@ document.addEventListener('DOMContentLoaded', function() {
     const cancelBtn = document.getElementById('cancelBtn');
     const formTitle = document.getElementById('formTitle');
     const saveBtn = document.getElementById('saveBtn');
+    const backBtn = document.getElementById('backBtn');
+    if (backBtn) {
+        backBtn.addEventListener('click', function() {
+            window.location.href = 'admin_main.html';
+        });
+    }
     
     // Filter elements
     const dateFilter = document.getElementById('dateFilter');
