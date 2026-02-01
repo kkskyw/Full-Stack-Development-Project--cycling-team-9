@@ -143,14 +143,18 @@ const getMRTStations = async (letter = '', timeFilter = '') => {
 
 const getEventById = async (eventId) => {
     try {
-        const eventDoc = await db.collection('events').doc(String(eventId)).get();
-        
+        const eventDoc = await db
+            .collection('events')
+            .doc(String(eventId))
+            .get();
+
         if (!eventDoc.exists) {
             return null;
         }
-        
+
         const data = eventDoc.data();
-        // Convert Firestore Timestamps to ISO strings
+
+        // Convert Firestore Timestamps
         if (data.time && data.time.toDate) {
             data.time = data.time.toDate().toISOString();
         }
@@ -160,16 +164,35 @@ const getEventById = async (eventId) => {
         if (data.end_time && data.end_time.toDate) {
             data.end_time = data.end_time.toDate().toISOString();
         }
-        
+
+        // 🔍 FETCH APPROVED COMPANY BOOKING
+        const companySnap = await db
+            .collection("companyBookings")
+            .where("eventId", "==", String(eventId))
+            .where("status", "==", "approved")
+            .limit(1)
+            .get();
+
+        let passengersCount = 0;
+
+        if (!companySnap.empty) {
+            passengersCount = Number(
+                companySnap.docs[0].data().passengersCount || 0
+            );
+        }
+
         return {
             eventId: eventDoc.id,
-            ...data
+            ...data,
+            passengersCount
         };
+
     } catch (error) {
         console.error('Error in eventModel.getEventById:', error);
         throw error;
     }
 };
+
 
 const getAllBookedEvents = async (page = 1, pageSize = 5, filters = {}) => {
     try {

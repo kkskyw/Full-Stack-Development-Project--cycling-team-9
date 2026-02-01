@@ -29,14 +29,38 @@ function initVoiceControl() {
     handleVoiceCommand(transcript);
   };
 
-  recognition.onerror = (err) => {
-    console.error("Voice recognition error:", err);
-    stopListening();
-  };
+ recognition.onerror = (err) => {
+  console.warn("Voice recognition error:", err.error);
 
-  recognition.onend = () => {
-    if (isListening) recognition.start();
-  };
+  // Ignore temporary errors
+  if (
+    err.error === "no-speech" ||
+    err.error === "network" ||
+    err.error === "audio-capture"
+  ) {
+    console.log("Recovering voice recognition...");
+    return;
+  }
+
+  // Only stop on real permission issues
+  if (err.error === "not-allowed" || err.error === "service-not-allowed") {
+    stopListening();
+  }
+};
+
+
+ recognition.onend = () => {
+  if (isListening) {
+    setTimeout(() => {
+      try {
+        recognition.start();
+      } catch (e) {
+        console.warn("Restart blocked:", e.message);
+      }
+    }, 500); // small delay = stability
+  }
+};
+
 
   injectVoiceUI();
 }
@@ -46,57 +70,72 @@ function initVoiceControl() {
 // ===============================
 
 function handleVoiceCommand(command) {
-    command = command.toLowerCase().trim();
+  command = command.toLowerCase().trim();
+  console.log("Voice command:", command);
 
-    console.log("Voice command:", command);
+  if (command.includes("scroll down")) {
+    window.scrollBy({ top: 500, behavior: "smooth" });
+    speak("Scrolling down");
+    return;
+  }
 
-    // NAVIGATION
-    if (command.includes("home")) {
-        const token = localStorage.getItem("token");
-        window.location.href = token ? "volunteer_main.html" : "guest_main.html";
-        return;
-    }
+  if (command.includes("scroll up")) {
+    window.scrollBy({ top: -500, behavior: "smooth" });
+    speak("Scrolling up");
+    return;
+  }
 
-    if (command.includes("events")) {
-        window.location.href = "eventIntroduction.html";
-        return;
-    }
+  if (command.includes("scroll to top")) {
+    window.scrollTo({ top: 0, behavior: "smooth" });
+    speak("Scrolled to top");
+    return;
+  }
 
-    if (command.includes("profile")) {
-        window.location.href = "profile.html";
-        return;
-    }
+  if (command.includes("scroll to bottom")) {
+    window.scrollTo({
+      top: document.body.scrollHeight,
+      behavior: "smooth"
+    });
+    speak("Scrolled to bottom");
+    return;
+  }
 
-    if (command.includes("logout") || command.includes("log out")) {
-        localStorage.clear();
-        window.location.href = "login.html";
-        return;
-    }
+  if (command.startsWith("click ")) {
+    const targetText = command.replace("click ", "").trim();
+    clickElementByText(targetText);
+    return;
+  }
 
-    // SCROLL
-    if (command.includes("scroll down")) {
-        window.scrollBy({ top: 400, behavior: "smooth" });
-        return;
-    }
+  if (command.includes("home")) {
+    const token = localStorage.getItem("token");
+    window.location.href = token ? "volunteer_main.html" : "guest_main.html";
+    return;
+  }
 
-    if (command.includes("scroll up")) {
-        window.scrollBy({ top: -400, behavior: "smooth" });
-        return;
-    }
+  if (command.includes("events")) {
+    window.location.href = "eventIntroduction.html";
+    return;
+  }
 
-    // FALLBACK
-    console.warn("Unmapped voice command:", command);
+  if (command.includes("profile")) {
+    window.location.href = "profile.html";
+    return;
+  }
+
+  if (command.includes("logout") || command.includes("log out")) {
+    localStorage.clear();
+    window.location.href = "login.html";
+    return;
+  }
+
+  console.warn("Unmapped voice command:", command);
 }
-
-// ===============================
-// Smart Click Handler
-// ===============================
-
 function clickElementByText(text) {
   text = text.toLowerCase();
 
-  const elements = [...document.querySelectorAll("button, a")]
-    .filter(el => el.innerText.trim());
+  const elements = [
+    ...document.querySelectorAll("button, a, [role='button'], .event-card")
+  ].filter(el => el.innerText && el.innerText.trim());
 
   // 1️⃣ Exact match
   for (const el of elements) {
@@ -107,16 +146,7 @@ function clickElementByText(text) {
     }
   }
 
-  // 2️⃣ Starts with
-  for (const el of elements) {
-    if (el.innerText.toLowerCase().startsWith(text)) {
-      el.click();
-      speak(`Clicked ${el.innerText}`);
-      return;
-    }
-  }
-
-  // 3️⃣ Contains (fallback)
+  // 2️⃣ Contains (best for event titles)
   for (const el of elements) {
     if (el.innerText.toLowerCase().includes(text)) {
       el.click();
@@ -127,7 +157,6 @@ function clickElementByText(text) {
 
   speak(`I couldn't find ${text}`);
 }
-
 
 // ===============================
 // Listening Controls

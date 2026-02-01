@@ -1,30 +1,22 @@
 const { signupForEvent, getEligibleEvents } = require("../models/eventSignupModel");
 
 async function joinEvent(req, res) {
-    try {
-        const userId = req.user.userId;
-        const eventId = req.params.eventId;
+  try {
+    const userId = req.user.userId;
+    const eventId = req.params.eventId;
 
-        await signupForEvent(userId, eventId);
+    await signupForEvent(userId, eventId);
 
-        return res.json({ message: "Signup successful!" });
+    return res.json({ message: "Signup successful!" });
 
-    } catch (err) {
-        console.error("SIGNUP ERROR:", err.message);
+  } catch (err) {
+    console.error("SIGNUP ERROR:", err.message);
 
-        // User-related errors
-        if (
-            err.message.includes("already booked") ||
-            err.message.includes("Event not found") ||
-            err.message.includes("already have an event")
-        ) {
-            return res.status(400).json({ error: err.message });
-        }
-
-        // Real server error
-        return res.status(500).json({ error: "Internal server error" });
-    }
-}
+    return res.status(400).json({
+      error: err.message
+    });
+  }
+} 
 
 async function fetchEligibleEvents(req, res) {
   try {
@@ -38,27 +30,27 @@ async function fetchEligibleEvents(req, res) {
 }
 
 async function emailSignup(req, res) {
-    try {
-        const userId = req.user.userId;
-        const eventId = req.params.eventId;
+  try {
+    const userId = req.user.userId;
+    const eventId = req.params.eventId;
 
-        await signupForEvent(userId, eventId);
+    await signupForEvent(userId, eventId);
 
-        return res.json({ message: "Email signup successful!" });
+    return res.json({ message: "Email signup successful!" });
 
-    } catch (err) {
-        console.error("EMAIL SIGNUP ERROR:", err.message);
+  } catch (err) {
+    console.error("EMAIL SIGNUP ERROR:", err.message);
 
-        if (
-            err.message.includes("already booked") ||
-            err.message.includes("Event not found") ||
-            err.message.includes("already have an event")
-        ) {
-            return res.status(400).json({ error: err.message });
-        }
-
-        return res.status(500).json({ error: "Internal server error" });
+    if (
+      err.message.includes("already booked") ||
+      err.message.includes("Event not found") ||
+      err.message.includes("already have an event")
+    ) {
+      return res.status(400).json({ error: err.message });
     }
+
+    return res.status(500).json({ error: "Internal server error" });
+  }
 }
 
 module.exports = {

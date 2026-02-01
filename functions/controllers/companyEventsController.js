@@ -30,7 +30,7 @@ const createCompanyBooking = async (req, res) => {
             ...req.body,
             bookingId: generateBookingId(),
             createdAt: new Date().toISOString(),
-            status: 'pending'
+            status: 'approved'
         };
         
         // Validate required fields
@@ -100,7 +100,7 @@ const createCompanyBooking = async (req, res) => {
             bookingId,
             companyName: bookingData.companyName,
             passengersCount: bookingData.passengersCount, // Changed from pilotsCount
-            status: 'pending'
+            status: 'approved'
         });
         
         // TODO: Send confirmation email to company
