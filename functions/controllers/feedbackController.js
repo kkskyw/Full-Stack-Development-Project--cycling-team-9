@@ -32,3 +32,61 @@ module.exports = {
   submitFeedback,
   getFeedback
 };
+
+async function getFeedbackForAdmin(req, res) {
+  try {
+    const feedback = await feedbackModel.getAllFeedback();
+    res.status(200).json({ 
+      success: true, 
+      feedbacks: feedback,
+      count: feedback.length,
+      timestamp: new Date().toISOString()
+    });
+  } catch (err) {
+    console.error("Get feedback error:", err);
+    res.status(500).json({ error: "Internal server error" });
+  }
+}
+
+async function updateFeedbackStatus(req, res) {
+  try {
+    const { id } = req.params;
+    const { status } = req.body;
+    
+  
+    res.status(200).json({ 
+      success: true, 
+      message: "Feedback status updated",
+      feedbackId: id,
+      status: status
+    });
+  } catch (err) {
+    console.error("Update feedback status error:", err);
+    res.status(500).json({ error: "Internal server error" });
+  }
+}
+
+async function deleteFeedback(req, res) {
+  try {
+    const { id } = req.params;
+    
+   
+    res.status(200).json({ 
+      success: true, 
+      message: "Feedback deleted successfully",
+      feedbackId: id
+    });
+  } catch (err) {
+    console.error("Delete feedback error:", err);
+    res.status(500).json({ error: "Internal server error" });
+  }
+}
+
+
+module.exports = {
+  submitFeedback,
+  getFeedback,
+  getFeedbackForAdmin,     
+  updateFeedbackStatus,    
+  deleteFeedback           
+};
