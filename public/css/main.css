@@ -585,3 +585,86 @@ body {
         width: 100%;
     }
 }
+@media (max-width: 768px) {
+
+  /* Header layout */
+  header {
+    padding: 8px 12px;
+  }
+
+  /* Logo: scale properly, no squish */
+  .logo {
+    height: 32px;
+    width: auto;
+    max-width: 32px;
+  }
+
+  .logo-text {
+    display: none;
+  }
+
+  /* Header buttons row */
+  .header-buttons {
+    display: flex;
+    flex-direction: row !important;
+    align-items: center;
+    gap: 6px;
+  }
+
+  .menu-btn,
+  .language-btn,
+  .font-size-btn,
+  .register-btn,
+  .logout-btn {
+    width: 36px !important;
+    height: 36px !important;
+    min-width: 36px !important;
+    padding: 0 !important;
+    font-size: 17px !important;
+    justify-content: center !important;
+  }
+
+  /* Kill font-size button expansion */
+  .font-size-btn {
+    min-width: unset !important;
+  }
+
+  /* Hide text, keep icons */
+  .menu-btn span:not(:first-child),
+  .language-btn span:not(:first-child),
+  .font-size-btn span:not(:first-child),
+  .font-size-indicator {
+    display: none !important;
+  }
+
+
+  .logout-btn {
+    background-color: #ff4d4d;
+    color: white;
+  }
+}
+@media (max-width: 768px) {
+  .font-size-btn {
+    padding-top: 4px !important;
+    padding-bottom: 2px !important;
+    align-items: center !important;
+  }
+}
+@media (max-width: 768px) {
+  .font-size-btn {
+    transform: translateY(5px);
+  }
+}
+@media (max-width: 768px) {
+  .logout-btn {
+    width: auto !important;
+    min-width: 72px !important;
+    height: 36px !important;
+    padding: 0 10px !important;
+    font-size: 13px !important;
+    white-space: nowrap;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+  }
+}

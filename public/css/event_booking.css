@@ -283,3 +283,85 @@ footer {
     margin-top: 0 !important;
     height: auto !important;
 }
+@media (max-width: 768px) {
+
+    /* Header layout */
+    header {
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+        padding: 8px 10px;
+    }
+
+    /* Logo: icon only */
+    .logo-container {
+        display: flex;
+        align-items: center;
+    }
+
+    .logo {
+        width: 32px;
+    }
+
+    .logo-text {
+        display: none; /* 🔥 remove text on mobile */
+    }
+
+    /* Right-side buttons */
+    .header-buttons {
+        display: flex;
+        flex-direction: row;
+        align-items: center;
+        gap: 6px;
+    }
+
+    .menu-container {
+        display: flex;
+    }
+
+    /* Icon-only buttons */
+    .header-buttons button {
+        width: 34px;
+        height: 34px;
+        padding: 0;
+        border-radius: 6px;
+        font-size: 17px;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+    }
+
+    /* Hide all button text */
+    .header-buttons button span:not(:first-child) {
+        display: none;
+    }
+
+    /* Font-size dropdown cleanup */
+    .font-size-btn .font-size-indicator,
+    .font-size-btn span:last-child {
+        display: none;
+    }
+
+    /* Logout stays red */
+    .logout-btn {
+        background-color: #ff4d4d;
+        color: white;
+        width: 36px;
+        height: 34px;
+        padding: 0;
+        font-size: 14px;
+    }
+}
+@media (max-width: 768px) {
+  .logout-btn {
+    width: auto !important;
+    min-width: 72px !important;
+    height: 36px !important;
+    padding: 0 10px !important;
+    font-size: 13px !important;
+    white-space: nowrap;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+  }
+}

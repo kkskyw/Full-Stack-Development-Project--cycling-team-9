@@ -87,10 +87,22 @@ function injectTTSUI() {
   const container = document.createElement("div");
   container.id = "voiceAssist";
   container.innerHTML = `
-    <button id="ttsRead">🔊 Read Page</button>
-    <button id="ttsStop">⏹ Stop Reading</button>
-    <button id="voiceStart">🎤 Voice</button>
-    <button id="voiceStop">⛔ Stop Voice</button>
+    <button id="ttsRead">
+      <span class="icon">🔊</span>
+      <span class="label">Read Page</span>
+    </button>
+    <button id="ttsStop">
+      <span class="icon">⏹</span>
+      <span class="label">Stop Reading</span>
+    </button>
+    <button id="voiceStart">
+      <span class="icon">🎤</span>
+      <span class="label">Voice</span>
+    </button>
+    <button id="voiceStop">
+      <span class="icon">⛔</span>
+      <span class="label">Stop Voice</span>
+    </button>
   `;
 
   document.body.appendChild(container);
@@ -115,7 +127,7 @@ function injectVoiceStyles() {
     }
 
     #voiceAssist button {
-      background: #1bb978;
+      background: #8dd4c3;
       color: white;
       border: none;
       padding: 12px 16px;
@@ -123,10 +135,33 @@ function injectVoiceStyles() {
       font-size: 14px;
       cursor: pointer;
       box-shadow: 0 4px 10px rgba(0,0,0,0.15);
+      display: flex;
+      align-items: center;
+      gap: 8px;
     }
 
     #voiceAssist button:hover {
       opacity: 0.9;
+    }
+
+    /* ===== MOBILE MODE ===== */
+    @media (max-width: 768px) {
+      #voiceAssist {
+        gap: 12px;
+      }
+
+      #voiceAssist button {
+        width: 52px;
+        height: 52px;
+        padding: 0;
+        border-radius: 50%;
+        justify-content: center;
+        font-size: 22px;
+      }
+
+      #voiceAssist .label {
+        display: none;
+      }
     }
   `;
   document.head.appendChild(style);
