@@ -7,6 +7,7 @@
     <link rel="stylesheet" href="css/main.css">
     <link rel="stylesheet" href="css/eventDetail.css">
     <link rel="stylesheet" href="css/adminEvents.css">
+    <link rel="stylesheet" href="css/companyEvents.css">
 </head>
 <body>
     <header>
@@ -25,27 +26,45 @@
             <button class="signup-btn" id="createNewBtn">+ Create New Event</button>
         </div>
 
-        <div class="event-detail-card list-card">
-            <div class="table-responsive">
-                <table class="admin-table">
-                    <thead>
-                        <tr>
-                            <th>ID</th>
-                            <th>Event Header</th>
-                            <th>Location</th>
-                            <th>Nearest MRT</th>
-                            <th>Max Passengers</th>
-                            <th>Start Time</th>
-                            <th>Actions</th>
-                        </tr>
-                    </thead>
-                    <tbody id="eventTableBody">
-                        <!-- Event rows will be populated here -->
-                    </tbody>
-                </table>
+        <!-- Replace table with card grid -->
+        <div class="admin-events-container">
+            <div class="filters-section">
+                <div class="filter-group">
+                    <label for="dateFilter">Filter by Date:</label>
+                    <input type="date" id="dateFilter" class="filter-input">
+                </div>
+                
+                <div class="filter-group">
+                    <label for="statusFilter">Filter by Status:</label>
+                    <select id="statusFilter" class="filter-select">
+                        <option value="">All Status</option>
+                        <option value="upcoming">Upcoming</option>
+                        <option value="past">Past</option>
+                        <option value="booked">Has Bookings</option>
+                        <option value="available">No Bookings</option>
+                    </select>
+                </div>
+                
+                <div class="filter-group">
+                    <label for="locationFilter">Filter by Location:</label>
+                    <select id="locationFilter" class="filter-select">
+                        <option value="">All Locations</option>
+                        <option value="Jurong Lake Gardens">Jurong Lake Gardens</option>
+                        <option value="Passion Wave Marina Bay">Passion Wave Marina Bay</option>
+                        <option value="Gardens by the Bay">Gardens by the Bay</option>
+                    </select>
+                </div>
+                
+                <button class="clear-filters-btn" id="clearFilters">Clear Filters</button>
+            </div>
+
+            <!-- Events Grid -->
+            <div class="events-grid" id="eventsGrid">
+                <div class="loading">Loading events...</div>
             </div>
         </div>
 
+        <!-- Rest of the modal code remains the same -->
         <div id="formModal" class="modal">
             <div class="event-detail-card form-card">
                 <div class="event-header-section">
@@ -118,6 +137,6 @@
         </div>
     </main>
 
-    <script src="script/adminEvents.js?v=2"></script>
+    <script src="script/adminEvents.js?v=3"></script>
 </body>
 </html>

@@ -1,13 +1,19 @@
 const API_BASE_URL = '';
 
 document.addEventListener('DOMContentLoaded', function() {
-    const eventTableBody = document.getElementById('eventTableBody');
+    const eventsGrid = document.getElementById('eventsGrid');
     const eventForm = document.getElementById('eventForm');
     const formModal = document.getElementById('formModal');
     const createNewBtn = document.getElementById('createNewBtn');
     const cancelBtn = document.getElementById('cancelBtn');
     const formTitle = document.getElementById('formTitle');
     const saveBtn = document.getElementById('saveBtn');
+    
+    // Filter elements
+    const dateFilter = document.getElementById('dateFilter');
+    const locationFilter = document.getElementById('locationFilter');
+    const statusFilter = document.getElementById('statusFilter');
+    const clearFiltersBtn = document.getElementById('clearFilters');
     
     // Location coordinates and MRT mapping
     const locationData = {
@@ -28,99 +34,431 @@ document.addEventListener('DOMContentLoaded', function() {
         }
     };
 
+    let currentEvents = [];
+    let currentFilters = {
+        date: '',
+        location: '',
+        status: ''
+    };
+
     // Load events on page load
     loadEvents();
 
-    // Show modal for creating new event
-    createNewBtn.addEventListener('click', () => {
-        resetForm();
-        formTitle.textContent = 'Create New Event';
-        formModal.style.display = 'block';
-    });
+    // Setup event listeners
+    setupEventListeners();
 
-    // Hide modal
-    cancelBtn.addEventListener('click', () => {
-        formModal.style.display = 'none';
-    });
+    function setupEventListeners() {
+        // Filter listeners
+        dateFilter.addEventListener('change', function() {
+            currentFilters.date = this.value;
+            filterEvents();
+        });
+        
+        locationFilter.addEventListener('change', function() {
+            currentFilters.location = this.value;
+            filterEvents();
+        });
+        
+        statusFilter.addEventListener('change', function() {
+            currentFilters.status = this.value;
+            filterEvents();
+        });
+        
+        clearFiltersBtn.addEventListener('click', clearFilters);
 
-    // Close modal when clicking outside
-    formModal.addEventListener('click', (e) => {
-        if (e.target === formModal) {
+        // Modal listeners
+        createNewBtn.addEventListener('click', () => {
+            resetForm();
+            formTitle.textContent = 'Create New Event';
+            formModal.style.display = 'block';
+        });
+
+        cancelBtn.addEventListener('click', () => {
             formModal.style.display = 'none';
-        }
-    });
+        });
 
-    // Location dropdown change handler
-    document.getElementById('location').addEventListener('change', function() {
-        const selectedLocation = this.value;
-        const locationInfo = locationData[selectedLocation];
-        
-        if (locationInfo) {
-            document.getElementById('latitude').value = locationInfo.latitude;
-            document.getElementById('longitude').value = locationInfo.longitude;
-            document.getElementById('nearestMRT').value = locationInfo.mrt;
-        } else {
-            document.getElementById('latitude').value = '';
-            document.getElementById('longitude').value = '';
-            document.getElementById('nearestMRT').value = '';
-        }
-    });
-
-    // Start Time change handler to update End Time date
-    document.getElementById('start_time').addEventListener('change', function() {
-        const startTimeInput = this.value;
-        if (startTimeInput) {
-            const startDate = new Date(startTimeInput);
-            const endTimeInput = document.getElementById('end_time');
-            const endTimeValue = endTimeInput.value;
-            
-            if (endTimeValue) {
-                // Update only the date part of end time
-                const endDate = new Date(endTimeValue);
-                endDate.setFullYear(startDate.getFullYear(), startDate.getMonth(), startDate.getDate());
-                endTimeInput.value = formatDateTimeLocal(endDate);
-            } else {
-                // Set default end time (2 hours after start)
-                const defaultEndTime = new Date(startDate.getTime() + 2 * 60 * 60 * 1000);
-                endTimeInput.value = formatDateTimeLocal(defaultEndTime);
+        formModal.addEventListener('click', (e) => {
+            if (e.target === formModal) {
+                formModal.style.display = 'none';
             }
-        }
-    });
+        });
 
-    // Handle form submission
-    eventForm.addEventListener('submit', async (e) => {
-        e.preventDefault();
-        
-        if (!validateForm()) {
+        // Location dropdown change handler
+        document.getElementById('location').addEventListener('change', function() {
+            const selectedLocation = this.value;
+            const locationInfo = locationData[selectedLocation];
+            
+            if (locationInfo) {
+                document.getElementById('latitude').value = locationInfo.latitude;
+                document.getElementById('longitude').value = locationInfo.longitude;
+                document.getElementById('nearestMRT').value = locationInfo.mrt;
+            } else {
+                document.getElementById('latitude').value = '';
+                document.getElementById('longitude').value = '';
+                document.getElementById('nearestMRT').value = '';
+            }
+        });
+
+        // Start Time change handler
+        document.getElementById('start_time').addEventListener('change', function() {
+            const startTimeInput = this.value;
+            if (startTimeInput) {
+                const startDate = new Date(startTimeInput);
+                const endTimeInput = document.getElementById('end_time');
+                const endTimeValue = endTimeInput.value;
+                
+                if (endTimeValue) {
+                    const endDate = new Date(endTimeValue);
+                    endDate.setFullYear(startDate.getFullYear(), startDate.getMonth(), startDate.getDate());
+                    endTimeInput.value = formatDateTimeLocal(endDate);
+                } else {
+                    const defaultEndTime = new Date(startDate.getTime() + 2 * 60 * 60 * 1000);
+                    endTimeInput.value = formatDateTimeLocal(defaultEndTime);
+                }
+            }
+        });
+
+        // Form submission
+        eventForm.addEventListener('submit', async (e) => {
+            e.preventDefault();
+            
+            if (!validateForm()) {
+                return;
+            }
+
+            const eventId = document.getElementById('eventId').value;
+            const formData = getFormData();
+            
+            saveBtn.classList.add('loading');
+            saveBtn.textContent = 'Saving...';
+
+            try {
+                const response = await saveEvent(eventId, formData);
+                
+                if (response.success) {
+                    alert('Event saved successfully!');
+                    formModal.style.display = 'none';
+                    loadEvents();
+                } else {
+                    throw new Error(response.message || 'Failed to save event');
+                }
+            } catch (error) {
+                console.error('Save error:', error);
+                alert(`Error: ${error.message}`);
+            } finally {
+                saveBtn.classList.remove('loading');
+                saveBtn.textContent = 'Save Event';
+            }
+        });
+    }
+
+    async function loadEvents() {
+        try {
+            eventsGrid.innerHTML = '<div class="loading">Loading events and booking data...</div>';
+            
+            // Load events
+            const eventsResponse = await fetch(`${API_BASE_URL}/admin/events`, {
+                headers: {
+                    'Accept': 'application/json',
+                    'Authorization': `Bearer ${localStorage.getItem('token')}`
+                }
+            });
+
+            // Parse events response
+            const eventsResult = await eventsResponse.json();
+            let events = [];
+            
+            if (eventsResult.success && eventsResult.data) {
+                events = eventsResult.data;
+            } else if (eventsResult.items) {
+                events = eventsResult.items;
+            } else if (Array.isArray(eventsResult)) {
+                events = eventsResult;
+            }
+            
+            console.log('Loaded events:', events.length);
+            
+            // Process events - checking both companyBookings field and separate bookings API
+            currentEvents = events.map(event => {
+                const eventId = event.eventId || event._id || event.id;
+                
+                // Check if event has companyBookings field (direct from events API)
+                const hasCompanyBookings = event.companyBookings && event.companyBookings.length > 0;
+                
+                // Get max passengers with backward compatibility
+                const maxPassengers = event.maxPassengers || event.maxPilots || 10;
+                
+                // Calculate total passengers booked from companyBookings
+                let totalPassengersBooked = 0;
+                if (hasCompanyBookings) {
+                    totalPassengersBooked = event.companyBookings.reduce((sum, booking) => {
+                        return sum + (booking.passengersCount || 0);
+                    }, 0);
+                }
+                
+                // Determine event status
+                const now = new Date();
+                const eventTime = new Date(event.time || event.start_time);
+                let status = 'upcoming';
+                
+                if (eventTime < now) {
+                    status = 'past';
+                }
+                
+                return {
+                    ...event,
+                    eventId: eventId,
+                    hasBookings: hasCompanyBookings, // Use the companyBookings field
+                    totalBookings: hasCompanyBookings ? event.companyBookings.length : 0,
+                    totalPassengersBooked: totalPassengersBooked,
+                    maxPassengers: maxPassengers,
+                    status: status,
+                    //remainingCapacity: Math.max(0, maxPassengers - totalPassengersBooked),
+                    companyBookings: event.companyBookings || [] // Keep the companyBookings data
+                };
+            });
+            
+            // Also try to load separate bookings data if needed
+            try {
+                const bookingsResponse = await fetch(`${API_BASE_URL}/admin/bookings`, {
+                    headers: {
+                        'Accept': 'application/json',
+                        'Authorization': `Bearer ${localStorage.getItem('token')}`
+                    }
+                });
+                
+                if (bookingsResponse.ok) {
+                    const bookingsResult = await bookingsResponse.json();
+                    let allBookings = [];
+                    
+                    if (bookingsResult.success && bookingsResult.data) {
+                        allBookings = bookingsResult.data;
+                    } else if (Array.isArray(bookingsResult)) {
+                        allBookings = bookingsResult;
+                    }
+                    
+                    console.log('Loaded separate bookings:', allBookings.length);
+                    
+                    // If we have separate bookings data, update the events
+                    if (allBookings.length > 0) {
+                        // Create a map of bookings by event ID
+                        const bookingsByEvent = {};
+                        allBookings.forEach(booking => {
+                            const eventId = booking.eventId;
+                            if (eventId) {
+                                if (!bookingsByEvent[eventId]) {
+                                    bookingsByEvent[eventId] = [];
+                                }
+                                bookingsByEvent[eventId].push(booking);
+                            }
+                        });
+                        
+                        // Update events with separate bookings data
+                        currentEvents = currentEvents.map(event => {
+                            const separateBookings = bookingsByEvent[event.eventId] || [];
+                            
+                            // If we have separate bookings, use them to supplement or override
+                            if (separateBookings.length > 0) {
+                                const totalSeparateBookings = separateBookings.length;
+                                const totalSeparatePassengers = separateBookings.reduce((sum, booking) => {
+                                    return sum + (booking.passengersCount || 0);
+                                }, 0);
+                                
+                                return {
+                                    ...event,
+                                    hasBookings: event.hasBookings || totalSeparateBookings > 0,
+                                    totalBookings: event.totalBookings + totalSeparateBookings,
+                                    totalPassengersBooked: event.totalPassengersBooked + totalSeparatePassengers,
+                                    //remainingCapacity: Math.max(0, event.maxPassengers - (event.totalPassengersBooked + totalSeparatePassengers)),
+                                    // Combine both booking sources
+                                    allBookings: [...(event.companyBookings || []), ...separateBookings]
+                                };
+                            }
+                            
+                            return event;
+                        });
+                    }
+                }
+            } catch (bookingError) {
+                console.log('Could not load separate bookings, using companyBookings field only:', bookingError.message);
+            }
+            
+            console.log('Processed events with booking status:', currentEvents);
+            displayEvents(currentEvents);
+            
+        } catch (error) {
+            console.error('Error loading events:', error);
+            eventsGrid.innerHTML = `<div class="no-events">Error loading events: ${error.message}</div>`;
+        }
+    }
+
+    function displayEvents(events) {
+        if (events.length === 0) {
+            eventsGrid.innerHTML = '<div class="no-events">No events found. Create your first event!</div>';
             return;
         }
-
-        const eventId = document.getElementById('eventId').value;
-        const formData = getFormData();
         
-        // Show loading state
-        saveBtn.classList.add('loading');
-        saveBtn.textContent = 'Saving...';
-
-        try {
-            const response = await saveEvent(eventId, formData);
+        eventsGrid.innerHTML = events.map(event => {
+            const eventTime = new Date(event.time || event.start_time);
+            const now = new Date();
+            const isPast = eventTime < now;
+            const isUpcoming = eventTime > now;
             
-            if (response.success) {
-                alert('Event saved successfully!');
-                formModal.style.display = 'none';
-                loadEvents(); // Refresh the event list
-            } else {
-                throw new Error(response.message || 'Failed to save event');
+            // Format date and time
+            const formattedDate = eventTime.toLocaleDateString('en-US', {
+                weekday: 'short',
+                year: 'numeric',
+                month: 'short',
+                day: 'numeric'
+            });
+            
+            const formattedTime = eventTime.toLocaleTimeString('en-US', {
+                hour: '2-digit',
+                minute: '2-digit'
+            });
+            
+            // Determine booking status
+            let bookingStatusClass = 'status-available';
+            let bookingStatusText = 'No Bookings';
+            
+            if (event.hasBookings) {
+                bookingStatusClass = 'status-booked';
+                bookingStatusText = `${event.totalBookings} Booking${event.totalBookings > 1 ? 's' : ''}`;
             }
-        } catch (error) {
-            console.error('Save error:', error);
-            alert(`Error: ${error.message}`);
-        } finally {
-            // Reset button state
-            saveBtn.classList.remove('loading');
-            saveBtn.textContent = 'Save Event';
+            
+            // Determine time status
+            let timeStatusClass = 'status-upcoming';
+            let timeStatusText = 'Upcoming';
+            
+            if (isPast) {
+                timeStatusClass = 'status-past';
+                timeStatusText = 'Past';
+            }
+            
+            return `
+                <div class="admin-event-card" data-event-id="${event.eventId}">
+                    <div class="admin-event-card-header">
+                        <h3>${event.header || 'Untitled Event'}</h3>
+                        <div class="header-status">
+                            <span class="event-status ${timeStatusClass}">
+                                ${timeStatusText}
+                            </span>
+                            <span class="event-status ${bookingStatusClass}">
+                                ${bookingStatusText}
+                            </span>
+                        </div>
+                    </div>
+                    <div class="admin-event-card-body">
+                        <div class="event-meta">
+                            <div class="meta-item">
+                                <i>📅</i>
+                                <span>${formattedDate}</span>
+                            </div>
+                            <div class="meta-item">
+                                <i>🕐</i>
+                                <span>${formattedTime}</span>
+                            </div>
+                            <div class="meta-item">
+                                <i>📍</i>
+                                <span>${event.location || 'Location not specified'}</span>
+                            </div>
+                            <div class="meta-item">
+                                <i>🚇</i>
+                                <span>${event.nearestMRT || 'MRT not specified'}</span>
+                            </div>
+                        </div>
+                        
+                        <div class="event-stats">
+                            <div class="stat-item">
+                                <span class="stat-label">Max Capacity</span>
+                                <span class="stat-value">${event.maxPassengers} passengers</span>
+                            </div>
+                            <div class="stat-item">
+                                <span class="stat-label">Booked</span>
+                                <span class="stat-value">${event.totalPassengersBooked} passengers</span>
+                            </div>
+                            <div class="stat-item">
+                            </div>
+                            <div class="stat-item">
+                            </div>
+                        </div>
+                        
+                        <div class="event-description">
+                            ${event.intro || 'No description available.'}
+                        </div>
+                        
+                        <div class="booking-info ${event.hasBookings ? 'has-bookings' : 'no-bookings'}">
+                            <small>
+                                ${event.hasBookings 
+                                    ? `✓ ${event.totalBookings} company booking${event.totalBookings > 1 ? 's' : ''} for ${event.totalPassengersBooked} passengers` 
+                                    : 'No bookings yet'
+                                }
+                            </small>
+                        </div>
+                        
+                        <div class="admin-actions">
+                            <button class="btn-edit" onclick="editEvent('${event.eventId}')">Edit</button>
+                            <button class="btn-delete" onclick="deleteEvent('${event.eventId}')">Delete</button>
+                        </div>
+                        
+                        ${event.hasBookings ? `
+                            
+                        ` : ''}
+                    </div>
+                </div>
+            `;
+        }).join('');
+    }
+
+    function filterEvents() {
+        let filteredEvents = [...currentEvents];
+        
+        if (currentFilters.date) {
+            const filterDate = new Date(currentFilters.date);
+            filteredEvents = filteredEvents.filter(event => {
+                const eventDate = new Date(event.time || event.start_time);
+                return eventDate.toDateString() === filterDate.toDateString();
+            });
         }
-    });
+        
+        if (currentFilters.location) {
+            filteredEvents = filteredEvents.filter(event => 
+                event.location === currentFilters.location
+            );
+        }
+        
+        if (currentFilters.status) {
+            switch(currentFilters.status) {
+                case 'upcoming':
+                    filteredEvents = filteredEvents.filter(event => event.status === 'upcoming');
+                    break;
+                case 'past':
+                    filteredEvents = filteredEvents.filter(event => event.status === 'past');
+                    break;
+                case 'booked':
+                    // Filter by companyBookings field specifically
+                    filteredEvents = filteredEvents.filter(event => 
+                        (event.companyBookings && event.companyBookings.length > 0) || event.hasBookings
+                    );
+                    break;
+                case 'available':
+                    filteredEvents = filteredEvents.filter(event => 
+                        (!event.companyBookings || event.companyBookings.length === 0) && !event.hasBookings
+                    );
+                    break;
+            }
+        }
+        
+        displayEvents(filteredEvents);
+    }
+
+    function clearFilters() {
+        dateFilter.value = '';
+        locationFilter.value = '';
+        statusFilter.value = '';
+        currentFilters = { date: '', location: '', status: '' };
+        displayEvents(currentEvents);
+    }
 
     function resetForm() {
         eventForm.reset();
@@ -131,10 +469,9 @@ document.addEventListener('DOMContentLoaded', function() {
         document.getElementById('maxPassengers').value = '10';
         document.getElementById('nearestMRT').value = '';
         
-        // Set default times (next hour for start, 2 hours later for end)
         const now = new Date();
-        const startTime = new Date(now.getTime() + 60 * 60 * 1000); // 1 hour from now
-        const endTime = new Date(startTime.getTime() + 2 * 60 * 60 * 1000); // 2 hours after start
+        const startTime = new Date(now.getTime() + 60 * 60 * 1000);
+        const endTime = new Date(startTime.getTime() + 2 * 60 * 60 * 1000);
         
         document.getElementById('start_time').value = formatDateTimeLocal(startTime);
         document.getElementById('end_time').value = formatDateTimeLocal(endTime);
@@ -154,7 +491,6 @@ document.addEventListener('DOMContentLoaded', function() {
         const startTime = new Date(document.getElementById('start_time').value);
         const endTime = new Date(document.getElementById('end_time').value);
         
-        // Create the event data object matching your database schema
         return {
             header: document.getElementById('header').value,
             intro: document.getElementById('intro').value,
@@ -165,7 +501,7 @@ document.addEventListener('DOMContentLoaded', function() {
             maxPassengers: parseInt(document.getElementById('maxPassengers').value),
             start_time: startTime.toISOString(),
             end_time: endTime.toISOString(),
-            time: startTime.toISOString(), // Duplicate of start_time for backward compatibility
+            time: startTime.toISOString(),
             geolocation: {
                 type: 'Point',
                 coordinates: [
@@ -192,7 +528,6 @@ document.addEventListener('DOMContentLoaded', function() {
             }
         }
         
-        // Validate start time is before end time
         const startTime = new Date(document.getElementById('start_time').value);
         const endTime = new Date(document.getElementById('end_time').value);
         
@@ -201,7 +536,6 @@ document.addEventListener('DOMContentLoaded', function() {
             return false;
         }
         
-        // Validate maxPassengers
         const maxPassengers = parseInt(document.getElementById('maxPassengers').value);
         if (maxPassengers < 1 || maxPassengers > 300) {
             alert('Maximum number of passengers must be between 1 and 300.');
@@ -209,63 +543,6 @@ document.addEventListener('DOMContentLoaded', function() {
         }
         
         return true;
-    }
-
-    async function loadEvents() {
-        try {
-            eventTableBody.innerHTML = '<tr><td colspan="7" style="text-align: center; padding: 30px;">Loading events...</td></tr>';
-            
-            const response = await fetch(`${API_BASE_URL}/admin/events`, {
-                headers: {
-                    'Accept': 'application/json',
-                    'Authorization': `Bearer ${localStorage.getItem('token')}`
-                }
-            });
-            
-            const result = await response.json();
-            
-            // Handle different API response structures
-            let events = [];
-            if (result.success && result.data) {
-                events = result.data;
-            } else if (result.items) {
-                events = result.items;
-            } else if (Array.isArray(result)) {
-                events = result;
-            }
-            
-            if (events.length === 0) {
-                eventTableBody.innerHTML = '<tr><td colspan="7" style="text-align: center; padding: 30px;">No events found. Create your first event!</td></tr>';
-                return;
-            }
-            
-            displayEvents(events);
-        } catch (error) {
-            console.error('Error loading events:', error);
-            eventTableBody.innerHTML = `<tr><td colspan="7" style="text-align: center; padding: 30px; color: #dc3545;">Error loading events: ${error.message}</td></tr>`;
-        }
-    }
-
-    function displayEvents(events) {
-        eventTableBody.innerHTML = events.map(event => {
-            const startTime = event.time || event.start_time;
-            const date = startTime ? new Date(startTime) : new Date();
-            
-            return `
-                <tr>
-                    <td>${event.eventId || event._id || 'N/A'}</td>
-                    <td><strong>${event.header}</strong></td>
-                    <td>${event.location}</td>
-                    <td>${event.nearestMRT || 'N/A'}</td>
-                    <td>${event.maxPassengers || event.maxPilots || 0}</td>
-                    <td>${date.toLocaleDateString()} ${date.toLocaleTimeString([], {hour: '2-digit', minute:'2-digit'})}</td>
-                    <td>
-                        <button class="btn-edit" onclick="editEvent('${event.eventId || event._id}')">Edit</button>
-                        <button class="btn-delete" onclick="deleteEvent('${event.eventId || event._id}')">Delete</button>
-                    </td>
-                </tr>
-            `;
-        }).join('');
     }
 
     async function saveEvent(eventId, eventData) {
@@ -289,13 +566,11 @@ document.addEventListener('DOMContentLoaded', function() {
                 body: JSON.stringify(eventData)
             });
             
-            // First check if response is empty
             const text = await response.text();
             if (!text) {
                 throw new Error('Server returned empty response');
             }
             
-            // Then try to parse as JSON
             return JSON.parse(text);
         } catch (error) {
             console.error('Save error:', error);
@@ -303,7 +578,7 @@ document.addEventListener('DOMContentLoaded', function() {
         }
     }
 
-    // Global functions for edit and delete
+    // Global functions
     window.editEvent = async function(eventId) {
         try {
             const response = await fetch(`${API_BASE_URL}/admin/events/${eventId}`, {
@@ -320,7 +595,6 @@ document.addEventListener('DOMContentLoaded', function() {
             const result = await response.json();
             const event = result.data || result;
             
-            // Populate form with event data
             document.getElementById('eventId').value = eventId;
             document.getElementById('header').value = event.header;
             document.getElementById('location').value = event.location;
@@ -330,12 +604,10 @@ document.addEventListener('DOMContentLoaded', function() {
             document.getElementById('intro').value = event.intro;
             document.getElementById('longIntro').value = event.longIntro;
             
-            // Set coordinates
             if (event.geolocation && event.geolocation.coordinates) {
                 document.getElementById('longitude').value = event.geolocation.coordinates[0];
                 document.getElementById('latitude').value = event.geolocation.coordinates[1];
             } else {
-                // Fallback to location mapping
                 const locationInfo = locationData[event.location];
                 if (locationInfo) {
                     document.getElementById('latitude').value = locationInfo.latitude;
@@ -343,7 +615,6 @@ document.addEventListener('DOMContentLoaded', function() {
                 }
             }
             
-            // Format dates for datetime-local input
             const startTime = new Date(event.start_time || event.time);
             const endTime = new Date(event.end_time);
             
@@ -382,5 +653,11 @@ document.addEventListener('DOMContentLoaded', function() {
             console.error('Delete error:', error);
             alert(`Error deleting event: ${error.message}`);
         }
+    };
+
+    window.viewBookings = function(eventId) {
+        alert(`View bookings for event: ${eventId}\n\nThis would open a detailed booking view in a future update.`);
+        // In a real implementation, this would navigate to a bookings page or open a modal
+        // window.location.href = `adminBookings.html?eventId=${eventId}`;
     };
 });
