@@ -1,178 +1,150 @@
-const { db } = require('../firebaseAdmin');
+const admin = require("firebase-admin");
+const { db } = require("../firebaseAdmin");
 
+/**
+ * Signup individual volunteer for an event
+ */
 async function signupForEvent(userId, eventId) {
-    // 1️⃣ CHECK: Already booked this exact event?
-    const existingSnap = await db.collection('bookedEvents')
-        .where('userId', '==', String(userId))
-        .where('eventId', '==', String(eventId))
-        .limit(1)
-        .get();
+  const eventRef = db.collection("events").doc(String(eventId));
+  const eventSnap = await eventRef.get();
 
-    if (!existingSnap.empty) {
-        throw new Error("You have already booked this event.");
+  if (!eventSnap.exists) {
+    throw new Error("Event not found");
+  }
+
+  // 1️⃣ Get approved company booking (SOURCE OF TRUTH)
+  const companySnap = await db
+    .collection("companyBookings")
+    .where("eventId", "==", String(eventId))
+    .where("status", "==", "approved")
+    .limit(1)
+    .get();
+
+  if (companySnap.empty) {
+    throw new Error("This event is not open for individual volunteers");
+  }
+
+  const companyBooking = companySnap.docs[0].data();
+  const passengersCount = Number(companyBooking.passengersCount || 0);
+
+  // 2️⃣ Prevent duplicate signup
+  const signupSnap = await db
+    .collection("bookedEvents")
+    .where("userId", "==", String(userId))
+    .where("eventId", "==", String(eventId))
+    .limit(1)
+    .get();
+
+  if (!signupSnap.empty) {
+    throw new Error("You have already signed up for this event");
+  }
+
+  // 3️⃣ Transaction
+  await db.runTransaction(async (tx) => {
+    const freshSnap = await tx.get(eventRef);
+    const freshCount = Number(freshSnap.data().volunteersCount || 0);
+
+    if (freshCount >= passengersCount) {
+      throw new Error("Volunteer slots just filled up");
     }
 
-    // 2️⃣ GET event details
-    const eventDoc = await db.collection('events').doc(String(eventId)).get();
-
-    if (!eventDoc.exists) {
-        throw new Error("Event not found.");
-    }
-
-    const eventData = eventDoc.data();
-    const maxPilots = Number(eventData.maxPilots || 0);
-
-// Get approved company booking for this event
-    const companySnap = await db
-        .collection("companyBookings")
-        .where("eventId", "==", String(eventId))
-        .where("status", "==", "approved")
-        .limit(1)
-        .get();
-
-    let pilotsCount = 0;
-
-    if (!companySnap.empty) {
-        pilotsCount = Number(companySnap.docs[0].data().pilotsCount || 0);
-    }
-
-    const remainingSlots = maxPilots - pilotsCount;
-
-    if (remainingSlots <= 0) {
-        throw new Error("This event is fully booked. No volunteer slots remaining.");
-    }
-    let eventTime = eventData.time || eventData.start_time;
-    
-    // Convert Firestore Timestamp to Date
-    if (eventTime && eventTime.toDate) {
-        eventTime = eventTime.toDate();
-    } else if (typeof eventTime === 'string') {
-        eventTime = new Date(eventTime);
-    }
-
-    // 3️⃣ CHECK: Already booked another event on same date
-    if (eventTime) {
-        const eventDate = new Date(eventTime);
-        const startOfDay = new Date(eventDate);
-        startOfDay.setHours(0, 0, 0, 0);
-        const endOfDay = new Date(eventDate);
-        endOfDay.setHours(23, 59, 59, 999);
-
-        const dateCheckSnap = await db.collection('bookedEvents')
-            .where('userId', '==', String(userId))
-            .get();
-
-        for (const doc of dateCheckSnap.docs) {
-            const booking = doc.data();
-            const bookedEventDoc = await db.collection('events').doc(String(booking.eventId)).get();
-            
-            if (bookedEventDoc.exists) {
-                const bookedEventData = bookedEventDoc.data();
-                let bookedEventTime = bookedEventData.time || bookedEventData.start_time;
-                
-                // Convert Firestore Timestamp to Date
-                if (bookedEventTime && bookedEventTime.toDate) {
-                    bookedEventTime = bookedEventTime.toDate();
-                } else {
-                    bookedEventTime = new Date(bookedEventTime);
-                }
-                
-                if (bookedEventTime >= startOfDay && bookedEventTime <= endOfDay) {
-                    throw new Error("You already have an event booked on this date.");
-                }
-            }
-        }
-    }
-
-    // 4️⃣ INSERT into bookedEvents collection
-    await db.collection('bookedEvents').add({
-        userId: String(userId),
-        eventId: String(eventId),
-        bookingDate: new Date().toISOString(),
-        status: 'confirmed'
+    tx.update(eventRef, {
+      volunteersCount: freshCount + 1
     });
 
-    return true;
+    tx.set(db.collection("bookedEvents").doc(), {
+      userId: String(userId),
+      eventId: String(eventId),
+      createdAt: admin.firestore.FieldValue.serverTimestamp()
+    });
+  });
 }
-
+/**
+ * Get events user has signed up for
+ */
 async function getUserBookings(userId) {
-    const bookingsSnap = await db.collection('bookedEvents')
-        .where('userId', '==', String(userId))
-        .get();
+  const bookingsSnap = await db
+    .collection("bookedEvents")
+    .where("userId", "==", String(userId))
+    .get();
 
-    if (bookingsSnap.empty) {
-        return [];
+  if (bookingsSnap.empty) return [];
+
+  const results = [];
+
+  for (const doc of bookingsSnap.docs) {
+    const booking = doc.data();
+    const eventSnap = await db
+      .collection("events")
+      .doc(String(booking.eventId))
+      .get();
+
+    if (eventSnap.exists) {
+      results.push({
+        eventId: eventSnap.id,
+        signupDate: booking.createdAt,
+        ...eventSnap.data()
+      });
     }
+  }
 
-    const bookings = [];
-    for (const doc of bookingsSnap.docs) {
-        const booking = doc.data();
-        const eventDoc = await db.collection('events').doc(String(booking.eventId)).get();
-        
-        if (eventDoc.exists) {
-            bookings.push({
-                signupDate: booking.bookingDate,
-                ...eventDoc.data(),
-                eventId: eventDoc.id
-            });
-        }
-    }
-
-    // Sort by signup date descending
-    bookings.sort((a, b) => new Date(b.signupDate) - new Date(a.signupDate));
-
-    return bookings;
+  return results.sort(
+    (a, b) => b.signupDate?.toMillis() - a.signupDate?.toMillis()
+  );
 }
 
+/**
+ * Get eligible events for individual volunteers
+ */
 async function getEligibleEvents(userId) {
-    const eventsSnap = await db.collection('events').get();
+  const eventsSnap = await db.collection("events").get();
 
-    const bookingsSnap = await db
-        .collection('bookedEvents')
-        .where('userId', '==', String(userId))
-        .get();
+  const bookingsSnap = await db
+    .collection("bookedEvents")
+    .where("userId", "==", String(userId))
+    .get();
 
-    const bookedEventIds = new Set(
-        bookingsSnap.docs.map(doc => doc.data().eventId)
+  const bookedEventIds = new Set(
+    bookingsSnap.docs.map(doc => doc.data().eventId)
+  );
+
+  const eligibleEvents = [];
+
+  for (const doc of eventsSnap.docs) {
+    if (bookedEventIds.has(doc.id)) continue;
+
+    const event = doc.data();
+    const volunteersCount = Number(event.volunteersCount || 0);
+
+    // 🔍 get approved company booking
+    const companySnap = await db
+      .collection("companyBookings")
+      .where("eventId", "==", doc.id)
+      .where("status", "==", "approved")
+      .limit(1)
+      .get();
+
+    if (companySnap.empty) continue;
+
+    const passengersCount = Number(
+      companySnap.docs[0].data().passengersCount || 0
     );
 
-    const eligibleEvents = [];
+    if (volunteersCount >= passengersCount) continue;
 
-    for (const doc of eventsSnap.docs) {
-        if (bookedEventIds.has(doc.id)) continue;
+    eligibleEvents.push({
+      eventId: doc.id,
+      remainingSlots: passengersCount - volunteersCount,
+      ...event
+    });
+  }
 
-        const eventData = doc.data();
-        const maxPilots = Number(eventData.maxPilots || 0);
-
-        // get approved company booking
-        const companySnap = await db
-            .collection("companyBookings")
-            .where("eventId", "==", doc.id)
-            .where("status", "==", "approved")
-            .limit(1)
-            .get();
-
-        let pilotsCount = 0;
-
-        if (!companySnap.empty) {
-            pilotsCount = Number(companySnap.docs[0].data().pilotsCount || 0);
-        }
-
-        const remainingSlots = maxPilots - pilotsCount;
-
-        eligibleEvents.push({
-            eventId: doc.id,
-            ...eventData,
-            remainingSlots
-        });
-    }
-
-    return eligibleEvents;
+  return eligibleEvents;
 }
 
 
 module.exports = {
-    signupForEvent,
-    getUserBookings,
-    getEligibleEvents
+  signupForEvent,
+  getUserBookings,
+  getEligibleEvents
 };
