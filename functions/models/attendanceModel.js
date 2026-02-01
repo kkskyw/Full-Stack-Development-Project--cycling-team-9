@@ -24,19 +24,41 @@ async function getEventDetails(eventId) {
     }
     
     const data = eventDoc.data();
+    console.log("Raw event data for attendance:", JSON.stringify(data));
     
-    // Extract latitude and longitude from geolocation GeoPoint or separate fields
+    // Extract latitude and longitude from various possible formats
     let latitude, longitude;
     
-    if (data.geolocation && data.geolocation._latitude !== undefined) {
-      // Firestore GeoPoint format
-      latitude = data.geolocation._latitude;
-      longitude = data.geolocation._longitude;
-    } else if (data.latitude !== undefined && data.longitude !== undefined) {
-      // Separate fields format
-      latitude = data.latitude;
-      longitude = data.longitude;
+    if (data.geolocation) {
+      // Check for GeoJSON format: { type: 'Point', coordinates: [lon, lat] }
+      if (data.geolocation.type === 'Point' && Array.isArray(data.geolocation.coordinates)) {
+        // GeoJSON uses [longitude, latitude] order
+        longitude = data.geolocation.coordinates[0];
+        latitude = data.geolocation.coordinates[1];
+      }
+      // Firestore GeoPoint - check both property access methods
+      else if (typeof data.geolocation.latitude === 'number') {
+        latitude = data.geolocation.latitude;
+        longitude = data.geolocation.longitude;
+      } else if (typeof data.geolocation._latitude === 'number') {
+        latitude = data.geolocation._latitude;
+        longitude = data.geolocation._longitude;
+      }
     }
+    
+    // Fallback to separate lat/lon fields
+    if (latitude === undefined && data.latitude !== undefined) {
+      latitude = parseFloat(data.latitude);
+      longitude = parseFloat(data.longitude);
+    }
+    
+    // Also check for 'lat' and 'lon' field names
+    if (latitude === undefined && data.lat !== undefined) {
+      latitude = parseFloat(data.lat);
+      longitude = parseFloat(data.lon);
+    }
+    
+    console.log(`Extracted coordinates: lat=${latitude}, lon=${longitude}, radius=${data.radius_m || 100}`);
     
     return {
       eventId: eventDoc.id,

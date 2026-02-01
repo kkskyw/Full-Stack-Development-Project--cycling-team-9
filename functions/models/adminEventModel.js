@@ -65,6 +65,107 @@ const getAllEvents = async () => {
     }
 };
 
+// Get paginated events
+const getEventsPaginated = async ({ skip = 0, limit = 10, date, location, status }) => {
+    try {
+        console.log('Getting paginated events:', { skip, limit, date, location, status });
+        
+        let query = db.collection('events');
+        
+        // Apply filters
+        if (date) {
+            const filterDate = new Date(date);
+            const nextDate = new Date(filterDate);
+            nextDate.setDate(filterDate.getDate() + 1);
+            
+            query = query.where('start_time', '>=', filterDate)
+                        .where('start_time', '<', nextDate);
+        }
+        
+        if (location) {
+            query = query.where('location', '==', location);
+        }
+        
+        // Apply status filter (upcoming/past)
+        if (status === 'upcoming' || status === 'past') {
+            const now = new Date();
+            if (status === 'upcoming') {
+                query = query.where('start_time', '>', now);
+            } else if (status === 'past') {
+                query = query.where('start_time', '<', now);
+            }
+        }
+        
+        // Get paginated results
+        const snapshot = await query
+            .orderBy('start_time', 'desc')
+            .offset(skip)
+            .limit(limit)
+            .get();
+        
+        const events = [];
+        snapshot.forEach(doc => {
+            const data = doc.data();
+            
+            // Convert Firestore Timestamps to ISO strings
+            const dateFields = ['time', 'start_time', 'end_time', 'createdAt', 'updatedAt'];
+            dateFields.forEach(field => {
+                if (data[field] && data[field].toDate) {
+                    data[field] = data[field].toDate().toISOString();
+                }
+            });
+            
+            events.push({
+                eventId: doc.id,
+                ...data
+            });
+        });
+        
+        console.log('Retrieved', events.length, 'paginated events');
+        
+        return events;
+    } catch (error) {
+        console.error('Error in adminEventModel.getEventsPaginated:', error);
+        throw error;
+    }
+};
+
+// Get total count of events with filters
+const getEventsCount = async ({ date, location, status }) => {
+    try {
+        let query = db.collection('events');
+        
+        // Apply same filters as getEventsPaginated
+        if (date) {
+            const filterDate = new Date(date);
+            const nextDate = new Date(filterDate);
+            nextDate.setDate(filterDate.getDate() + 1);
+            
+            query = query.where('start_time', '>=', filterDate)
+                        .where('start_time', '<', nextDate);
+        }
+        
+        if (location) {
+            query = query.where('location', '==', location);
+        }
+        
+        if (status === 'upcoming' || status === 'past') {
+            const now = new Date();
+            if (status === 'upcoming') {
+                query = query.where('start_time', '>', now);
+            } else if (status === 'past') {
+                query = query.where('start_time', '<', now);
+            }
+        }
+        
+        const snapshot = await query.get();
+        return snapshot.size;
+    } catch (error) {
+        console.error('Error in adminEventModel.getEventsCount:', error);
+        throw error;
+    }
+};
+
 // Get event by ID
 const getEventById = async (eventId) => {
     try {
@@ -177,7 +278,9 @@ const deleteEvent = async (eventId) => {
 
 module.exports = {
     createEvent,
-    getAllEvents,
+    getAllEvents: getEventsPaginated,
+    getEventsPaginated,
+    getEventsCount,
     getEventById,
     updateEvent,
     deleteEvent

@@ -36,13 +36,26 @@ async function checkIn(req, res) {
     }
 
     const eventDetails = await attendanceModel.getEventDetails(eventId);
+    console.log("Event details for check-in:", JSON.stringify(eventDetails));
+    
     if (!eventDetails) return res.status(404).json({ error: "Event not found" });
 
-    const distance = calculateDistance(lat, lon, eventDetails.latitude, eventDetails.longitude);
-    if (distance > eventDetails.radius_m) {
-      return res.status(400).json({ 
-        error: `You must be within ${eventDetails.radius_m}m of the event location to check in. Current distance: ${Math.round(distance)}m` 
-      });
+    // Check if event has valid coordinates
+    if (eventDetails.latitude === undefined || eventDetails.longitude === undefined ||
+        eventDetails.latitude === null || eventDetails.longitude === null) {
+      console.log("Event missing coordinates, allowing check-in without distance check");
+      // If event has no coordinates, we can't verify distance - allow check-in but log it
+    } else {
+      const distance = calculateDistance(lat, lon, eventDetails.latitude, eventDetails.longitude);
+      const radius = eventDetails.radius_m || 100; // Default 100 meters
+      
+      console.log(`Distance check: User (${lat}, ${lon}) to Event (${eventDetails.latitude}, ${eventDetails.longitude}) = ${Math.round(distance)}m, Radius: ${radius}m`);
+      
+      if (distance > radius) {
+        return res.status(400).json({ 
+          error: `You must be within ${radius}m of the event location to check in. Current distance: ${Math.round(distance)}m` 
+        });
+      }
     }
 
     let attendance = await attendanceModel.getAttendance(userId, eventId);

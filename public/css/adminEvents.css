@@ -1,73 +1,289 @@
-/* adminEvents.css */
+/* adminEvents.css - UPDATED */
 
 .admin-controls {
     display: flex;
     justify-content: space-between;
     align-items: center;
-    margin-bottom: 20px;
+    margin-bottom: 40px;
 }
 
-.list-card {
+.admin-events-container {
+    max-width: 1400px;
+    margin: 0 auto;
     padding: 20px;
-    background: white;
 }
 
-.table-responsive {
-    overflow-x: auto;
+/* Filters Section */
+.filters-section {
+    background-color: #f9f9f9;
+    padding: 25px;
+    border-radius: 10px;
+    margin-bottom: 40px;
+    display: flex;
+    gap: 20px;
+    align-items: flex-end;
+    flex-wrap: wrap;
 }
 
-.admin-table {
-    width: 100%;
-    border-collapse: collapse;
-    margin-top: 10px;
+.filter-group {
+    flex: 1;
+    min-width: 200px;
 }
 
-.admin-table th, .admin-table td {
-    text-align: left;
-    padding: 15px;
-    border-bottom: 1px solid #eee;
-}
-
-.admin-table th {
-    color: #6bc4b1;
+.filter-group label {
+    display: block;
     font-weight: bold;
-    text-transform: uppercase;
+    margin-bottom: 8px;
+    color: #333;
     font-size: 14px;
 }
 
-/* Action Buttons */
-.btn-edit {
-    background: #ffc107;
-    color: #000;
+.filter-input,
+.filter-select {
+    width: 100%;
+    padding: 12px;
+    border: 2px solid #ddd;
+    border-radius: 6px;
+    font-size: 16px;
+    background-color: white;
+}
+
+.filter-input:focus,
+.filter-select:focus {
+    border-color: #6bc4b1;
+    outline: none;
+}
+
+.clear-filters-btn {
+    padding: 12px 25px;
+    background-color: #d4d4d4;
     border: none;
-    padding: 6px 12px;
-    border-radius: 4px;
+    border-radius: 6px;
+    font-size: 16px;
+    font-weight: bold;
     cursor: pointer;
-    margin-right: 5px;
+    transition: all 0.3s;
+    height: fit-content;
+}
+
+.clear-filters-btn:hover {
+    background-color: #bbb;
+}
+
+/* Admin Events Grid - Similar to companyEvents but with admin actions */
+.events-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fill, minmax(400px, 1fr));
+    gap: 30px;
+    margin-bottom: 50px;
+}
+
+.admin-event-card {
+    background: white;
+    border: 1px solid #eaeaea;
+    border-radius: 10px;
+    overflow: hidden;
+    box-shadow: 0 3px 10px rgba(0, 0, 0, 0.08);
+    transition: all 0.3s ease;
+    display: flex;
+    flex-direction: column;
+    position: relative;
+}
+
+.admin-event-card:hover {
+    transform: translateY(-5px);
+    box-shadow: 0 8px 25px rgba(0, 0, 0, 0.12);
+    border-color: #6bc4b1;
+}
+
+.admin-event-card-header {
+    background: linear-gradient(135deg, #6bc4b1, #5ab3a0);
+    color: white;
+    padding: 20px;
+    display: flex;
+    flex-direction: column;
+    gap: 8px;
+}
+
+.admin-event-card-header h3 {
+    margin: 0;
+    font-size: 20px;
+    font-weight: 600;
+    line-height: 1.3;
+}
+
+.header-status {
+    display: flex;
+    gap: 8px;
+    flex-wrap: wrap;
+    margin-top: 5px;
+}
+
+.event-status {
+    display: inline-block;
+    padding: 4px 10px;
+    border-radius: 20px;
+    font-size: 12px;
+    font-weight: 600;
+}
+
+.status-upcoming {
+    background-color: #fff3cd;
+    color: #856404;
+}
+
+.status-past {
+    background-color: #e2e3e5;
+    color: #383d41;
+}
+
+.status-booked {
+    background-color: #d4edda;
+    color: #155724;
+}
+
+.status-available {
+    background-color: #d1ecf1;
+    color: #0c5460;
+}
+
+.status-pending {
+    background-color: #fff3cd;
+    color: #856404;
+}
+
+.status-cancelled {
+    background-color: #f8d7da;
+    color: #721c24;
+}
+
+.admin-event-card-body {
+    padding: 20px;
+    flex-grow: 1;
+    display: flex;
+    flex-direction: column;
+}
+
+.event-meta {
+    margin-bottom: 15px;
+}
+
+.meta-item {
+    display: flex;
+    align-items: center;
+    margin-bottom: 8px;
+    color: #555;
     font-size: 14px;
-    transition: background 0.3s;
+}
+
+.meta-item i {
+    width: 20px;
+    margin-right: 10px;
+    color: #6bc4b1;
+    text-align: center;
+}
+
+.event-description {
+    color: #666;
+    line-height: 1.5;
+    margin-bottom: 20px;
+    flex-grow: 1;
+    font-size: 14px;
+}
+
+.event-stats {
+    display: grid;
+    grid-template-columns: repeat(2, 1fr);
+    gap: 10px;
+    margin-bottom: 20px;
+    background-color: #f8f9fa;
+    padding: 15px;
+    border-radius: 8px;
+}
+
+.stat-item {
+    display: flex;
+    flex-direction: column;
+}
+
+.stat-label {
+    font-size: 12px;
+    color: #666;
+    margin-bottom: 4px;
+}
+
+.stat-value {
+    font-size: 16px;
+    font-weight: 600;
+    color: #333;
+}
+
+.admin-actions {
+    display: flex;
+    gap: 10px;
+    margin-top: auto;
+}
+
+.btn-edit, .btn-delete, .btn-view-bookings {
+    flex: 1;
+    padding: 10px 15px;
+    border: none;
+    border-radius: 6px;
+    font-size: 14px;
+    font-weight: 600;
+    cursor: pointer;
+    transition: all 0.3s;
+    text-align: center;
+    text-decoration: none;
+}
+
+.btn-edit {
+    background-color: #ffc107;
+    color: #000;
 }
 
 .btn-edit:hover {
-    background: #e0a800;
+    background-color: #e0a800;
 }
 
 .btn-delete {
-    background: #dc3545;
+    background-color: #dc3545;
     color: #fff;
-    border: none;
-    padding: 6px 12px;
-    border-radius: 4px;
-    cursor: pointer;
-    font-size: 14px;
-    transition: background 0.3s;
 }
 
 .btn-delete:hover {
-    background: #c82333;
+    background-color: #c82333;
 }
 
-/* Form Styling */
+.btn-view-bookings {
+    background-color: #6bc4b1;
+    color: #fff;
+    width: 100%;
+    margin-top: 10px;
+}
+
+.btn-view-bookings:hover {
+    background-color: #5ab3a0;
+}
+
+.booking-info {
+    margin-top: 10px;
+    padding: 10px;
+    background-color: #f8f9fa;
+    border-radius: 6px;
+    font-size: 13px;
+    color: #666;
+}
+
+.booking-info.has-bookings {
+    border-left: 3px solid #28a745;
+}
+
+.booking-info.no-bookings {
+    border-left: 3px solid #6c757d;
+}
+
+/* Form Styling (Keep existing) */
 .form-grid {
     display: grid;
     grid-template-columns: 1fr 1fr;
@@ -148,6 +364,193 @@
     cursor: not-allowed;
 }
 
+/* Loading States */
+.loading {
+    grid-column: 1 / -1;
+    text-align: center;
+    padding: 60px;
+    font-size: 18px;
+    color: #666;
+}
+
+.no-events {
+    grid-column: 1 / -1;
+    text-align: center;
+    padding: 60px;
+    font-size: 18px;
+    color: #666;
+}
+
+/* Bookings Modal Styles */
+.bookings-list {
+    margin-top: 20px;
+}
+
+.booking-item {
+    background: #f8f9fa;
+    border: 1px solid #e9ecef;
+    border-radius: 8px;
+    padding: 15px;
+    margin-bottom: 15px;
+}
+
+.booking-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    margin-bottom: 10px;
+    padding-bottom: 10px;
+    border-bottom: 1px solid #dee2e6;
+}
+
+.booking-status {
+    padding: 3px 8px;
+    border-radius: 12px;
+    font-size: 11px;
+    font-weight: 600;
+    text-transform: uppercase;
+}
+
+.booking-status.pending {
+    background-color: #fff3cd;
+    color: #856404;
+}
+
+.booking-status.confirmed {
+    background-color: #d4edda;
+    color: #155724;
+}
+
+.booking-status.cancelled {
+    background-color: #f8d7da;
+    color: #721c24;
+}
+
+.booking-details p {
+    margin: 5px 0;
+    font-size: 14px;
+}
+
+.company-list {
+    margin: 10px 0;
+    padding: 10px;
+    background-color: #e7f3ff;
+    border-radius: 6px;
+    font-size: 13px;
+}
+
+.company-list small {
+    color: #0066cc;
+}
+
+.close-modal {
+    font-size: 28px;
+    cursor: pointer;
+    color: #999;
+    transition: color 0.3s;
+}
+
+.close-modal:hover {
+    color: #333;
+}
+
+.modal-footer {
+    padding: 15px;
+    border-top: 1px solid #eee;
+    text-align: right;
+}
+
+/* Pagination Styles (Similar to viewEvent.css) */
+.pagination {
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    gap: 10px;
+    margin-top: 40px;
+    padding: 20px 0;
+    flex-wrap: wrap;
+    border-top: 1px solid #eee;
+}
+
+.page-btn {
+    padding: 10px 16px;
+    background-color: white;
+    border: 2px solid #ddd;
+    border-radius: 5px;
+    cursor: pointer;
+    font-size: 16px;
+    font-weight: bold;
+    transition: all 0.3s;
+    min-width: 45px;
+}
+
+.page-btn:hover:not(:disabled) {
+    background-color: #6bc4b1;
+    border-color: #6bc4b1;
+    color: white;
+    transform: translateY(-2px);
+}
+
+.page-btn.active {
+    background-color: #6bc4b1;
+    border-color: #6bc4b1;
+    color: white;
+}
+
+.page-btn:disabled {
+    opacity: 0.5;
+    cursor: not-allowed;
+}
+
+.page-btn:disabled:hover {
+    background-color: white;
+    border-color: #ddd;
+    transform: none;
+    color: inherit;
+}
+
+.page-info {
+    padding: 10px 20px;
+    font-size: 16px;
+    color: #666;
+    margin: 0 10px;
+}
+
+/* Events Grid adjustments for pagination */
+.events-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fill, minmax(400px, 1fr));
+    gap: 30px;
+    margin-bottom: 30px;
+    min-height: 600px; /* Ensure consistent height */
+}
+
+/* Loading States */
+.loading {
+    grid-column: 1 / -1;
+    text-align: center;
+    padding: 60px;
+    font-size: 18px;
+    color: #666;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    height: 300px;
+}
+
+.no-events {
+    grid-column: 1 / -1;
+    text-align: center;
+    padding: 60px;
+    font-size: 18px;
+    color: #666;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    height: 300px;
+}
+
+/* Responsive */
 @media (max-width: 768px) {
     .form-grid {
         grid-template-columns: 1fr;
@@ -157,11 +560,58 @@
         padding: 20px;
     }
     
-    .admin-table {
-        font-size: 12px;
+    .filters-section {
+        padding: 30px;
+        flex-direction: column;
+        align-items: stretch;
     }
     
-    .admin-table th, .admin-table td {
-        padding: 8px;
+    .filter-group {
+        min-width: 100%;
+    }
+    
+    .events-grid {
+        grid-template-columns: 1fr;
+    }
+    
+    .event-stats {
+        grid-template-columns: 1fr;
+    }
+    
+    .admin-actions {
+        flex-direction: column;
+    }
+
+    .pagination {
+        gap: 5px;
+        padding: 15px 0;
+    }
+    
+    .page-btn {
+        padding: 8px 12px;
+        font-size: 14px;
+        min-width: 40px;
+    }
+    
+    .page-info {
+        font-size: 14px;
+        padding: 8px 15px;
+    }
+    
+    .events-grid {
+        grid-template-columns: 1fr;
+        min-height: 500px;
+    }
+}
+
+@media (max-width: 480px) {
+    .pagination {
+        flex-direction: column;
+        gap: 10px;
+    }
+    
+    .page-btn {
+        width: 100%;
+        max-width: 200px;
     }
 }
