@@ -185,6 +185,9 @@ document.addEventListener('DOMContentLoaded', function() {
     eventMRT.textContent = event.nearestMRT;
     eventDescription.textContent = event.longIntro || event.intro || 'No detailed description available.';
 
+    // Store event location for directions
+    currentEventLocation = event.location;
+
     const passengersCount = Number(event.passengersCount || 0);
     const volunteersCount = Number(event.volunteersCount || 0);
     const remainingSlots = passengersCount - volunteersCount;

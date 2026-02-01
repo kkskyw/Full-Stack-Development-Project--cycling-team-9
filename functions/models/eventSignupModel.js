@@ -12,20 +12,32 @@ async function signupForEvent(userId, eventId) {
     throw new Error("Event not found");
   }
 
-  // 1️⃣ Get approved company booking (SOURCE OF TRUTH)
-  const companySnap = await db
-    .collection("companyBookings")
-    .where("eventId", "==", String(eventId))
-    .where("status", "==", "approved")
-    .limit(1)
-    .get();
+  const eventData = eventSnap.data();
+  let passengersCount = 0;
 
-  if (companySnap.empty) {
-    throw new Error("This event is not open for individual volunteers");
+  // 1️⃣ Check if event has maxPassengers set directly (individual volunteer event)
+  if (eventData.maxPassengers && Number(eventData.maxPassengers) > 0) {
+    passengersCount = Number(eventData.maxPassengers);
+  } else {
+    // Fallback: Get approved company booking (SOURCE OF TRUTH for company events)
+    const companySnap = await db
+      .collection("companyBookings")
+      .where("eventId", "==", String(eventId))
+      .where("status", "==", "approved")
+      .limit(1)
+      .get();
+
+    if (companySnap.empty) {
+      throw new Error("This event is not open for individual volunteers");
+    }
+
+    const companyBooking = companySnap.docs[0].data();
+    passengersCount = Number(companyBooking.passengersCount || 0);
   }
 
-  const companyBooking = companySnap.docs[0].data();
-  const passengersCount = Number(companyBooking.passengersCount || 0);
+  if (passengersCount === 0) {
+    throw new Error("This event is not open for individual volunteers");
+  }
 
   // 2️⃣ Prevent duplicate signup
   const signupSnap = await db

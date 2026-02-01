@@ -75,7 +75,7 @@ async function fetchVolunteers() {
   `;
 
   try {
-    const res = await fetch("/admin/volunteers", {
+    const res = await fetch("/api/admin/volunteers", {
       method: "GET",
       headers: {
         "Authorization": "Bearer " + token

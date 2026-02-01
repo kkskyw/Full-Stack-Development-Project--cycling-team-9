@@ -135,7 +135,7 @@ document.addEventListener('DOMContentLoaded', function() {
             if (currentFilters.mrt) params.append('mrt', currentFilters.mrt);
             if (currentFilters.mrtLetter) params.append('mrtLetter', currentFilters.mrtLetter);
             
-            const url = `/api/events/booked?${params}`;
+            const url = `/api/events?${params}`;
             console.log('Fetching from URL:', url);
             
             const response = await fetch(url);
@@ -206,6 +206,11 @@ document.addEventListener('DOMContentLoaded', function() {
             
             const eventIntro = event.intro || event.header || 'No description available';
             
+            // Calculate slots left - handle different data structures
+            const maxPassengers = event.maxPassengers || (event.companyBookings && event.companyBookings[0] ? event.companyBookings[0].passengersCount : 0);
+            const volunteersCount = event.volunteersCount || 0;
+            const slotsLeft = Math.max(0, maxPassengers - volunteersCount);
+            
             eventCard.innerHTML = `
                 <div class="event-header">${event.header}</div>
                 <div class="event-meta">
@@ -213,7 +218,7 @@ document.addEventListener('DOMContentLoaded', function() {
                     <div class="event-time">${formattedTime}</div>
                     <div class="event-location">${event.location}</div>
                     <div class="event-mrt">${event.nearestMRT}</div>
-                    <div class="event-count">${event.companyBookings[0].passengersCount - event.volunteersCount} slot(s) left</div>
+                    <div class="event-count">${slotsLeft} slot(s) left</div>
                 </div>
                 <div class="event-intro">${eventIntro}</div>
             `;
