@@ -147,5 +147,46 @@ function stopListening() {
   speak("Voice control stopped");
 }
 
+// ===============================
+// Voice UI Injection
+// ===============================
+
+function injectVoiceUI() {
+  // Create voice control button if it doesn't exist
+  if (document.getElementById('voiceControlBtn')) return;
+
+  const btn = document.createElement('button');
+  btn.id = 'voiceControlBtn';
+  btn.innerHTML = '🎤';
+  btn.title = 'Toggle Voice Control';
+  btn.style.cssText = `
+    position: fixed;
+    bottom: 20px;
+    right: 20px;
+    width: 50px;
+    height: 50px;
+    border-radius: 50%;
+    border: none;
+    background: #4CAF50;
+    color: white;
+    font-size: 24px;
+    cursor: pointer;
+    z-index: 9999;
+    box-shadow: 0 2px 10px rgba(0,0,0,0.2);
+    transition: background 0.3s;
+  `;
+
+  btn.addEventListener('click', () => {
+    if (isListening) {
+      stopListening();
+      btn.style.background = '#4CAF50';
+    } else {
+      startListening();
+      btn.style.background = '#f44336';
+    }
+  });
+
+  document.body.appendChild(btn);
+}
 
 document.addEventListener("DOMContentLoaded", initVoiceControl);

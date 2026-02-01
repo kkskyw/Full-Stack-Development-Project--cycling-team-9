@@ -24,6 +24,8 @@ const telegramController = require("./controllers/telegramController");
 const trainingController = require("./controllers/trainingController");
 const adminVolunteerController = require("./controllers/adminVolunteerController");
 const feedbackController = require("./controllers/feedbackController");
+const adminEventsController = require("./controllers/adminEventsController");
+const companyEventsController = require("./controllers/companyEventsController");
 
 // Validation & Auth Middleware
 const userValidation = require("./middlewares/userValidation");
@@ -66,6 +68,7 @@ app.get("/api/events/:id", eventController.getEventById);
 // Reminder
 app.post("/api/sendReminder", verifyJWT, reminderController.sendReminder);
 app.post("/api/training/apply", verifyJWT, trainingController.applyForTraining);
+app.get("/api/training/status", verifyJWT, trainingController.getMyTrainingStatus);
 
 // Booking list
 app.get("/api/users/:userId/bookings", verifyJWT, bookingController.getUserBookings);
@@ -74,12 +77,22 @@ app.get("/api/users/eligible-events", verifyJWT, eventSignupController.getEligib
 // History routes
 app.get("/api/volunteers/:id/events", verifyJWT, historyController.getEventsByVolunteer);
 app.get("/api/admin/events/history", verifyJWT, verifyAdmin, historyController.getAllPastEvents);
-app.get("/api/admin/events", verifyJWT, verifyAdmin, eventController.getAllEvents);
+app.get("/api/admin/events", verifyJWT, verifyAdmin, adminEventsController.getAllEvents);
+app.post("/api/admin/events", verifyJWT, verifyAdmin, adminEventsController.createEvent);
+app.get("/api/admin/events/:id", verifyJWT, verifyAdmin, adminEventsController.getEventById);
+app.put("/api/admin/events/:id", verifyJWT, verifyAdmin, adminEventsController.updateEvent);
+app.delete("/api/admin/events/:id", verifyJWT, verifyAdmin, adminEventsController.deleteEvent);
 
 // Attendance routes
 app.post("/api/attendance/checkin", verifyJWT, attendanceController.checkIn);
 app.post("/api/attendance/checkout", verifyJWT, attendanceController.checkOut);
 app.get("/api/admin/volunteers/:id", verifyJWT, verifyAdmin, adminVolunteerController.getVolunteerDetails);
+
+// Company booking routes
+app.get("/api/company/events", companyEventsController.getEventsForCompanies);
+app.post("/api/company/bookings", companyEventsController.createCompanyBooking);
+app.get("/api/company/bookings", companyEventsController.getCompanyBookings);
+app.put("/api/company/bookings/:bookingId/status", verifyJWT, verifyAdmin, companyEventsController.updateBookingStatus);
 
 // Telegram routes
 app.post("/api/telegram/set-webhook", telegramController.setWebhook);

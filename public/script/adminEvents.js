@@ -1,4 +1,11 @@
-const API_BASE_URL = '';
+const API_BASE_URL = '/api';
+
+// Check if user is logged in
+const token = localStorage.getItem('token');
+if (!token) {
+    alert('Please log in as an admin to access this page.');
+    window.location.href = 'login.html';
+}
 
 document.addEventListener('DOMContentLoaded', function() {
     const eventsGrid = document.getElementById('eventsGrid');
@@ -200,6 +207,13 @@ document.addEventListener('DOMContentLoaded', function() {
                     'Authorization': `Bearer ${localStorage.getItem('token')}`
                 }
             });
+
+            // Check for auth errors
+            if (eventsResponse.status === 401 || eventsResponse.status === 403) {
+                alert('Access denied. Please log in as an admin.');
+                window.location.href = 'login.html';
+                return;
+            }
 
             // Parse events response
             const eventsResult = await eventsResponse.json();

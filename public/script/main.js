@@ -137,7 +137,7 @@ document.addEventListener('DOMContentLoaded', function () {
     const elements = document.querySelectorAll('[data-lang]');
     elements.forEach(element => {
         const key = element.dataset.lang;
-        element.textContent = key in tranlations[displayLanguage].main ? tranlations[displayLanguage].main[key] : tranlations['en'].main[key];
+        element.textContent = key in translations[displayLanguage].main ? translations[displayLanguage].main[key] : translations['en'].main[key];
     })
 })
 

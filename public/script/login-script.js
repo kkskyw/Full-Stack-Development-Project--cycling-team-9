@@ -26,12 +26,17 @@ document.getElementById("loginForm").addEventListener("submit", async function (
     localStorage.setItem("userId", data.userId);
     localStorage.setItem("userRole", data.role);
     localStorage.setItem("userName", data.name);
+    if (data.companyName) {
+      localStorage.setItem("companyName", data.companyName);
+    }
 
     // Decide redirect based on role
     let redirectUrl = "volunteer_main.html";
 
     if (data.role === "Admin") {
       redirectUrl = "admin_main.html";
+    } else if (data.role === "Company") {
+      redirectUrl = "companyEvents.html";
     }
 
     // Show success modal

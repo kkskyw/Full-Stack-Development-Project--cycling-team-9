@@ -91,7 +91,8 @@ async function loginUser(req, res) {
       userId: user.userId,
       role: user.role,
       trainingRoles: user.trainingRoles || [],
-      name: user.name
+      name: user.name,
+      companyName: user.companyName || null
     });
 
   } catch (err) {
