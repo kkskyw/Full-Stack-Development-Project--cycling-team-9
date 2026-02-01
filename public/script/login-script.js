@@ -32,6 +32,8 @@ document.getElementById("loginForm").addEventListener("submit", async function (
 
     if (data.role === "Admin") {
       redirectUrl = "admin_main.html";
+    } else if (data.role === "Company") {
+      redirectUrl = "companyEvents.html";
     }
 
     // Show success modal
