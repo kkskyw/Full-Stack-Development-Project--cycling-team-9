@@ -1,98 +1,108 @@
 function getToken() {
-    return localStorage.getItem("token");
+  return localStorage.getItem("token");
 }
 
 document.addEventListener("DOMContentLoaded", async () => {
-    // PAGE GUARD → Only run on event_booking.html
-    const container = document.getElementById("booking-container");
-    if (!container) return;
+  const container = document.getElementById("booking-container");
+  if (!container) return;
 
-    try {
-        const userId = localStorage.getItem("userId");
+  try {
+    const userId = localStorage.getItem("userId");
 
-        const res = await fetch(`/api/users/${userId}/bookings`, {
-            headers: {
-                "Authorization": `Bearer ${getToken()}`,
-                "Content-Type": "application/json"
-            }
-        });
+    const res = await fetch(`/api/users/${userId}/bookings`, {
+      headers: {
+        Authorization: `Bearer ${getToken()}`,
+        "Content-Type": "application/json"
+      }
+    });
 
-        const data = await res.json();
+    const data = await res.json();
 
-        if (!res.ok) {
-            container.innerHTML = `<p style="color:red">${data.error}</p>`;
-            return;
-        }
-
-        if (data.bookings.length === 0) {
-            container.innerHTML = "<p>You have no bookings yet.</p>";
-            return;
-        }
-
-        container.innerHTML = data.bookings
-            .map(b => bookingCard(b))
-            .join("");
-
-    } catch (err) {
-        container.innerHTML = `<p style="color:red">Failed to load bookings.</p>`;
-        console.error(err);
+    if (!res.ok) {
+      container.innerHTML = `<p style="color:red">${data.error}</p>`;
+      return;
     }
+
+    if (!data.bookings || data.bookings.length === 0) {
+      container.innerHTML = "<p>You have no bookings yet.</p>";
+      return;
+    }
+
+    container.innerHTML = data.bookings.map(bookingCard).join("");
+
+  } catch (err) {
+    console.error(err);
+    container.innerHTML = `<p style="color:red">Failed to load bookings.</p>`;
+  }
 });
 
 function bookingCard(b) {
-    return `
-        <div class="booking-card">
-            <h2>${b.header}</h2>
-            <p><strong>Location:</strong> ${b.location}</p>
-            <p><strong>Signed Up:</strong> ${new Date(b.bookingDate).toLocaleString()}</p>
-            <p>${b.intro}</p>
+  const bookingDate = b.bookingDate
+    ? new Date(b.bookingDate).toLocaleString()
+    : "N/A";
 
-            <button class="checkin-btn" onclick="location.href='attendance.html?eventId=${b.eventId}'">
-                Check In
-            </button>
+  return `
+    <div class="booking-card">
+      <h2>${b.header}</h2>
+      <p><strong>Location:</strong> ${b.location}</p>
+      <p><strong>Signed Up:</strong> ${bookingDate}</p>
+      <p>${b.intro || ""}</p>
 
-            <button class="resend-btn" onclick="resendReminder(${b.eventId})">
-                Resend Reminder Email
-            </button>
+      <button class="checkin-btn"
+        onclick="location.href='attendance.html?eventId=${b.eventId}'">
+        Check In
+      </button>
 
-            <div id="status-${b.eventId}" class="booking-status"></div>
-        </div>
-    `;
+      <button class="resend-btn"
+        onclick="resendReminder('${b.eventId}', this)">
+        Resend Reminder Email
+      </button>
+
+      <div id="status-${b.eventId}" class="booking-status"></div>
+    </div>
+  `;
 }
 
-async function resendReminder(eventId) {
-    const status = document.getElementById(`status-${eventId}`);
-    status.style.display = "block";
-    status.textContent = "Sending email...";
-    status.style.color = "black";
+async function resendReminder(eventId, btn) {
+  const status = document.getElementById(`status-${eventId}`);
+  if (!status) return;
 
-    try {
-        const res = await fetch("/api/sendReminder", {
-            method: "POST",
-            headers: {
-                "Authorization": `Bearer ${getToken()}`,
-                "Content-Type": "application/json"
-            },
-            body: JSON.stringify({
-                eventId: eventId,
-                method: "email"
-            })
-        });
+  btn.disabled = true;
+  status.textContent = "Sending email...";
+  status.style.color = "#333";
 
-        const data = await res.json();
+  try {
+    const res = await fetch("/api/sendReminder", {
+      method: "POST",
+      headers: {
+        Authorization: `Bearer ${getToken()}`,
+        "Content-Type": "application/json"
+      },
+      body: JSON.stringify({
+        eventId,
+        method: "email"
+      })
+    });
 
-        if (!res.ok) {
-            status.textContent = data.error || "Reminder failed.";
-            status.style.color = "red";
-            return;
-        }
+    const data = await res.json();
 
-        status.textContent = "Reminder sent!";
-        status.style.color = "green";
-
-    } catch (err) {
-        status.textContent = "Server error.";
-        status.style.color = "red";
-        console.error(err);
+    if (!res.ok) {
+      status.textContent = data.error || "Reminder failed.";
+      status.style.color = "red";
+      btn.disabled = false;
+      return;
     }
+
+    status.textContent = "Reminder sent!";
+    status.style.color = "green";
+
+    btn.textContent = "Resend Again";
+    btn.disabled = false;
+
+  } catch (err) {
+    console.error(err);
+    status.textContent = "Server error.";
+    status.style.color = "red";
+    btn.disabled = false;
+  }
 }

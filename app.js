@@ -69,17 +69,16 @@ app.post("/api/admin/reject-training", verifyJWT, adminTrainingController.reject
 app.get("/api/training/status", verifyJWT, trainingController.getMyTrainingStatus);
 
 // ========== ADMIN EVENT MANAGEMENT ROUTES ==========
-app.post("/admin/events", verifyJWT, verifyAdmin, adminEventsController.createEvent);
-app.get("/admin/events", verifyJWT, verifyAdmin, adminEventsController.getAllEvents);
-app.get("/admin/events/:id", verifyJWT, verifyAdmin, adminEventsController.getEventById);
-app.put("/admin/events/:id", verifyJWT, verifyAdmin, adminEventsController.updateEvent);
-app.delete("/admin/events/:id", verifyJWT, verifyAdmin, adminEventsController.deleteEvent);
-
+app.post("/api/admin/events", verifyJWT, verifyAdmin, adminEventsController.createEvent);
+app.get("/api/admin/events", verifyJWT, verifyAdmin, adminEventsController.getAllEvents);
+app.get("/api/admin/events/:id", verifyJWT, verifyAdmin, adminEventsController.getEventById);
+app.put("/api/admin/events/:id", verifyJWT, verifyAdmin, adminEventsController.updateEvent);
+app.delete("/api/admin/events/:id", verifyJWT, verifyAdmin, adminEventsController.deleteEvent);
 // Company booking routes
-app.get('/company/events', companyEventsController.getEventsForCompanies);
-app.post('/company/bookings', companyEventsController.createCompanyBooking);
-app.get('/company/bookings', companyEventsController.getCompanyBookings);
-app.put('/company/bookings/:bookingId/status', verifyJWT, verifyAdmin, companyEventsController.updateBookingStatus);
+app.get('/api/company/events', companyEventsController.getEventsForCompanies);
+app.post('/api/company/bookings', companyEventsController.createCompanyBooking);
+app.get('/api/company/bookings', companyEventsController.getCompanyBookings);
+app.put('/api/company/bookings/:bookingId/status', verifyJWT, verifyAdmin, companyEventsController.updateBookingStatus);
 
 //booking list
 app.get("/api/users/:userId/bookings", verifyJWT, bookingController.getUserBookings);

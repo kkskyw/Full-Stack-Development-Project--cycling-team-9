@@ -108,19 +108,16 @@ document.addEventListener('DOMContentLoaded', function() {
         }
 
         //  Backend says not allowed (duplicate or same-day)
-       if (!res.ok) {
-        if (data.error?.includes("already")) {
-            showAlreadyBookedModal("You’ve already signed up for this event 😊");
-        } else if (data.error?.includes("not open")) {
-            showAlreadyBookedModal("This event is not open for individual volunteers.");
-        } else if (data.error?.includes("full")) {
-            showAlreadyBookedModal("This event is fully booked.");
-        } else {
-            showAlreadyBookedModal(data.error || "Unable to sign up for this event.");
+        if (!res.ok) {
+            if (data.error === "You have already booked this event.") {
+                showAlreadyBookedModal();
+            } else {
+                showAlreadyBookedModal(
+                    data.error || "Unable to sign up for this event."
+                );
+            }
+            return;
         }
-        return;
-    }
-
 
 
         // 3️ Allowed → redirect to signup page
@@ -161,22 +158,25 @@ document.addEventListener('DOMContentLoaded', function() {
     }
 
     function displayEventDetails(event) {
-    const eventDateTime = new Date(event.start_time || event.time);
-
-    const formattedDate = eventDateTime.toLocaleDateString('en-US', {
-        timeZone: 'Asia/Singapore',
-        weekday: 'long',
-        year: 'numeric',
-        month: 'long',
-        day: 'numeric'
-    });
-
-    const formattedTime = eventDateTime.toLocaleTimeString('en-US', {
-        timeZone: 'Asia/Singapore',
-        hour: '2-digit',
-        minute: '2-digit',
-        hour12: true
-    });
+        console.log('Displaying event details:', event);
+        
+        // Format date and time
+        const eventDateTime = new Date(event.start_time || event.time);
+        
+        const formattedDate = eventDateTime.toLocaleDateString('en-US', {
+            timeZone: 'Asia/Singapore',  // Change from 'UTC' to 'Asia/Singapore'
+            weekday: 'long',
+            year: 'numeric',
+            month: 'long',
+            day: 'numeric'
+        });
+        
+        const formattedTime = eventDateTime.toLocaleTimeString('en-US', {
+            timeZone: 'Asia/Singapore',  // Change from 'UTC' to 'Asia/Singapore'
+            hour: '2-digit',
+            minute: '2-digit',
+            hour12: true
+        });
 
     eventTitle.textContent = event.header;
     eventDate.textContent = formattedDate;
@@ -212,9 +212,7 @@ document.addEventListener('DOMContentLoaded', function() {
 
 
         signupBtn.disabled = false;
-        document.title = `${event.header} - Cycling Without Age Singapore`;
     }
-
 
     function showErrorMessage(message) {
         eventTitle.textContent = 'Event Not Found';
