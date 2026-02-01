@@ -5,6 +5,7 @@ document.addEventListener('DOMContentLoaded', function() {
     window.updateEventCardAsBooked = updateEventCardAsBooked;
     window.testBookingUpdate = testBookingUpdate;
     const eventsGrid = document.getElementById('eventsGrid');
+    const pagination = document.getElementById('pagination');
     const dateFilter = document.getElementById('dateFilter');
     const locationFilter = document.getElementById('locationFilter');
     const clearFiltersBtn = document.getElementById('clearFilters');
@@ -21,6 +22,12 @@ document.addEventListener('DOMContentLoaded', function() {
         location: ''
     };
     
+    // Pagination variables
+    let currentPage = 1;
+    const pageSize = 6; // 6 event cards per page
+    let totalEvents = 0;
+    let totalPages = 1;
+
     // Company identifier - using company name as key
     let companyIdentifier = '';
 
@@ -38,11 +45,13 @@ document.addEventListener('DOMContentLoaded', function() {
     function setupEventListeners() {
         dateFilter.addEventListener('change', function() {
             currentFilters.date = this.value;
+            currentPage = 1; // Reset to first page when filter changes
             filterEvents();
         });
         
         locationFilter.addEventListener('change', function() {
             currentFilters.location = this.value;
+            currentPage = 1; // Reset to first page when filter changes
             filterEvents();
         });
         
@@ -71,6 +80,7 @@ document.addEventListener('DOMContentLoaded', function() {
     async function loadEvents() {
         try {
             eventsGrid.innerHTML = '<div class="loading">Loading available events...</div>';
+            pagination.innerHTML = ''; // Clear pagination
             
             // Load events and bookings in parallel
             const [eventsResponse, bookingsResponse] = await Promise.all([
@@ -115,32 +125,38 @@ document.addEventListener('DOMContentLoaded', function() {
             const now = new Date();
             const todayStart = new Date(now.getFullYear(), now.getMonth(), now.getDate());
             
-            currentEvents = events.filter(event => {
+            let allEvents = events.filter(event => {
                 const eventTime = new Date(event.time || event.start_time);
                 return eventTime >= todayStart;
             });
             
             // Add booking status to each event
-            currentEvents = currentEvents.map(event => {
+            allEvents = allEvents.map(event => {
                 return {
                     ...event,
                     isBookedByCompany: bookedEventIds.has(event.eventId)
                 };
             });
             
-            console.log('Upcoming events with booking status:', currentEvents.length);
+            console.log('Upcoming events with booking status:', allEvents.length);
             
-            displayEvents(currentEvents);
+            // Store all events for filtering
+            currentEvents = allEvents;
+            
+            // Apply filters and pagination
+            filterEvents();
             
         } catch (error) {
             console.error('Error loading events:', error);
             eventsGrid.innerHTML = `<div class="no-events">Error loading events: ${error.message}</div>`;
+            pagination.innerHTML = '';
         }
     }
 
     function displayEvents(events) {
         if (events.length === 0) {
             eventsGrid.innerHTML = '<div class="no-events">No events available at the moment. Please check back later.</div>';
+            displayPagination(); // Still show pagination even if no events
             return;
         }
         
@@ -223,9 +239,74 @@ document.addEventListener('DOMContentLoaded', function() {
         }).join('');
         
         console.log('Displayed', events.length, 'events');
+        
+        // Display pagination after loading events
+        displayPagination();
+    }
+
+    function displayPagination() {
+        pagination.innerHTML = '';
+        
+        if (totalPages <= 1) {
+            // Don't show pagination if there's only one page
+            return;
+        }
+        
+        // Previous button
+        const prevButton = document.createElement('button');
+        prevButton.className = 'page-btn';
+        prevButton.innerHTML = '&laquo;';
+        prevButton.disabled = currentPage === 1;
+        prevButton.addEventListener('click', () => {
+            if (currentPage > 1) {
+                currentPage--;
+                filterEvents();
+            }
+        });
+        pagination.appendChild(prevButton);
+        
+        // Page numbers
+        const maxVisiblePages = 5;
+        let startPage = Math.max(1, currentPage - Math.floor(maxVisiblePages / 2));
+        let endPage = Math.min(totalPages, startPage + maxVisiblePages - 1);
+        
+        if (endPage - startPage + 1 < maxVisiblePages) {
+            startPage = Math.max(1, endPage - maxVisiblePages + 1);
+        }
+        
+        for (let i = startPage; i <= endPage; i++) {
+            const pageButton = document.createElement('button');
+            pageButton.className = `page-btn ${i === currentPage ? 'active' : ''}`;
+            pageButton.textContent = i;
+            pageButton.addEventListener('click', () => {
+                currentPage = i;
+                filterEvents();
+            });
+            pagination.appendChild(pageButton);
+        }
+        
+        // Next button
+        const nextButton = document.createElement('button');
+        nextButton.className = 'page-btn';
+        nextButton.innerHTML = '&raquo;';
+        nextButton.disabled = currentPage === totalPages;
+        nextButton.addEventListener('click', () => {
+            if (currentPage < totalPages) {
+                currentPage++;
+                filterEvents();
+            }
+        });
+        pagination.appendChild(nextButton);
+        
+        // Page info
+        const pageInfo = document.createElement('div');
+        pageInfo.className = 'page-info';
+        pageInfo.textContent = `Page ${currentPage} of ${totalPages} (${totalEvents} events)`;
+        pagination.appendChild(pageInfo);
     }
 
     function filterEvents() {
+        // Apply filters to all events
         let filteredEvents = [...currentEvents];
         
         if (currentFilters.date) {
@@ -242,14 +323,25 @@ document.addEventListener('DOMContentLoaded', function() {
             );
         }
         
-        displayEvents(filteredEvents);
+        // Calculate pagination for filtered results
+        totalEvents = filteredEvents.length;
+        totalPages = Math.ceil(totalEvents / pageSize);
+        
+        // Get paginated slice
+        const startIndex = (currentPage - 1) * pageSize;
+        const endIndex = startIndex + pageSize;
+        const paginatedEvents = filteredEvents.slice(startIndex, endIndex);
+        
+        // Display paginated events
+        displayEvents(paginatedEvents);
     }
 
     function clearFilters() {
         dateFilter.value = '';
         locationFilter.value = '';
         currentFilters = { date: '', location: '' };
-        displayEvents(currentEvents);
+        currentPage = 1; // Reset to first page when clearing filters
+        loadEvents(); // Reload events without filters
     }
 
     // Global function for opening booking modal
@@ -624,6 +716,16 @@ document.addEventListener('DOMContentLoaded', function() {
         const eventCard = document.querySelector(`.event-card[data-event-id="${eventId}"]`);
         if (!eventCard) {
             console.log('Event card not found for ID:', eventId);
+            // Event might not be on current page, so update the data structure
+            currentEvents = currentEvents.map(event => {
+                if ((event.eventId || event._id || event.id) === eventId) {
+                    return {
+                        ...event,
+                        isBookedByCompany: true
+                    };
+                }
+                return event;
+            });
             return;
         }
         
@@ -656,7 +758,7 @@ document.addEventListener('DOMContentLoaded', function() {
         
         // Also update the currentEvents array
         currentEvents = currentEvents.map(event => {
-            if (event.eventId === eventId) {
+            if ((event.eventId || event._id || event.id) === eventId) {
                 return {
                     ...event,
                     isBookedByCompany: true

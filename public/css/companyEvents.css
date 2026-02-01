@@ -576,10 +576,101 @@
     word-wrap: break-word;
 }
 
+/* Pagination Styles (Same as adminEvents.css) */
+.pagination {
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    gap: 10px;
+    margin-top: 40px;
+    padding: 20px 0;
+    flex-wrap: wrap;
+    border-top: 1px solid #eee;
+}
+
+.page-btn {
+    padding: 10px 16px;
+    background-color: white;
+    border: 2px solid #ddd;
+    border-radius: 5px;
+    cursor: pointer;
+    font-size: 16px;
+    font-weight: bold;
+    transition: all 0.3s;
+    min-width: 45px;
+}
+
+.page-btn:hover:not(:disabled) {
+    background-color: #6bc4b1;
+    border-color: #6bc4b1;
+    color: white;
+    transform: translateY(-2px);
+}
+
+.page-btn.active {
+    background-color: #6bc4b1;
+    border-color: #6bc4b1;
+    color: white;
+}
+
+.page-btn:disabled {
+    opacity: 0.5;
+    cursor: not-allowed;
+}
+
+.page-btn:disabled:hover {
+    background-color: white;
+    border-color: #ddd;
+    transform: none;
+    color: inherit;
+}
+
+.page-info {
+    padding: 10px 20px;
+    font-size: 16px;
+    color: #666;
+    margin: 0 10px;
+}
+
+/* Events Grid adjustments for pagination */
+.events-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fill, minmax(400px, 1fr));
+    gap: 30px;
+    margin-bottom: 30px;
+    min-height: 600px; /* Ensure consistent height */
+}
+
+/* Loading States */
+.loading {
+    grid-column: 1 / -1;
+    text-align: center;
+    padding: 60px;
+    font-size: 18px;
+    color: #666;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    height: 300px;
+}
+
+.no-events {
+    grid-column: 1 / -1;
+    text-align: center;
+    padding: 60px;
+    font-size: 18px;
+    color: #666;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    height: 300px;
+}
+
 /* Responsive */
 @media (max-width: 768px) {
     .events-grid {
         grid-template-columns: 1fr;
+        min-height: 500px;
     }
     
     .filters-section {
@@ -603,5 +694,33 @@
     .modal-content {
         margin: 20px auto;
         width: 95%;
+    }
+
+    .pagination {
+        gap: 5px;
+        padding: 15px 0;
+    }
+    
+    .page-btn {
+        padding: 8px 12px;
+        font-size: 14px;
+        min-width: 40px;
+    }
+    
+    .page-info {
+        font-size: 14px;
+        padding: 8px 15px;
+    }
+}
+
+@media (max-width: 480px) {
+    .pagination {
+        flex-direction: column;
+        gap: 10px;
+    }
+    
+    .page-btn {
+        width: 100%;
+        max-width: 200px;
     }
 }
