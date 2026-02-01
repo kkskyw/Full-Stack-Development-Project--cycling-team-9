@@ -16,7 +16,6 @@ const reminderController = require("./functions/controllers/reminderController")
 const bookingController = require("./functions/controllers/bookingController");
 const historyController = require("./functions/controllers/historyController");
 const resetPwController = require("./functions/controllers/resetPwController");
-const telegramController = require("./functions/controllers/telegramController");
 const trainingController = require("./functions/controllers/trainingController");
 const adminVolunteerController = require("./functions/controllers/adminVolunteerController");
 const adminTrainingController = require("./functions/controllers/adminTrainingController");
@@ -93,10 +92,6 @@ app.get("/volunteers/:id/events", verifyJWT, historyController.getEventsByVolunt
 app.post("/api/attendance/checkin", verifyJWT, attendanceController.checkIn);
 app.post("/api/attendance/checkout", verifyJWT, attendanceController.checkOut);
 app.get("/api/admin/volunteers/:id", verifyJWT, verifyAdmin, adminVolunteerController.getVolunteerDetails);
-
-// Telegram routes
-app.post("/api/telegram/set-webhook", telegramController.setWebhook);
-app.post("/api/telegram/webhook", telegramController.webhook);
 
 // Feedback routes
 app.post("/feedback", feedbackController.submitFeedback);
